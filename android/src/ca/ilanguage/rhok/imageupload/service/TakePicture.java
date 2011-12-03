@@ -1,10 +1,11 @@
 package ca.ilanguage.rhok.imageupload.service;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+
+import ca.ilanguage.rhok.imageupload.R;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -22,37 +23,40 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class TakePicture extends Activity {
-	 Uri myPicture = null;
-	 String mImageFilename = "";
+	private static final String EXTRA_RESULT_FILENAME = null;
+	Uri myPicture = null;
+	String mImageFilename = "";
 
-	    @Override
-	    public void onCreate(Bundle savedInstanceState) {
-	        super.onCreate(savedInstanceState);
-	        setContentView(R.layout.take_picture);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.take_picture);
 
-	        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	        mImageFilename = getIntent().getExtras().getString(OPrime.EXTRA_RESULT_FILENAME);
-	    }
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		mImageFilename = getIntent().getExtras().getString(
+				EXTRA_RESULT_FILENAME);
+	}
 
-	    public void captureImage(View view)
-	    {
-	        ContentValues values = new ContentValues();
-	        values.put(Media.TITLE, mImageFilename);
-	        values.put(Media.DESCRIPTION, "Image Captured as part of Bilingual Aphasia Test");
+	public void captureImage(View view) {
+		ContentValues values = new ContentValues();
+		values.put(Media.TITLE, mImageFilename);
+		values.put(Media.DESCRIPTION,
+				"Image Captured as part of Bilingual Aphasia Test");
 
-	        myPicture = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI, values);
-	        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-	        i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
+		myPicture = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
+				values);
+		Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
 
-	        startActivityForResult(i, 0);
-	    }
+		startActivityForResult(i, 0);
+	}
 
-	    @Override
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
 			// Now we know that our myPicture URI refers to the image just taken
 			/*
-			 *  copy image to results folder
+			 * copy image to results folder
 			 */
 			try {
 				File sd = Environment.getExternalStorageDirectory();
@@ -75,20 +79,22 @@ public class TakePicture extends Activity {
 						"Saving as " + mImageFilename, Toast.LENGTH_LONG)
 						.show();
 			} catch (Exception e) {
-				Toast.makeText(getApplicationContext(),
-						"Result picture wasn't copied, its in the Camera folder: " + getPath(myPicture), Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(
+						getApplicationContext(),
+						"Result picture wasn't copied, its in the Camera folder: "
+								+ getPath(myPicture), Toast.LENGTH_LONG).show();
 			}
 
 		}
 	}
-	    public String getPath(Uri uri) {
-	        String[] projection = { MediaStore.Images.Media.DATA };
-	        Cursor cursor = managedQuery(uri, projection, null, null, null);
-	        startManagingCursor(cursor);
-	        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-	        cursor.moveToFirst();
-	        return cursor.getString(column_index);
-	    }
+
+	public String getPath(Uri uri) {
+		String[] projection = { MediaStore.Images.Media.DATA };
+		Cursor cursor = managedQuery(uri, projection, null, null, null);
+		startManagingCursor(cursor);
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
 	}
 }

@@ -3,5 +3,31 @@
 
     <string name="hello">Hello World, AndroidBacterialCountingActivity!</string>
     <string name="app_name">AndroidBacterialCounting</string>
+    
+    <string name="experiment_title">Bilingual Aphasia Test - English</string>
+    <string name="experiment_ready_message">Experiment Trial is ready</string>
+    <string name="experiment_start_instructions">Touch Start to take Participants Background Info</string>
+    <string name="experiment_completed_message">Tablet Experiment completed!</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="alert_dialog_ok">OK</string>
+    <string name="alert_dialog_text_entry">Participant details dialog</string>
+    <string name="user_agent_suffix">BilingualAphasiaTest/1.0</string>
+    <string name="preference_about">About</string>
+    <string name="preference_about_title">About</string>
+    <string name="preference_about_summary">Bilingual Aphasia Test was Android-ified by
+    iLanguage Lab.</string>
+    <string name="preference_visit_site">Go to the web site</string>
+    <string name="preference_thanks_title">Special Thanks</string>
+    <string name="preference_thanks_summary">Special Thanks to the Montreal Aphasia community,
+    the Montreal Computational Linguistics community, and the Android Open
+    Source developers for their work which directly or indirectly
+    contributed to this project.</string>
+    <string name="preference_licence_title">License</string>
+    <string name="preference_licence_summary">The Experiments are copyright their original
+    authors, see the Experiment Home screen for details for each
+    Experiment. Portions of this app are modifications based on work
+    created and shared by Google and used according to terms described in
+    the Apache 2.0 License.</string>
+    <string name="preference_misc">More Information</string>
 
 </resources>
