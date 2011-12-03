@@ -28,7 +28,7 @@ target
 *.dmg
 *.gz
 *.iso
-*.jar
+#*.jar
 !android-gdata-1.30.0.jar
 !bursaq-goto.jar
 !libGoogleAnalytics.jar
