@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, AndroidBacterialCountingActivity!</string>
+	<!--  Common strings -->
     <string name="app_name">AndroidBacterialCounting</string>
     
-    <string name="experiment_title">Bilingual Aphasia Test - English</string>
+    <!-- main portal -->
+    <string name="create_water_source">Create a new water source</string>
+	<string name="create_water_sample">Create a new water sample</string>
+	<string name="sync_server">Synchronize with server</string>
+
+
+    <string name="experiment_trial_header">ParticipantID,FirstName,LastName,WorstLanguage,FirstBat,StartTime,EndTime,ExperimenterID</string>
+    <string name="install_oprime">To record participant video you can install the OPrime Android Experimentation App, it allows your tablet to record video in the background and save it to the SDCARD.</string>
+	<string name="experiment_title">Bilingual Aphasia Test - English</string>
     <string name="experiment_ready_message">Experiment Trial is ready</string>
     <string name="experiment_start_instructions">Touch Start to take Participants Background Info</string>
     <string name="experiment_completed_message">Tablet Experiment completed!</string>
