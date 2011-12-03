@@ -9,6 +9,10 @@ import android.view.View;
 
 public class MainPortal extends Activity {
 
+	private static final String EXTRA_WATER_SOURCE_CODE = null;
+	private String imageSourceCodeFileName = "";
+	private String imageFileName = "";
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -17,13 +21,14 @@ public class MainPortal extends Activity {
 
 	public void onWaterSourceClick(View v) {
 		Intent intent = new Intent(this, TakePicture.class);
+		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageSourceCodeFileName);
 
 		startActivity(intent);
 	}
 
 	public void onWaterResultsClick(View v) {
 		Intent intent = new Intent(this, TakePicture.class);
-
+		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageFileName );
 		startActivity(intent);
 	}
 
