@@ -32,7 +32,7 @@ import android.net.Uri;
 import android.util.Log;
 
 public class ImageUploadService extends IntentService {
-	protected static String TAG = "NotifyingTranscriptionIntentService";
+	protected static String TAG = "NotifyingIntentService";
 
 	private NotificationManager mNM;
 	private Notification mNotification;
@@ -121,11 +121,12 @@ public class ImageUploadService extends IntentService {
 		mContentIntent = PendingIntent.getActivity(this, 0, notifyingIntent, 0);
 
 		mNotification = new Notification(mImageUploadIconId,
-				"ImageUpload Transcription in progress",
+				"ImageUpload  in progress",
 				System.currentTimeMillis());
-		mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+		mNotification.setLatestEventInfo(this, "ImageUpload ",
 				"Checking for Wifi connection...", mContentIntent);
 		mNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+		
 		// startForeground(startId, mNotification);
 		if (mShowNotification) {
 			mNM.notify(NOTIFICATION, mNotification);
@@ -166,7 +167,7 @@ public class ImageUploadService extends IntentService {
 			// StringBody("thecaption"));
 			httpPost.setEntity(entity);
 
-			mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+			mNotification.setLatestEventInfo(this, "ImageUpload ",
 					"Connecting to transcription server...", mContentIntent);
 			if (mShowNotification) {
 				mNM.notify(NOTIFICATION, mNotification);
@@ -193,12 +194,13 @@ public class ImageUploadService extends IntentService {
 				
 			}
 			reader.close();
-			Intent mailto = new Intent(Intent.ACTION_SEND); 
-	        mailto.setType("message/rfc822") ; // use from live device
-	        mailto.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
-	        mailto.putExtra(Intent.EXTRA_SUBJECT,"httpresponse data");
-	        mailto.putExtra(Intent.EXTRA_TEXT,httpresponse);
-	        startActivity(Intent.createChooser(mailto, "Select email application."));
+//			Intent mailto = new Intent(Intent.ACTION_SEND); 
+//			mailto.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//	        mailto.setType("message/rfc822") ; // use from live device
+//	        mailto.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
+//	        mailto.putExtra(Intent.EXTRA_SUBJECT,"httpresponse data");
+//	        mailto.putExtra(Intent.EXTRA_TEXT,httpresponse);
+//	        startActivity(Intent.createChooser(mailto, "Select email application."));
 			
 		} catch (Exception e) {
 			Log.e(e.getClass().getName(), e.getMessage(), e);
@@ -208,7 +210,7 @@ public class ImageUploadService extends IntentService {
 		}
 
 		mNotificationMessage = "Image sent.";
-		mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+		mNotification.setLatestEventInfo(this, "ImageUpload ",
 				mNotificationMessage, mContentIntent);
 		if (mShowNotification) {
 			mNM.notify(NOTIFICATION, mNotification);
