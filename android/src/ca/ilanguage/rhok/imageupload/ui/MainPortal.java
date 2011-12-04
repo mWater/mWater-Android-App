@@ -16,20 +16,18 @@ import android.view.View;
 import android.widget.Toast;
 
 public class MainPortal extends Activity {
-<<<<<<< HEAD
 
 	private static final String EXTRA_WATER_SOURCE_CODE = null;
 	private String imageSourceCodeFileName = "";
 	private String imageFileName = "";
 
-=======
 	private static final String TAG = "AndroidBacterialCountingMain";
 	private String mOutputDir="";
 	private String mSampleCodeCount="0";
 	private String mSampleId ="0";
 	private String mExperimenterCode = "AA";
 	public static final int WATER_SOURCE = 1;
->>>>>>> ca9b2344d113a1553d49fdaa78b0783a8ac4ba25
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
