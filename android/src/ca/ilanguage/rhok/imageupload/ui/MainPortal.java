@@ -22,27 +22,33 @@ public class MainPortal extends Activity {
 	private String imageFileName = "";
 
 	private static final String TAG = "AndroidBacterialCountingMain";
-	private String mOutputDir="";
-	private String mSampleCodeCount="0";
-	private String mSampleId ="0";
+	private String mOutputDir = "";
+	private String mSampleCodeCount = "0";
+	private String mSampleId = "0";
 	private String mExperimenterCode = "AA";
 	public static final int WATER_SOURCE = 1;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
-		mOutputDir = prefs.getString(PreferenceConstants.OUTPUT_IMAGE_DIRECTORY, "/sdcard/BacteriaCounting/watersamples/");
-		mSampleId = prefs.getString(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID, "unkown");
-		mExperimenterCode = prefs.getString(PreferenceConstants.PREFERENCE_EXPERIMENTER_ID, "AA");
-		
+
+		SharedPreferences prefs = getSharedPreferences(
+				PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		mOutputDir = prefs.getString(
+				PreferenceConstants.OUTPUT_IMAGE_DIRECTORY,
+				"/sdcard/BacteriaCounting/watersamples/");
+		mSampleId = prefs.getString(
+				PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID, "unkown");
+		mExperimenterCode = prefs.getString(
+				PreferenceConstants.PREFERENCE_EXPERIMENTER_ID, "AA");
+
 		saveStateToPreferences();
 	}
 
 	/**
-	 * Creates a new database entry for the image and launches the take picture activity with this info
+	 * Creates a new database entry for the image and launches the take picture
+	 * activity with this info
 	 * 
 	 * @param v
 	 */
@@ -53,7 +59,7 @@ public class MainPortal extends Activity {
 		Uri uri = getContentResolver().insert(ImageUploadHistory.CONTENT_URI,
 				null);
 		mSampleCodeCount = uri.getLastPathSegment();
-		
+
 		// If we were unable to create a new db entry, then just finish
 		// this activity. A RESULT_CANCELED will be sent back to the
 		// original activity if they requested a result.
@@ -63,11 +69,13 @@ public class MainPortal extends Activity {
 		} else {
 			intent.setData(uri);
 			new File(mOutputDir).mkdirs();
-			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mOutputDir+System.currentTimeMillis()+mExperimenterCode+mSampleCodeCount+"_source.jpg");
+			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH,
+					mOutputDir + System.currentTimeMillis() + mExperimenterCode
+							+ mSampleCodeCount + "_source.jpg");
 			startActivityForResult(intent, WATER_SOURCE);
-			
+
 		}
-		
+
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -75,11 +83,12 @@ public class MainPortal extends Activity {
 				PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
 		switch (requestCode) {
 		case WATER_SOURCE:
-			
-			if (mSampleCodeCount == null){
-				mSampleCodeCount="0";
+
+			if (mSampleCodeCount == null) {
+				mSampleCodeCount = "0";
 			}
-			Toast.makeText(getApplicationContext(),
+			Toast.makeText(
+					getApplicationContext(),
 					"TODO Display water sample code to write on the petri dish.",
 					Toast.LENGTH_LONG).show();
 			break;
@@ -91,7 +100,7 @@ public class MainPortal extends Activity {
 
 	public void onWaterResultsClick(View v) {
 		Intent intent = new Intent(this, TakePicture.class);
-		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageFileName );
+		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageFileName);
 		startActivity(intent);
 	}
 
@@ -99,24 +108,25 @@ public class MainPortal extends Activity {
 		startActivity(new Intent(this, ServerSync.class));
 	}
 
-	private void saveStateToPreferences(){
-		if(mExperimenterCode != null || mSampleCodeCount != null){
+	private void saveStateToPreferences() {
+		if (mExperimenterCode != null || mSampleCodeCount != null) {
 			mSampleId = mExperimenterCode + mSampleCodeCount;
-		}else{
+		} else {
 			mSampleId = "unknown";
 		}
-		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		SharedPreferences prefs = getSharedPreferences(
+				PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-    	editor.putString(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID,mSampleId);
-    	editor.commit();
+		editor.putString(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID,
+				mSampleId);
+		editor.commit();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		saveStateToPreferences();
 		super.onDestroy();
 	}
-	
 
 }

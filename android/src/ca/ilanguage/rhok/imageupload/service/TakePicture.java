@@ -11,51 +11,72 @@ import ca.ilanguage.rhok.imageupload.pref.PreferenceConstants;
 import ca.ilanguage.rhok.imageupload.ui.MainPortal;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.provider.Settings;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
 public class TakePicture extends Activity {
-	private static final String EXTRA_RESULT_FILENAME = null;
+	private static final int GPS_ENABLE = 2;
 	Uri myPicture = null;
-	Uri mImageDBUri= null;
+	Uri mImageDBUri = null;
 	String mImageFilename = "";
+	private LocationManager locationManager;
+
+	public TakePicture() {
+		locationManager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.take_picture);
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		try{
-		mImageFilename = getIntent().getExtras().getString(
-				PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
-		}catch (Exception e) {
-			// TODO: handle exception
-			
-		}
-		mImageDBUri = getIntent().getData();
-		if(mImageFilename == null){
-			mImageFilename="/sdcard/BacteriaCounting/watersamples/error.jpg";
-		}
-		if(mImageDBUri == null){
-			//This activity needs to be called with a URI of its corresponding row in the database.
+		if (initializeGeoLocation()) {
+			setContentView(R.layout.take_picture);
+
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			try {
+				mImageFilename = getIntent().getExtras().getString(
+						PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
+			} catch (Exception e) {
+				// TODO: handle exception
+
+			}
+			mImageDBUri = getIntent().getData();
+			if (mImageFilename == null) {
+				mImageFilename = "/sdcard/BacteriaCounting/watersamples/error.jpg";
+			}
+			if (mImageDBUri == null) {
+				// This activity needs to be called with a URI of its
+				// corresponding
+				// row in the database.
+				finish();
+			}
+			captureImage();
+		} else {
+			Toast.makeText(getApplicationContext(),
+					"Need the GPS to take picture", Toast.LENGTH_LONG).show();
 			finish();
 		}
-		captureImage();
-		
 	}
-	private void captureImage(){
+
+	private void captureImage() {
 		ContentValues values = new ContentValues();
 		values.put(Media.TITLE, mImageFilename);
 		values.put(Media.DESCRIPTION,
@@ -68,12 +89,23 @@ public class TakePicture extends Activity {
 
 		startActivityForResult(i, 0);
 	}
+
 	public void onCaptureImageClick(View view) {
 		captureImage();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case 0:
+			break;
+		case GPS_ENABLE:
+			if (!locationManager
+					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+				finish();
+			}
+		}
+		
 		if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
 			// Now we know that our myPicture URI refers to the image just taken
 			/*
@@ -97,9 +129,11 @@ public class TakePicture extends Activity {
 					}
 				}
 				int affectedEntriesCount = updateImageMetadata(mImageDBUri);
-				Toast.makeText(getApplicationContext(),
-						"Saving as " + mImageFilename + "\nUpdated " + affectedEntriesCount + " water sample.", Toast.LENGTH_LONG)
-						.show();
+				Toast.makeText(
+						getApplicationContext(),
+						"Saving as " + mImageFilename + "\nUpdated "
+								+ affectedEntriesCount + " water sample.",
+						Toast.LENGTH_LONG).show();
 				finish();
 			} catch (Exception e) {
 				Toast.makeText(
@@ -107,25 +141,30 @@ public class TakePicture extends Activity {
 						"Result picture wasn't copied, but it's in the Camera folder: "
 								+ getPath(myPicture), Toast.LENGTH_LONG).show();
 			}
-			
+
 		}
 		finish();
 	}
 
 	/**
-	 * TODO detect GPS on device, turn it on and get the Latitude and Longitude when this image is shot.
+	 * TODO detect GPS on device, turn it on and get the Latitude and Longitude
+	 * when this image is shot.
 	 * 
-	 * @param uri which matches the row in the database for this image
+	 * @param uri
+	 *            which matches the row in the database for this image
 	 * @return
 	 */
-	private int updateImageMetadata(Uri uri){
+	private int updateImageMetadata(Uri uri) {
+
 		String metadataInJSON = "{lat: 43, long: 42, timestamp:21312, user: 23425}";
 		ContentValues values = new ContentValues();
 		values.put(ImageUploadHistory.FILEPATH, mImageFilename);
-		values.put(ImageUploadHistory.UPLOADED,"0");//sets deleted flag to true
+		values.put(ImageUploadHistory.UPLOADED, "0");// sets deleted flag to
+														// true
 		values.put(ImageUploadHistory.METADATA, metadataInJSON);
 		return getContentResolver().update(uri, values, null, null);
 	}
+
 	public String getPath(Uri uri) {
 		String[] projection = { MediaStore.Images.Media.DATA };
 		Cursor cursor = managedQuery(uri, projection, null, null, null);
@@ -135,4 +174,44 @@ public class TakePicture extends Activity {
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
 	}
+
+	private Boolean initializeGeoLocation() {
+		if (!locationManager
+				.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+			Intent myIntent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+			startActivityForResult(myIntent, GPS_ENABLE);
+		}
+
+		// Define a listener that responds to location updates
+		LocationListener locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location
+				// provider.
+				makeUseOfNewLocation(location);
+			}
+
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+			}
+
+			public void onProviderEnabled(String provider) {
+			}
+
+			public void onProviderDisabled(String provider) {
+			}
+		};
+
+		// Register the listener with the Location Manager to receive location
+		// updates
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+		return true;
+	}
+
+	protected void makeUseOfNewLocation(Location location) {
+		// TODO Auto-generated method stub
+
+	}
+	
+	
 }
