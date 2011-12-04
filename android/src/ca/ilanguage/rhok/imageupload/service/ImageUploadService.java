@@ -32,7 +32,7 @@ import android.net.Uri;
 import android.util.Log;
 
 public class ImageUploadService extends IntentService {
-	protected static String TAG = "NotifyingTranscriptionIntentService";
+	protected static String TAG = "NotifyingIntentService";
 
 	private NotificationManager mNM;
 	private Notification mNotification;
@@ -85,7 +85,9 @@ public class ImageUploadService extends IntentService {
 	 */
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
+		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		String serverUrl = prefs.getString(PreferenceConstants.WEBSERVICE_URL, "http://");
+		
 		/*
 		 * get data from extras bundle, store it in the member variables
 		 */
@@ -119,18 +121,19 @@ public class ImageUploadService extends IntentService {
 		mContentIntent = PendingIntent.getActivity(this, 0, notifyingIntent, 0);
 
 		mNotification = new Notification(mImageUploadIconId,
-				"ImageUpload Transcription in progress",
+				"ImageUpload  in progress",
 				System.currentTimeMillis());
-		mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+		mNotification.setLatestEventInfo(this, "ImageUpload ",
 				"Checking for Wifi connection...", mContentIntent);
 		mNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+		
 		// startForeground(startId, mNotification);
 		if (mShowNotification) {
 			mNM.notify(NOTIFICATION, mNotification);
 		}
 
 		
-		File audioFile = new File(mImageFilePath);
+		File imageFile = new File(mImageFilePath);
 
 
 		try {
@@ -138,8 +141,8 @@ public class ImageUploadService extends IntentService {
 			HttpContext localContext = new BasicHttpContext();
 			Long uniqueId = System.currentTimeMillis();
 			HttpPost httpPost = new HttpPost(
-					PreferenceConstants.TRANSCRIPTION_WEBSERVICE_URL
-							+ PreferenceConstants.TRANSCRIPTION_WEBSERVICE_API_KEY
+					serverUrl
+							
 							+ mImageFilePath
 									.replace(
 											PreferenceConstants.OUTPUT_IMAGE_DIRECTORY
@@ -151,20 +154,20 @@ public class ImageUploadService extends IntentService {
 			// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			// bitmap.compress(CompressFormat.JPEG, 100, bos);
 			// byte[] data = bos.toByteArray();
-			entity.addPart("title", new StringBody("thetitle"));
+			//entity.addPart("title", new StringBody("thetitle"));
 			// /entity.addPart("returnformat", new StringBody("json"));
 			// entity.addPart("uploaded", new
 			// ByteArrayBody(data,"myImage.jpg"));
 			// entity.addPart("ImageUploadInstallID",new
 			// StringBody(mImageUploadInstallId));
 			String splitCode = "" + mSplitType;
-			entity.addPart("latitude", new StringBody("putthelatitudehere"));
-			entity.addPart("file", new FileBody(audioFile));
+			entity.addPart("metadata", new StringBody("putthelatitudehere"));
+			entity.addPart("file", new FileBody(imageFile));
 			// /entity.addPart("photoCaption", new
 			// StringBody("thecaption"));
 			httpPost.setEntity(entity);
 
-			mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+			mNotification.setLatestEventInfo(this, "ImageUpload ",
 					"Connecting to transcription server...", mContentIntent);
 			if (mShowNotification) {
 				mNM.notify(NOTIFICATION, mNotification);
@@ -184,11 +187,21 @@ public class ImageUploadService extends IntentService {
 			if (mShowNotification) {
 				mNM.notify(NOTIFICATION, mNotification);
 			}
-//			reader.readLine();// mFileNameOnServer =
-//								// reader.readLine().replaceAll(":filename","");
-//			mFileNameOnServer = reader.readLine().replaceAll(":path", "");
-
-			// mAudioResultsFileStatus=mAudioResultsFileStatus+":::"+"File saved on server as "+mFileNameOnServer+" .";
+			String httpresponse = firstLine;
+			String line = "";
+			while((line = reader.readLine()) != null){
+				httpresponse =httpresponse+"\n"+line;
+				
+			}
+			reader.close();
+//			Intent mailto = new Intent(Intent.ACTION_SEND); 
+//			mailto.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//	        mailto.setType("message/rfc822") ; // use from live device
+//	        mailto.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
+//	        mailto.putExtra(Intent.EXTRA_SUBJECT,"httpresponse data");
+//	        mailto.putExtra(Intent.EXTRA_TEXT,httpresponse);
+//	        startActivity(Intent.createChooser(mailto, "Select email application."));
+			
 		} catch (Exception e) {
 			Log.e(e.getClass().getName(), e.getMessage(), e);
 			// this is showing up for when the audio is not sent, but the
@@ -197,7 +210,7 @@ public class ImageUploadService extends IntentService {
 		}
 
 		mNotificationMessage = "Image sent.";
-		mNotification.setLatestEventInfo(this, "ImageUpload Transcription",
+		mNotification.setLatestEventInfo(this, "ImageUpload ",
 				mNotificationMessage, mContentIntent);
 		if (mShowNotification) {
 			mNM.notify(NOTIFICATION, mNotification);
