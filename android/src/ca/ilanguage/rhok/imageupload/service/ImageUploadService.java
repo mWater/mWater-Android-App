@@ -39,7 +39,7 @@ public class ImageUploadService extends IntentService {
 	private int NOTIFICATION = 7030;
 	private Boolean mShowNotification = true;
 	private PendingIntent mContentIntent;
-	private int mImageUploadIconId = R.drawable.image_upload_icon;
+	private int mImageUploadIconId = R.drawable.image_upload;
 
 	public ImageUploadService() {
 		super(TAG);
