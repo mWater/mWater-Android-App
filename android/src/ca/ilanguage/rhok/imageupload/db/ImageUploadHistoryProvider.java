@@ -28,7 +28,6 @@ public class ImageUploadHistoryProvider extends ContentProvider {
 
 	private static HashMap<String, String> sImageUploadHistoryProjectionMap;
 
-	// retrieve options?
 	private static final int IMAGEUPLOADHISTORIES = 1;
 	private static final int IMAGEUPLOADHISTORY_ID = 2;
 

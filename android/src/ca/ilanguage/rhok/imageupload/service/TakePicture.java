@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
 import ca.ilanguage.rhok.imageupload.R;
+import ca.ilanguage.rhok.imageupload.pref.PreferenceConstants;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -33,15 +34,23 @@ public class TakePicture extends Activity {
 		setContentView(R.layout.take_picture);
 
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		try{
 		mImageFilename = getIntent().getExtras().getString(
-				EXTRA_RESULT_FILENAME);
+				PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
+		}catch (Exception e) {
+			// TODO: handle exception
+			
+		}
+		if(mImageFilename ==null){
+			mImageFilename="/sdcard/BacteriaCounting/watersamples/error.jpg";
+		}
 	}
 
 	public void captureImage(View view) {
 		ContentValues values = new ContentValues();
 		values.put(Media.TITLE, mImageFilename);
 		values.put(Media.DESCRIPTION,
-				"Image Captured as part of Bilingual Aphasia Test");
+				"Image Captured as part of Bacteria Counting Water Sample");
 
 		myPicture = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
 				values);
@@ -81,7 +90,7 @@ public class TakePicture extends Activity {
 			} catch (Exception e) {
 				Toast.makeText(
 						getApplicationContext(),
-						"Result picture wasn't copied, its in the Camera folder: "
+						"Result picture wasn't copied, but its in the Camera folder: "
 								+ getPath(myPicture), Toast.LENGTH_LONG).show();
 			}
 

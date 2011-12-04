@@ -8,8 +8,7 @@ import android.widget.Toast;
 
 public class SetPreferencesActivity extends PreferenceActivity implements
 		YesNoDialogPreference.YesNoDialogListener {
-	String mBloggerAccount;
-	String mBloggerPassword;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
