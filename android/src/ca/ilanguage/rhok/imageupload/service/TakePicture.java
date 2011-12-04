@@ -52,9 +52,10 @@ public class TakePicture extends Activity {
 			//This activity needs to be called with a URI of its corresponding row in the database.
 			finish();
 		}
+		captureImage();
+		
 	}
-
-	public void captureImage(View view) {
+	private void captureImage(){
 		ContentValues values = new ContentValues();
 		values.put(Media.TITLE, mImageFilename);
 		values.put(Media.DESCRIPTION,
@@ -66,6 +67,9 @@ public class TakePicture extends Activity {
 		i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
 
 		startActivityForResult(i, 0);
+	}
+	public void onCaptureImageClick(View view) {
+		captureImage();
 	}
 
 	@Override
@@ -96,15 +100,16 @@ public class TakePicture extends Activity {
 				Toast.makeText(getApplicationContext(),
 						"Saving as " + mImageFilename + "\nUpdated " + affectedEntriesCount + " water sample.", Toast.LENGTH_LONG)
 						.show();
+				finish();
 			} catch (Exception e) {
 				Toast.makeText(
 						getApplicationContext(),
 						"Result picture wasn't copied, but it's in the Camera folder: "
 								+ getPath(myPicture), Toast.LENGTH_LONG).show();
 			}
-
+			
 		}
-		finishActivity(MainPortal.WATER_SOURCE);
+		finish();
 	}
 
 	/**
