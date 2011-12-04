@@ -117,7 +117,9 @@ public class MainPortal extends Activity {
 	public void onSyncServerClick(View v) {
 		
 		Intent intent = new Intent(this, ImageUploadService.class);
-		intent.setData(mUri);
+		if (mUri != null){
+			intent.setData(mUri);
+		}
         intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mImageFileName);
         startService(intent); 
 		//TODO put the logic in this class later, for now this is just so teh server side cand ebug the connection
