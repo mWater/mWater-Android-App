@@ -7,6 +7,7 @@ import ca.ilanguage.rhok.imageupload.R;
 import ca.ilanguage.rhok.imageupload.db.ImageUploadHistoryDatabase.ImageUploadHistory;
 import ca.ilanguage.rhok.imageupload.pref.PreferenceConstants;
 import ca.ilanguage.rhok.imageupload.pref.SetPreferencesActivity;
+import ca.ilanguage.rhok.imageupload.service.ImageUploadService;
 import ca.ilanguage.rhok.imageupload.service.TakePicture;
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +28,7 @@ public class MainPortal extends Activity {
 
 	private static final String EXTRA_WATER_SOURCE_CODE = null;
 	private String imageSourceCodeFileName = "";
-	private String imageFileName = "";
+	private String mImageFileName = "";
 
 	private static final String TAG = "AndroidBacterialCountingMain";
 	private String mOutputDir="";
@@ -37,6 +38,7 @@ public class MainPortal extends Activity {
 	public static final int WATER_SOURCE = 1;
 	private static final int SWITCH_LANGUAGE = 2;
 	private Menu mMenu;
+	private Uri mUri;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,9 @@ public class MainPortal extends Activity {
 
 		Uri uri = getContentResolver().insert(ImageUploadHistory.CONTENT_URI,
 				null);
+		if (uri != null){
+			mUri = uri;
+		}
 		mSampleCodeCount = uri.getLastPathSegment();
 		
 		// If we were unable to create a new db entry, then just finish
@@ -73,7 +78,8 @@ public class MainPortal extends Activity {
 		} else {
 			intent.setData(uri);
 			new File(mOutputDir).mkdirs();
-			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mOutputDir+System.currentTimeMillis()+mExperimenterCode+mSampleCodeCount+"_source.jpg");
+			mImageFileName = mOutputDir+System.currentTimeMillis()+mExperimenterCode+mSampleCodeCount+"_source.jpg";
+			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mImageFileName);
 			startActivityForResult(intent, WATER_SOURCE);
 			
 		}
@@ -104,12 +110,18 @@ public class MainPortal extends Activity {
 
 	public void onWaterResultsClick(View v) {
 		Intent intent = new Intent(this, TakePicture.class);
-		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageFileName );
+		intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName );
 		startActivity(intent);
 	}
 
 	public void onSyncServerClick(View v) {
-		startActivity(new Intent(this, ServerSync.class));
+		
+		Intent intent = new Intent(this, ImageUploadService.class);
+		intent.setData(mUri);
+        intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mImageFileName);
+        startService(intent); 
+		//TODO put the logic in this class later, for now this is just so teh server side cand ebug the connection
+		//startActivity(new Intent(this, ServerSync.class));
 	}
 
 	private void saveStateToPreferences(){

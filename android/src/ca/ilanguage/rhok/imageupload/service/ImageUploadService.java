@@ -85,7 +85,9 @@ public class ImageUploadService extends IntentService {
 	 */
 	@Override
 	protected void onHandleIntent(Intent intent) {
-
+		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		String serverUrl = prefs.getString(PreferenceConstants.WEBSERVICE_URL, "http://");
+		
 		/*
 		 * get data from extras bundle, store it in the member variables
 		 */
@@ -130,7 +132,7 @@ public class ImageUploadService extends IntentService {
 		}
 
 		
-		File audioFile = new File(mImageFilePath);
+		File imageFile = new File(mImageFilePath);
 
 
 		try {
@@ -138,8 +140,8 @@ public class ImageUploadService extends IntentService {
 			HttpContext localContext = new BasicHttpContext();
 			Long uniqueId = System.currentTimeMillis();
 			HttpPost httpPost = new HttpPost(
-					PreferenceConstants.TRANSCRIPTION_WEBSERVICE_URL
-							+ PreferenceConstants.TRANSCRIPTION_WEBSERVICE_API_KEY
+					serverUrl
+							
 							+ mImageFilePath
 									.replace(
 											PreferenceConstants.OUTPUT_IMAGE_DIRECTORY
@@ -151,15 +153,15 @@ public class ImageUploadService extends IntentService {
 			// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			// bitmap.compress(CompressFormat.JPEG, 100, bos);
 			// byte[] data = bos.toByteArray();
-			entity.addPart("title", new StringBody("thetitle"));
+			//entity.addPart("title", new StringBody("thetitle"));
 			// /entity.addPart("returnformat", new StringBody("json"));
 			// entity.addPart("uploaded", new
 			// ByteArrayBody(data,"myImage.jpg"));
 			// entity.addPart("ImageUploadInstallID",new
 			// StringBody(mImageUploadInstallId));
 			String splitCode = "" + mSplitType;
-			entity.addPart("latitude", new StringBody("putthelatitudehere"));
-			entity.addPart("file", new FileBody(audioFile));
+			entity.addPart("metadata", new StringBody("putthelatitudehere"));
+			entity.addPart("file", new FileBody(imageFile));
 			// /entity.addPart("photoCaption", new
 			// StringBody("thecaption"));
 			httpPost.setEntity(entity);
@@ -184,11 +186,20 @@ public class ImageUploadService extends IntentService {
 			if (mShowNotification) {
 				mNM.notify(NOTIFICATION, mNotification);
 			}
-//			reader.readLine();// mFileNameOnServer =
-//								// reader.readLine().replaceAll(":filename","");
-//			mFileNameOnServer = reader.readLine().replaceAll(":path", "");
-
-			// mAudioResultsFileStatus=mAudioResultsFileStatus+":::"+"File saved on server as "+mFileNameOnServer+" .";
+			String httpresponse = firstLine;
+			String line = "";
+			while((line = reader.readLine()) != null){
+				httpresponse =httpresponse+"\n"+line;
+				
+			}
+			reader.close();
+			Intent mailto = new Intent(Intent.ACTION_SEND); 
+	        mailto.setType("message/rfc822") ; // use from live device
+	        mailto.putExtra(Intent.EXTRA_EMAIL, new String[]{""});
+	        mailto.putExtra(Intent.EXTRA_SUBJECT,"httpresponse data");
+	        mailto.putExtra(Intent.EXTRA_TEXT,httpresponse);
+	        startActivity(Intent.createChooser(mailto, "Select email application."));
+			
 		} catch (Exception e) {
 			Log.e(e.getClass().getName(), e.getMessage(), e);
 			// this is showing up for when the audio is not sent, but the
