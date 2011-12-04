@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.util.Date;
 
 import ca.ilanguage.rhok.imageupload.R;
 import ca.ilanguage.rhok.imageupload.db.ImageUploadHistoryDatabase.ImageUploadHistory;
@@ -37,6 +38,8 @@ public class TakePicture extends Activity {
 	Uri mImageDBUri = null;
 	String mImageFilename = "";
 	private LocationManager locationManager;
+	private double longitude;
+	private double latitude;
 
 	public TakePicture() {
 		locationManager = (LocationManager) this
@@ -155,8 +158,8 @@ public class TakePicture extends Activity {
 	 * @return
 	 */
 	private int updateImageMetadata(Uri uri) {
-
-		String metadataInJSON = "{lat: 43, long: 42, timestamp:21312, user: 23425}";
+		Date now = new Date();
+		String metadataInJSON = String.format("{lat: %f, long: %f, timestamp:%d, user: %d}", latitude, longitude, now.getTime(), 12345);
 		ContentValues values = new ContentValues();
 		values.put(ImageUploadHistory.FILEPATH, mImageFilename);
 		values.put(ImageUploadHistory.UPLOADED, "0");// sets deleted flag to
@@ -209,8 +212,8 @@ public class TakePicture extends Activity {
 	}
 
 	protected void makeUseOfNewLocation(Location location) {
-		// TODO Auto-generated method stub
-
+		longitude = location.getLongitude();
+		latitude = location.getLatitude();
 	}
 	
 	
