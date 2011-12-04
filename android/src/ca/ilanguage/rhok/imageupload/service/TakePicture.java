@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
 import ca.ilanguage.rhok.imageupload.R;
+import ca.ilanguage.rhok.imageupload.db.ImageUploadHistoryDatabase.ImageUploadHistory;
 import ca.ilanguage.rhok.imageupload.pref.PreferenceConstants;
 
 import android.app.Activity;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 public class TakePicture extends Activity {
 	private static final String EXTRA_RESULT_FILENAME = null;
 	Uri myPicture = null;
+	Uri mImageDBUri= null;
 	String mImageFilename = "";
 
 	@Override
@@ -41,8 +43,13 @@ public class TakePicture extends Activity {
 			// TODO: handle exception
 			
 		}
-		if(mImageFilename ==null){
+		mImageDBUri = getIntent().getData();
+		if(mImageFilename == null){
 			mImageFilename="/sdcard/BacteriaCounting/watersamples/error.jpg";
+		}
+		if(mImageDBUri == null){
+			//This activity needs to be called with a URI of its corresponding row in the database.
+			finish();
 		}
 	}
 
@@ -84,19 +91,28 @@ public class TakePicture extends Activity {
 						dst.close();
 					}
 				}
+				int affectedEntriesCount = updateImageMetadata(mImageDBUri);
 				Toast.makeText(getApplicationContext(),
-						"Saving as " + mImageFilename, Toast.LENGTH_LONG)
+						"Saving as " + mImageFilename + "\nUpdated " + affectedEntriesCount + " water sample.", Toast.LENGTH_LONG)
 						.show();
 			} catch (Exception e) {
 				Toast.makeText(
 						getApplicationContext(),
-						"Result picture wasn't copied, but its in the Camera folder: "
+						"Result picture wasn't copied, but it's in the Camera folder: "
 								+ getPath(myPicture), Toast.LENGTH_LONG).show();
 			}
 
 		}
 	}
 
+	private int updateImageMetadata(Uri uri){
+		String metadataInJSON = "{lat: 43, long: 42, timestamp:21312, user: 23425}";
+		ContentValues values = new ContentValues();
+		values.put(ImageUploadHistory.FILEPATH, mImageFilename);
+		values.put(ImageUploadHistory.UPLOADED,"0");//sets deleted flag to true
+		values.put(ImageUploadHistory.METADATA, metadataInJSON);
+		return getContentResolver().update(uri, values, null, null);
+	}
 	public String getPath(Uri uri) {
 		String[] projection = { MediaStore.Images.Media.DATA };
 		Cursor cursor = managedQuery(uri, projection, null, null, null);

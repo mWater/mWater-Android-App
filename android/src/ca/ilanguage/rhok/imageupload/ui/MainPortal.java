@@ -13,10 +13,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainPortal extends Activity {
 	private static final String TAG = "AndroidBacterialCountingMain";
 	private String mOutputDir="";
+	private int mSampleCodeCount=0;
+	private String mExperimenterCode = "AA";
+	private static final int WATER_SOURCE = 1;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -24,6 +28,8 @@ public class MainPortal extends Activity {
 		
 		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
 		mOutputDir = prefs.getString(PreferenceConstants.OUTPUT_IMAGE_DIRECTORY, "/sdcard/BacteriaCounting/watersamples/");
+		mSampleCodeCount = prefs.getInt(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID, 0);
+		mExperimenterCode = prefs.getString(PreferenceConstants.PREFERENCE_EXPERIMENTER_ID, "AA");
 	}
 
 	/**
@@ -46,11 +52,26 @@ public class MainPortal extends Activity {
 		} else {
 			intent.setData(uri);
 			new File(mOutputDir).mkdirs();
-			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mOutputDir+"testfile.jpg");
-			startActivity(intent);
+			intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mOutputDir+System.currentTimeMillis()+mExperimenterCode+mSampleCodeCount+"_source.jpg");
+			startActivityForResult(intent, WATER_SOURCE);
 			
 		}
 		
+	}
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		SharedPreferences prefens = getSharedPreferences(
+				PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		switch (requestCode) {
+		case WATER_SOURCE:
+			Toast.makeText(getApplicationContext(),
+					"TODO Display water sample code to write on the petri dish.",
+					Toast.LENGTH_LONG).show();
+			break;
+		default:
+			break;
+
+		}
 	}
 
 	public void onWaterResultsClick(View v) {
