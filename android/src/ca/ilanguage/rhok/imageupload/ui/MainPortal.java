@@ -18,9 +18,10 @@ import android.widget.Toast;
 public class MainPortal extends Activity {
 	private static final String TAG = "AndroidBacterialCountingMain";
 	private String mOutputDir="";
-	private int mSampleCodeCount=0;
+	private String mSampleCodeCount="0";
+	private String mSampleId ="0";
 	private String mExperimenterCode = "AA";
-	private static final int WATER_SOURCE = 1;
+	public static final int WATER_SOURCE = 1;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,8 +29,10 @@ public class MainPortal extends Activity {
 		
 		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
 		mOutputDir = prefs.getString(PreferenceConstants.OUTPUT_IMAGE_DIRECTORY, "/sdcard/BacteriaCounting/watersamples/");
-		mSampleCodeCount = prefs.getInt(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID, 0);
+		mSampleId = prefs.getString(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID, "unkown");
 		mExperimenterCode = prefs.getString(PreferenceConstants.PREFERENCE_EXPERIMENTER_ID, "AA");
+		
+		saveStateToPreferences();
 	}
 
 	/**
@@ -42,6 +45,7 @@ public class MainPortal extends Activity {
 
 		Uri uri = getContentResolver().insert(ImageUploadHistory.CONTENT_URI,
 				null);
+		mSampleCodeCount = uri.getLastPathSegment();
 		
 		// If we were unable to create a new db entry, then just finish
 		// this activity. A RESULT_CANCELED will be sent back to the
@@ -64,6 +68,10 @@ public class MainPortal extends Activity {
 				PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
 		switch (requestCode) {
 		case WATER_SOURCE:
+			
+			if (mSampleCodeCount == null){
+				mSampleCodeCount="0";
+			}
 			Toast.makeText(getApplicationContext(),
 					"TODO Display water sample code to write on the petri dish.",
 					Toast.LENGTH_LONG).show();
@@ -83,5 +91,25 @@ public class MainPortal extends Activity {
 	public void onSyncServerClick(View v) {
 		startActivity(new Intent(this, ServerSync.class));
 	}
+
+	private void saveStateToPreferences(){
+		if(mExperimenterCode != null || mSampleCodeCount != null){
+			mSampleId = mExperimenterCode + mSampleCodeCount;
+		}else{
+			mSampleId = "unknown";
+		}
+		SharedPreferences prefs = getSharedPreferences(PreferenceConstants.PREFERENCE_NAME, MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+    	editor.putString(PreferenceConstants.PREFERENCE_WATER_SAMPLE_ID,mSampleId);
+    	editor.commit();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		saveStateToPreferences();
+		super.onDestroy();
+	}
+	
 
 }

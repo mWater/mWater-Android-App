@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import ca.ilanguage.rhok.imageupload.R;
 import ca.ilanguage.rhok.imageupload.db.ImageUploadHistoryDatabase.ImageUploadHistory;
 import ca.ilanguage.rhok.imageupload.pref.PreferenceConstants;
+import ca.ilanguage.rhok.imageupload.ui.MainPortal;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -103,8 +104,15 @@ public class TakePicture extends Activity {
 			}
 
 		}
+		finishActivity(MainPortal.WATER_SOURCE);
 	}
 
+	/**
+	 * TODO detect GPS on device, turn it on and get the Latitude and Longitude when this image is shot.
+	 * 
+	 * @param uri which matches the row in the database for this image
+	 * @return
+	 */
 	private int updateImageMetadata(Uri uri){
 		String metadataInJSON = "{lat: 43, long: 42, timestamp:21312, user: 23425}";
 		ContentValues values = new ContentValues();
