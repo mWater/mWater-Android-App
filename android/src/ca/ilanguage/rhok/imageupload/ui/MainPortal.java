@@ -116,9 +116,9 @@ public class MainPortal extends Activity {
 	}
 
 	public void onWaterResultsClick(View v) {
-//		Intent intent = new Intent(this, TakePicture.class);
-//		intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName);
-//		startActivity(intent);
+                Intent intent = new Intent(this, GridViewSourceSelection.class);
+                intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName );
+                startActivity(intent);
 	}
 
 	public void onSyncServerClick(View v) {

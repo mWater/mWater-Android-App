@@ -38,6 +38,10 @@
         </activity>
         <activity
             android:label="@string/app_name"
+            android:name=".ui.GridViewSourceSelection" >
+        </activity>
+            <activity
+            android:label="@string/app_name"
             android:name=".ui.WaterSourceConfimation" >
         </activity>
         <activity
