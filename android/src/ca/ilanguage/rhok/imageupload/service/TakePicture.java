@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 public class TakePicture extends Activity {
 	private static final int GPS_ENABLE = 2;
+	private static final int TOOK_A_PICTURE = 0;
 	Uri myPicture = null;
 	Uri mImageDBUri = null;
 	String mImageFilename = "";
@@ -71,13 +72,11 @@ public class TakePicture extends Activity {
 			
 			locationManager = (LocationManager) this
 					.getSystemService(Context.LOCATION_SERVICE);
-			
-			if (initializeGeoLocation()) {
-				captureImage();
-			} else {
-				Toast.makeText(getApplicationContext(),
-						"Need the GPS in order to take picture", Toast.LENGTH_LONG).show();
-				finish();
+			/*
+			 * only check GPS or take a picture if this is the first run of the activity, ie its saved instance state is null
+			 */
+			if(savedInstanceState == null){
+				initializeGeoLocation();
 			}
 	}
 
@@ -102,9 +101,8 @@ public class TakePicture extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-		case 0:
+		case TOOK_A_PICTURE:
 
-			if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
 				// Now we know that our myPicture URI refers to the image just
 				// taken
 				/*
@@ -142,14 +140,43 @@ public class TakePicture extends Activity {
 							.show();
 				}
 
-			}
+			
 			finish();
 			break;
 		case GPS_ENABLE:
 			if (!locationManager
 					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+				Toast.makeText(getApplicationContext(),
+						"Need the GPS in order to take picture", Toast.LENGTH_LONG).show();
 				finish();
 			}
+
+				// Define a listener that responds to location updates
+				LocationListener locationListener = new LocationListener() {
+					public void onLocationChanged(Location location) {
+						// Called when a new location is found by the network location
+						// provider.
+						makeUseOfNewLocation(location);
+					}
+
+					public void onStatusChanged(String provider, int status,
+							Bundle extras) {
+					}
+
+					public void onProviderEnabled(String provider) {
+					}
+
+					public void onProviderDisabled(String provider) {
+					}
+				};
+
+				// Register the listener with the Location Manager to receive location
+				// updates
+				locationManager.requestLocationUpdates(
+						LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+				
+				captureImage();
+			
 			break;
 		default:
 			break;
@@ -187,12 +214,12 @@ public class TakePicture extends Activity {
 		return cursor.getString(column_index);
 	}
 
-	private Boolean initializeGeoLocation() {
+	private void initializeGeoLocation() {
 		if (!locationManager
 				.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
 			Intent myIntent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
 			startActivityForResult(myIntent, GPS_ENABLE);
-		}
+		} else {
 
 		// Define a listener that responds to location updates
 		LocationListener locationListener = new LocationListener() {
@@ -217,7 +244,9 @@ public class TakePicture extends Activity {
 		// updates
 		locationManager.requestLocationUpdates(
 				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		return true;
+		captureImage();
+		}
+		
 	}
 
 	protected void makeUseOfNewLocation(Location location) {
