@@ -66,7 +66,7 @@ public class MainPortal extends Activity {
 	 */
 	public void onWaterSourceClick(View v) {
 		Intent intent = new Intent(this, TakePicture.class);
-		intent.putExtra(EXTRA_WATER_SOURCE_CODE, imageSourceCodeFileName);
+		intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName);
 
 		Uri uri = getContentResolver().insert(ImageUploadHistory.CONTENT_URI,
 				null);
@@ -116,19 +116,19 @@ public class MainPortal extends Activity {
 	}
 
 	public void onWaterResultsClick(View v) {
-		Intent intent = new Intent(this, TakePicture.class);
-		intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName);
-		startActivity(intent);
+//		Intent intent = new Intent(this, TakePicture.class);
+//		intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName);
+//		startActivity(intent);
 	}
 
 	public void onSyncServerClick(View v) {
-		
+
 		Intent intent = new Intent(this, ImageUploadService.class);
 		if (mUri != null){
 			intent.setData(mUri);
 		}
-        intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mImageFileName);
-        startService(intent); 
+		intent.putExtra(PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH, mImageFileName);
+		startService(intent); 
 		//TODO put the logic in this class later, for now this is just so teh server side cand ebug the connection
 		//startActivity(new Intent(this, ServerSync.class));
 	}
@@ -201,8 +201,8 @@ public class MainPortal extends Activity {
 						+ mOutputDir));
 				startActivity(openResults);
 			}
-			
-		
+
+
 		case R.id.issue_tracker:
 
 			Intent browserIntent = new Intent(
