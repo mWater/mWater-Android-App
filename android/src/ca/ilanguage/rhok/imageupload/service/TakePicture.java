@@ -47,11 +47,8 @@ public class TakePicture extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-
 		setContentView(R.layout.take_picture);
 
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		try {
 			mImageFilename = getIntent().getExtras().getString(
 					PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
@@ -72,35 +69,39 @@ public class TakePicture extends Activity {
 
 		locationManager = (LocationManager) this
 				.getSystemService(Context.LOCATION_SERVICE);
-		/*
-		 * only check GPS or take a picture if this is the first run of the activity, ie its saved instance state is null
-		 */
-		if(savedInstanceState == null){
-			initializeGeoLocation();
+		if (!locationManager
+		.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+			Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivityForResult(myIntent, GPS_ENABLE);
+		}else{
+			getGeoTagAndPicture();
 		}
+
+
+		
+		
 	}
 
-	private void captureImage() {
-		ContentValues values = new ContentValues();
-		values.put(Media.TITLE, mImageFilename);
-		values.put(Media.DESCRIPTION,
-				"Image Captured as part of Bacteria Counting Water Sample");
-
-		myPicture = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
-				values);
-		Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
-
-		startActivityForResult(i, TOOK_A_PICTURE);
-	}
+	
 
 	public void onCaptureImageClick(View view) {
-		captureImage();
+		getGeoTagAndPicture();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
+		case GPS_ENABLE:
+			if (!locationManager
+					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+				Toast.makeText(getApplicationContext(),
+						"Need the GPS in order to GeoTag picture", Toast.LENGTH_LONG).show();
+				finish();
+			}
+
+			getGeoTagAndPicture();
+
+			break;
 		case TOOK_A_PICTURE:
 
 			if(resultCode == Activity.RESULT_OK){
@@ -144,48 +145,52 @@ public class TakePicture extends Activity {
 			}
 			finish();
 			break;
-		case GPS_ENABLE:
-			if (!locationManager
-					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
-				Toast.makeText(getApplicationContext(),
-						"Need the GPS in order to GeoTag picture", Toast.LENGTH_LONG).show();
-				finish();
-			}
 
-			// Define a listener that responds to location updates
-			LocationListener locationListener = new LocationListener() {
-				public void onLocationChanged(Location location) {
-					// Called when a new location is found by the network location
-					// provider.
-					makeUseOfNewLocation(location);
-				}
-
-				public void onStatusChanged(String provider, int status,
-						Bundle extras) {
-				}
-
-				public void onProviderEnabled(String provider) {
-				}
-
-				public void onProviderDisabled(String provider) {
-				}
-			};
-
-			// Register the listener with the Location Manager to receive location
-			// updates
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-
-			captureImage();
-
-			break;
 		default:
+			//finish();
 			break;
 
 		}
 
 	}
+	private void getGeoTagAndPicture(){
+		// Define a listener that responds to location updates
+		LocationListener locationListener = new LocationListener() {
+			public void onLocationChanged(Location location) {
+				// Called when a new location is found by the network location
+				// provider.
+				makeUseOfNewLocation(location);
+			}
 
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+			}
+
+			public void onProviderEnabled(String provider) {
+			}
+
+			public void onProviderDisabled(String provider) {
+			}
+		};
+
+		// Register the listener with the Location Manager to receive location
+		// updates
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+		ContentValues values = new ContentValues();
+		values.put(Media.TITLE, mImageFilename);
+		values.put(Media.DESCRIPTION,
+				"Image Captured as part of Bacteria Counting Water Sample");
+
+		myPicture = getContentResolver().insert(Media.EXTERNAL_CONTENT_URI,
+				values);
+		Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
+
+		startActivityForResult(i, TOOK_A_PICTURE);
+	}
+	
 	/**
 	 * TODO detect GPS on device, turn it on and get the Latitude and Longitude
 	 * when this image is shot.
@@ -215,40 +220,7 @@ public class TakePicture extends Activity {
 		return cursor.getString(column_index);
 	}
 
-	private void initializeGeoLocation() {
-		if (!locationManager
-				.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
-			Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-			startActivityForResult(myIntent, GPS_ENABLE);
-		} else {
-
-			// Define a listener that responds to location updates
-			LocationListener locationListener = new LocationListener() {
-				public void onLocationChanged(Location location) {
-					// Called when a new location is found by the network location
-					// provider.
-					makeUseOfNewLocation(location);
-				}
-
-				public void onStatusChanged(String provider, int status,
-						Bundle extras) {
-				}
-
-				public void onProviderEnabled(String provider) {
-				}
-
-				public void onProviderDisabled(String provider) {
-				}
-			};
-
-			// Register the listener with the Location Manager to receive location
-			// updates
-			locationManager.requestLocationUpdates(
-					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-			captureImage();
-		}
-
-	}
+	
 
 	protected void makeUseOfNewLocation(Location location) {
 		longitude = location.getLongitude();
