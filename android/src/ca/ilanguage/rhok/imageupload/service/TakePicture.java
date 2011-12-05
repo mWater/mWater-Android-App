@@ -91,7 +91,7 @@ public class TakePicture extends Activity {
 		Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		i.putExtra(MediaStore.EXTRA_OUTPUT, myPicture);
 
-		startActivityForResult(i, 0);
+		startActivityForResult(i, TOOK_A_PICTURE);
 	}
 
 	public void onCaptureImageClick(View view) {
@@ -147,7 +147,7 @@ public class TakePicture extends Activity {
 			if (!locationManager
 					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
 				Toast.makeText(getApplicationContext(),
-						"Need the GPS in order to take picture", Toast.LENGTH_LONG).show();
+						"Need the GPS in order to GeoTag picture", Toast.LENGTH_LONG).show();
 				finish();
 			}
 
@@ -217,7 +217,7 @@ public class TakePicture extends Activity {
 	private void initializeGeoLocation() {
 		if (!locationManager
 				.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
-			Intent myIntent = new Intent(Settings.ACTION_SECURITY_SETTINGS);
+			Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 			startActivityForResult(myIntent, GPS_ENABLE);
 		} else {
 
