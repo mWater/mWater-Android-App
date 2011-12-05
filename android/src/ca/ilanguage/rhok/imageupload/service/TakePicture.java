@@ -48,36 +48,36 @@ public class TakePicture extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		
-			setContentView(R.layout.take_picture);
 
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			try {
-				mImageFilename = getIntent().getExtras().getString(
-						PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
-			} catch (Exception e) {
-				// TODO: handle exception
+		setContentView(R.layout.take_picture);
 
-			}
-			mImageDBUri = getIntent().getData();
-			if (mImageFilename == null) {
-				mImageFilename = "/sdcard/BacteriaCounting/watersamples/error.jpg";
-			}
-			if (mImageDBUri == null) {
-				// This activity needs to be called with a URI of its
-				// corresponding
-				// row in the database.
-				finish();
-			}
-			
-			locationManager = (LocationManager) this
-					.getSystemService(Context.LOCATION_SERVICE);
-			/*
-			 * only check GPS or take a picture if this is the first run of the activity, ie its saved instance state is null
-			 */
-			if(savedInstanceState == null){
-				initializeGeoLocation();
-			}
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		try {
+			mImageFilename = getIntent().getExtras().getString(
+					PreferenceConstants.EXTRA_IMAGEFILE_FULL_PATH);
+		} catch (Exception e) {
+			// TODO: handle exception
+
+		}
+		mImageDBUri = getIntent().getData();
+		if (mImageFilename == null) {
+			mImageFilename = "/sdcard/BacteriaCounting/watersamples/error.jpg";
+		}
+		if (mImageDBUri == null) {
+			// This activity needs to be called with a URI of its
+			// corresponding
+			// row in the database.
+			finish();
+		}
+
+		locationManager = (LocationManager) this
+				.getSystemService(Context.LOCATION_SERVICE);
+		/*
+		 * only check GPS or take a picture if this is the first run of the activity, ie its saved instance state is null
+		 */
+		if(savedInstanceState == null){
+			initializeGeoLocation();
+		}
 	}
 
 	private void captureImage() {
@@ -103,44 +103,44 @@ public class TakePicture extends Activity {
 		switch (requestCode) {
 		case TOOK_A_PICTURE:
 
-				// Now we know that our myPicture URI refers to the image just
-				// taken
-				/*
-				 * copy image to results folder
-				 */
-				try {
-					File sd = Environment.getExternalStorageDirectory();
-					if (sd.canWrite()) {
-						String sourceImagePath = getPath(myPicture);
-						String destinationImagePath = mImageFilename;
-						File source = new File(sourceImagePath);
-						File destination = new File(destinationImagePath);
-						if (source.exists()) {
-							FileChannel src = new FileInputStream(source)
-									.getChannel();
-							FileChannel dst = new FileOutputStream(destination)
-									.getChannel();
-							dst.transferFrom(src, 0, src.size());
-							src.close();
-							dst.close();
-						}
+			// Now we know that our myPicture URI refers to the image just
+			// taken
+			/*
+			 * copy image to results folder
+			 */
+			try {
+				File sd = Environment.getExternalStorageDirectory();
+				if (sd.canWrite()) {
+					String sourceImagePath = getPath(myPicture);
+					String destinationImagePath = mImageFilename;
+					File source = new File(sourceImagePath);
+					File destination = new File(destinationImagePath);
+					if (source.exists()) {
+						FileChannel src = new FileInputStream(source)
+						.getChannel();
+						FileChannel dst = new FileOutputStream(destination)
+						.getChannel();
+						dst.transferFrom(src, 0, src.size());
+						src.close();
+						dst.close();
 					}
-					int affectedEntriesCount = updateImageMetadata(mImageDBUri);
-					Toast.makeText(
-							getApplicationContext(),
-							"Saving as " + mImageFilename + "\nUpdated "
-									+ affectedEntriesCount + " water sample.",
-							Toast.LENGTH_LONG).show();
-					finish();
-				} catch (Exception e) {
-					Toast.makeText(
-							getApplicationContext(),
-							"Result picture wasn't copied, but it's in the Camera folder: "
-									+ getPath(myPicture), Toast.LENGTH_LONG)
-							.show();
 				}
+				int affectedEntriesCount = updateImageMetadata(mImageDBUri);
+				Toast.makeText(
+						getApplicationContext(),
+						"Saving as " + mImageFilename + "\nUpdated "
+								+ affectedEntriesCount + " water sample.",
+								Toast.LENGTH_LONG).show();
+				finish();
+			} catch (Exception e) {
+				Toast.makeText(
+						getApplicationContext(),
+						"Result picture wasn't copied, but it's in the Camera folder: "
+								+ getPath(myPicture), Toast.LENGTH_LONG)
+								.show();
+			}
 
-			
+
 			finish();
 			break;
 		case GPS_ENABLE:
@@ -151,32 +151,32 @@ public class TakePicture extends Activity {
 				finish();
 			}
 
-				// Define a listener that responds to location updates
-				LocationListener locationListener = new LocationListener() {
-					public void onLocationChanged(Location location) {
-						// Called when a new location is found by the network location
-						// provider.
-						makeUseOfNewLocation(location);
-					}
+			// Define a listener that responds to location updates
+			LocationListener locationListener = new LocationListener() {
+				public void onLocationChanged(Location location) {
+					// Called when a new location is found by the network location
+					// provider.
+					makeUseOfNewLocation(location);
+				}
 
-					public void onStatusChanged(String provider, int status,
-							Bundle extras) {
-					}
+				public void onStatusChanged(String provider, int status,
+						Bundle extras) {
+				}
 
-					public void onProviderEnabled(String provider) {
-					}
+				public void onProviderEnabled(String provider) {
+				}
 
-					public void onProviderDisabled(String provider) {
-					}
-				};
+				public void onProviderDisabled(String provider) {
+				}
+			};
 
-				// Register the listener with the Location Manager to receive location
-				// updates
-				locationManager.requestLocationUpdates(
-						LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-				
-				captureImage();
-			
+			// Register the listener with the Location Manager to receive location
+			// updates
+			locationManager.requestLocationUpdates(
+					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+			captureImage();
+
 			break;
 		default:
 			break;
@@ -199,7 +199,7 @@ public class TakePicture extends Activity {
 		ContentValues values = new ContentValues();
 		values.put(ImageUploadHistory.FILEPATH, mImageFilename);
 		values.put(ImageUploadHistory.UPLOADED, "0");// sets deleted flag to
-														// true
+		// true
 		values.put(ImageUploadHistory.METADATA, metadataInJSON);
 		return getContentResolver().update(uri, values, null, null);
 	}
@@ -221,38 +221,38 @@ public class TakePicture extends Activity {
 			startActivityForResult(myIntent, GPS_ENABLE);
 		} else {
 
-		// Define a listener that responds to location updates
-		LocationListener locationListener = new LocationListener() {
-			public void onLocationChanged(Location location) {
-				// Called when a new location is found by the network location
-				// provider.
-				makeUseOfNewLocation(location);
-			}
+			// Define a listener that responds to location updates
+			LocationListener locationListener = new LocationListener() {
+				public void onLocationChanged(Location location) {
+					// Called when a new location is found by the network location
+					// provider.
+					makeUseOfNewLocation(location);
+				}
 
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-			}
+				public void onStatusChanged(String provider, int status,
+						Bundle extras) {
+				}
 
-			public void onProviderEnabled(String provider) {
-			}
+				public void onProviderEnabled(String provider) {
+				}
 
-			public void onProviderDisabled(String provider) {
-			}
-		};
+				public void onProviderDisabled(String provider) {
+				}
+			};
 
-		// Register the listener with the Location Manager to receive location
-		// updates
-		locationManager.requestLocationUpdates(
-				LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		captureImage();
+			// Register the listener with the Location Manager to receive location
+			// updates
+			locationManager.requestLocationUpdates(
+					LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+			captureImage();
 		}
-		
+
 	}
 
 	protected void makeUseOfNewLocation(Location location) {
 		longitude = location.getLongitude();
 		latitude = location.getLatitude();
 	}
-	
-	
+
+
 }
