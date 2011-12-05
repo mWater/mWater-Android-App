@@ -101,52 +101,59 @@ public class TakePicture extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case 0:
+
+			if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
+				// Now we know that our myPicture URI refers to the image just
+				// taken
+				/*
+				 * copy image to results folder
+				 */
+				try {
+					File sd = Environment.getExternalStorageDirectory();
+					if (sd.canWrite()) {
+						String sourceImagePath = getPath(myPicture);
+						String destinationImagePath = mImageFilename;
+						File source = new File(sourceImagePath);
+						File destination = new File(destinationImagePath);
+						if (source.exists()) {
+							FileChannel src = new FileInputStream(source)
+									.getChannel();
+							FileChannel dst = new FileOutputStream(destination)
+									.getChannel();
+							dst.transferFrom(src, 0, src.size());
+							src.close();
+							dst.close();
+						}
+					}
+					int affectedEntriesCount = updateImageMetadata(mImageDBUri);
+					Toast.makeText(
+							getApplicationContext(),
+							"Saving as " + mImageFilename + "\nUpdated "
+									+ affectedEntriesCount + " water sample.",
+							Toast.LENGTH_LONG).show();
+					finish();
+				} catch (Exception e) {
+					Toast.makeText(
+							getApplicationContext(),
+							"Result picture wasn't copied, but it's in the Camera folder: "
+									+ getPath(myPicture), Toast.LENGTH_LONG)
+							.show();
+				}
+
+			}
+			finish();
 			break;
 		case GPS_ENABLE:
 			if (!locationManager
 					.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
 				finish();
 			}
-		}
-		
-		if (requestCode == 0 && resultCode == Activity.RESULT_OK) {
-			// Now we know that our myPicture URI refers to the image just taken
-			/*
-			 * copy image to results folder
-			 */
-			try {
-				File sd = Environment.getExternalStorageDirectory();
-				if (sd.canWrite()) {
-					String sourceImagePath = getPath(myPicture);
-					String destinationImagePath = mImageFilename;
-					File source = new File(sourceImagePath);
-					File destination = new File(destinationImagePath);
-					if (source.exists()) {
-						FileChannel src = new FileInputStream(source)
-								.getChannel();
-						FileChannel dst = new FileOutputStream(destination)
-								.getChannel();
-						dst.transferFrom(src, 0, src.size());
-						src.close();
-						dst.close();
-					}
-				}
-				int affectedEntriesCount = updateImageMetadata(mImageDBUri);
-				Toast.makeText(
-						getApplicationContext(),
-						"Saving as " + mImageFilename + "\nUpdated "
-								+ affectedEntriesCount + " water sample.",
-						Toast.LENGTH_LONG).show();
-				finish();
-			} catch (Exception e) {
-				Toast.makeText(
-						getApplicationContext(),
-						"Result picture wasn't copied, but it's in the Camera folder: "
-								+ getPath(myPicture), Toast.LENGTH_LONG).show();
-			}
+			break;
+		default:
+			break;
 
 		}
-		finish();
+
 	}
 
 	/**
