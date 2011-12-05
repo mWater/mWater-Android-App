@@ -41,16 +41,13 @@ public class TakePicture extends Activity {
 	private double longitude;
 	private double latitude;
 
-	public TakePicture() {
-		locationManager = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
-	}
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (initializeGeoLocation()) {
+		
 			setContentView(R.layout.take_picture);
 
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -71,12 +68,17 @@ public class TakePicture extends Activity {
 				// row in the database.
 				finish();
 			}
-			captureImage();
-		} else {
-			Toast.makeText(getApplicationContext(),
-					"Need the GPS to take picture", Toast.LENGTH_LONG).show();
-			finish();
-		}
+			
+			locationManager = (LocationManager) this
+					.getSystemService(Context.LOCATION_SERVICE);
+			
+			if (initializeGeoLocation()) {
+				captureImage();
+			} else {
+				Toast.makeText(getApplicationContext(),
+						"Need the GPS in order to take picture", Toast.LENGTH_LONG).show();
+				finish();
+			}
 	}
 
 	private void captureImage() {
