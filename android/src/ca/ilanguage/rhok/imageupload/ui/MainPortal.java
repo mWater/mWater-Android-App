@@ -202,7 +202,7 @@ public class MainPortal extends Activity {
 				startActivity(openResults);
 			}
 
-
+			break;
 		case R.id.issue_tracker:
 
 			Intent browserIntent = new Intent(
