@@ -2,7 +2,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-include ../includeOpenCV.mk
+include /Users/gina/Downloads/temp/OpenCV-2.3.1-android-bin/samples/includeOpenCV.mk 
 ifeq ("$(wildcard $(OPENCV_MK_PATH))","")
 	#try to load OpenCV.mk from default install location
 	include $(TOOLCHAIN_PREBUILT_ROOT)/user/share/OpenCV/OpenCV.mk
