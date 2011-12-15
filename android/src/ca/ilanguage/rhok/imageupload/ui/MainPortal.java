@@ -116,12 +116,12 @@ public class MainPortal extends Activity {
 	}
 
 	public void onWaterResultsClick(View v) {
-                Intent intent = new Intent(this, GridViewSourceSelection.class);
-                intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName );
-                startActivity(intent);
+//                Intent intent = new Intent(this, GridViewSourceSelection.class);
+//                intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName );
+//                startActivity(intent);
 		//Use this button temporarily to test the OpenCV activity on your machine:
-//		Intent intent = new Intent(this, Sample3Native.class);
-//		startActivity(intent);
+		Intent intent = new Intent(this, Sample3Native.class);
+		startActivity(intent);
 	}
 
 	public void onSyncServerClick(View v) {
