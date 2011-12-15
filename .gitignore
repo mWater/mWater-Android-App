@@ -17,8 +17,8 @@ target
 *.class
 *.dll
 *.exe
-*.o
-*.so
+#*.o
+#*.so
 
 # Packages #
 ############
