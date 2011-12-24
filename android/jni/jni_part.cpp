@@ -7,6 +7,12 @@
 using namespace std;
 using namespace cv;
 
+
+#define PETRI_FILM_MARGIN 10
+#define PETRI_FILM_USABLE_PORTION 0.95
+#define HIST_BIN_COUNT 50
+
+
 extern "C" {
 JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_Sample3View_FindFeatures(JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv, jintArray bgra)
 {
@@ -20,14 +26,26 @@ JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_Sample3View_FindFea
     //Please make attention about BGRA byte order
     //ARGB stored in java as int array becomes BGRA at native level
     cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
-
-    vector<KeyPoint> v;
-
-    FastFeatureDetector detector(50);
-    detector.detect(mgray, v);
-    for( size_t i = 0; i < v.size(); i++ )
-        circle(mbgra, Point(v[i].pt.x, v[i].pt.y), 10, Scalar(0,0,255,255));
-
+    
+    /// Separate the image in 3 places ( B, G and R )
+    vector<Mat> rgbPlanes;
+    split( mbgra, rgbPlanes );
+    /// Finding the petri-film circle
+    vector<Vec3f> circles;
+    int maxRad = ((mbgra.rows<mbgra.cols)?mbgra.rows:mbgra.cols) /2;
+    int minRad = maxRad /4;
+    
+    double param = 250;
+    do {
+      HoughCircles( rgbPlanes[1], circles, CV_HOUGH_GRADIENT, 2, minRad/2, param, param*0.8, minRad, maxRad );
+      param *= 0.9;
+    } while(circles.size()<1);
+    int centerX = cvRound(circles[0][0]);
+    int centerY = cvRound(circles[0][1]);
+    int rad = cvRound(circles[0][2]);
+    
+    circle(mbgra, Point(centerX, centerY), rad, Scalar(0,255,255,255));
+    
     env->ReleaseIntArrayElements(bgra, _bgra, 0);
     env->ReleaseByteArrayElements(yuv, _yuv, 0);
 }
