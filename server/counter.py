@@ -1,4 +1,4 @@
-import cv2, cv, numpy
+import cv2, cv, numpy, math
 
 def scaleimage(img, size):
     h, w = img.shape[:2]
@@ -6,15 +6,15 @@ def scaleimage(img, size):
     return cv2.resize(img, (int(w/scale), int(h/scale)), interpolation=cv2.INTER_AREA)
 
 def findcircle(img):
-    # Gray scale and blur
-    gray=cv2.cvtColor(img, cv.CV_BGR2GRAY)
-    blur=cv2.GaussianBlur(gray, (5, 5), 0)
+    # Gray scale (green component) and blur
+    green=numpy.compress([False, True, False], img, 2)
+    blur=cv2.GaussianBlur(green, (3, 3), 0)
     
     # Get min max radius
     h, w = img.shape[:2]
     minrad=min(h,w)/8
     maxrad=min(h,w)/2
-    circles=cv2.HoughCircles(blur, cv.CV_HOUGH_GRADIENT, 2, 100, None, 100, 100, minrad, maxrad)
+    circles=cv2.HoughCircles(blur, cv.CV_HOUGH_GRADIENT, 1, 100, None, 100, 50, minrad, maxrad)
 
     return (circles[0][0][0],circles[0][0][1],circles[0][0][2])
 
@@ -24,142 +24,113 @@ def drawcircle(img, circledata):
 def extractcircle(img, circledata):
     rad=int(circledata[2])-2
     sqr=numpy.zeros((rad*2, rad*2, 3), numpy.uint8)
-    mask=numpy.zeros((rad*2, rad*2, 1), numpy.uint8)
     offset=(circledata[0]-rad, circledata[1]-rad)
     for x in xrange(0,int(rad*2)):
         for y in xrange(0,int(rad*2)):
             dist=(x-rad)*(x-rad)+(y-rad)*(y-rad)
             if dist<(rad*rad):
                 sqr[y][x]=img[y+offset[1]][x+offset[0]]
-                mask[y][x]=255
-            
-    return sqr, mask
+            else:
+                dist=math.sqrt(dist)
+                # Move back inside circle by reflecting
+                factor=(2*rad-dist)/dist
+                newx=(x-rad)*factor+rad
+                newy=(y-rad)*factor+rad
+                sqr[y][x]=img[newy+offset[1]][newx+offset[0]]
+    return sqr, getmask(rad)
 
 def getmask(rad):
     sqr=numpy.zeros((rad*2, rad*2, 1), numpy.uint8)
-    cv2.circle(sqr, (rad, rad), rad, cv.Scalar(255),-1)
+    cv2.circle(sqr, (rad, rad), rad, cv.Scalar(1),-1)
     return sqr
 
-def determinebackground(img, mask):
-    # Get histogram
-    histr=gethistsimple(img, 2)
-    histg=gethistsimple(img, 1)
-    histb=gethistsimple(img, 0)
+def highpass(img, mask):
+    blur=cv2.blur(img, (100,100), None, (-1,-1), cv2.BORDER_REFLECT)
     
-    return (bestval(histb)[0], bestval(histg)[0], bestval(histr)[0])
-
-def gethist(img, mask, channel):
-    h, w = img.shape[:2]
-    # Get histogram
-    hist=numpy.zeros([256], numpy.uint32)
-    # Get max histogram value
-    for x in xrange(0,w):
-        for y in xrange(0,h):
-            if mask[y][x]>0:
-                hist[img[y][x][channel]]+=1
-    return hist
-
-def gethistsimple(img, channel):
-    h, w = img.shape[:2]
-    # Get histogram
-    hist=numpy.zeros([256], numpy.uint32)
-    # Get max histogram value
-    for x in xrange(0,w):
-        for y in xrange(0,h):
-            hist[img[y][x][channel]]+=1
-    hist[0]=0
-    return hist
-
-def fillbackground(img, mask, color):
-    h, w = img.shape[:2]
+    # Divide out blur in float domain
+    diff=img.astype(numpy.float32)/blur.astype(numpy.float32)
+    
+    # Set non-mask to 1
+    h, w = diff.shape[:2]
     for x in xrange(0,w):
         for y in xrange(0,h):
             if mask[y][x]==0:
-                img[y][x]=color
+                diff[y][x]=1
+
+    return diff
+
+def findbacteria(col, ecoli, bubbles, drawon):
+    bacts=cv2.findContours(col.astype(numpy.uint8), cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]
+
+    # Bacteria neighborhood size 1/50th of dish
+    h, w = col.shape[:2]
+    neighsize=h/50
     
-
-def gauss(x, a, mu, sigma):
-    return a*np.exp(-(x-mu)**2/(2*sigma**2))
-
-def bestval(hist):
-    bestval=0
-    bestidx=0
-    for idx in xrange(0,256):
-        if hist[idx]>bestval:
-            bestidx=idx
-            bestval=hist[idx]
-    return bestidx, bestval
-
-def normimage(img, color):
-    nrm=numpy.copy(img)
-    h, w = img.shape[:2]
-
-    # Get max histogram value
-    for x in xrange(0,w):
-        for y in xrange(0,h):
-            for c in xrange(0,3):
-                if img[y][x][c]<color[c]:
-                    nrm[y][x][c]=img[y][x][c]*192/color[c]
-                else:
-                    nrm[y][x][c]=(img[y][x][c]-color[c])*64/(255-color[c])+192
-    return nrm
+    numecoli=0
+    numtherm=0
+    numother=0
     
-def removeyellow(img):
-    h, w = img.shape[:2]
-
-    # Get max histogram value
-    for x in xrange(0,w):
-        for y in xrange(0,h):
-            img[y][x][0]=max(min(img[y][x][1],img[y][x][2]),img[y][x][0])
-
-def removeyellow2(img):
-    h, w = img.shape[:2]
-    noyel=numpy.copy(img)
-
-    # Get max histogram value
-    for x in xrange(0,w):
-        for y in xrange(0,h):
-            # If yellow (B<min(R,G))
-            if img[y][x][0]<min(img[y][x][1],img[y][x][2]):
-                noyel[y][x]=(192, 192, 192)
-    return noyel
+    for bact in bacts:
+        rect=cv2.boundingRect(bact)
+        center=(rect[0]+rect[2]/2, rect[1]+rect[3]/2)
+        topleft=(max(0, center[0]-neighsize), max(0, center[1]-neighsize))
+        bottomright=(min(w-1, center[0]+neighsize), min(h-1, center[1]+neighsize))
+        
+        ecolicount=numpy.average(ecoli[topleft[1]:bottomright[1]+1, topleft[0]:bottomright[0]+1])
+        bubblecount=numpy.average(bubbles[topleft[1]:bottomright[1]+1, topleft[0]:bottomright[0]+1])
+        #print "e:{0:0.00} b:{1:0.00}".format(ecolicount, bubblecount)
+        #text="e:{0:0.00} b:{1:0.00}".format(ecolicount, bubblecount)
+        #cv2.putText(drawon, text, bottomright, cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,0))
+        
+        # Create outer boundary
+        #cv2.rectangle(drawon, (rect[0]-neighsize, rect[1]-neighsize), (rect[0]+rect[2]+neighsize, rect[1]+rect[3]+neighsize), cv.Scalar(0,0,255))
+        if ecolicount>0.1:
+            color=cv.Scalar(255,0,0)
+            numecoli+=1
+        elif bubblecount>0.03:
+            color=cv.Scalar(0,0,255)
+            numtherm+=1
+        else:
+            color=cv.Scalar(0,0,0)
+            numother+=1
+        cv2.rectangle(drawon, topleft, bottomright, color)
             
-def filtercolonies(img):
-    red=numpy.compress([False, False, True], img, 2)
-    red=192-red.clip(0,192)
-    
-    # Remove green and blue
-    green=numpy.compress([False, True, False], img, 2)
-    blue=numpy.compress([True, False, False], img, 2)
-    greenblue=numpy.minimum(192-green.clip(0,192), 192-blue.clip(0,192))+64
-    col=(greenblue-red).clip(64,255)-64
-    col=255-((col*3).clip(0,255))
-    return col
+    return numecoli, numtherm, numother
 
-def filtercolonies2(img):
-    red=numpy.compress([False, False, True], img, 2)
-    return 255-(192-red.clip(0,192))
-    
-def filterecoli(img):
+
+def analyse(img):
     red=numpy.compress([False, False, True], img, 2)
     green=numpy.compress([False, True, False], img, 2)
-    blue=numpy.compress([True, False, False], img, 2)
 
-    red=192-red.clip(0,192)+64
+    col=cv2.threshold(green, 0.75, 1, cv2.THRESH_BINARY_INV)[1]
+    ecoli=cv2.threshold(red, 0.9, 1, cv2.THRESH_BINARY_INV)[1]
+    bubbles=cv2.threshold(green, 1.05, 1, cv2.THRESH_BINARY)[1]
     
-    # Remove green and blue
-    greenblue=numpy.minimum(192-green.clip(0,192), 192-blue.clip(0,192))
-    col=(red-greenblue).clip(64,255)-64
-    col=255-((col*3).clip(0,255))
-    return col
+    cv2.imwrite('col.png', col*255)
+    cv2.imwrite('ecoli.png', ecoli*255)
+    cv2.imwrite('bubbles.png', bubbles*255)
     
-def findcolonies(col):
-    thrs=cv2.adaptiveThreshold(col, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 5, 18)
-    cont=cv2.findContours(thrs, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
-    return cont[0]
+    return col, ecoli, bubbles
+
+def createfalsecolor(col, ecoli, bubbles):
+    h, w = col.shape[:2]
+    img=numpy.zeros((h, w, 3), numpy.uint8)
+    for x in xrange(0,w):
+        for y in xrange(0,h):
+            if col[y][x]>0:
+                img[y][x]=(0,0,255)
+            elif ecoli[y][x]>0:
+                img[y][x]=(255,0,0)
+            elif bubbles[y][x]>0:
+                img[y][x]=(192,192,192)
+            else:
+                img[y][x]=(255,255,255)
+    return img
+    
 
 def processimage(img):
-    img=scaleimage(img, 1024)
+    img=scaleimage(img, 2048)
+    cv2.imwrite('stage0.png', img)
     
     # Find circle and show
     img2=numpy.copy(img)
@@ -171,66 +142,25 @@ def processimage(img):
     sqr,mask=extractcircle(img, circledata)
     cv2.imwrite('stage2.png', sqr)
     
-    # Figure out background color
-    backcolor=determinebackground(sqr, mask)
-    
-    # Normalize background
-    fillbackground(sqr, mask, backcolor)
-    nrm=normimage(sqr,backcolor)
-    cv2.imwrite('stage3.png', nrm)
-    
-    # Remove yellow grid lines
-    noyel=removeyellow2(nrm)
-    cv2.imwrite('stage4.png', noyel)
-    
-    # Filter everything but colonies (red dots)
-    col=filtercolonies2(noyel)
-    cv2.imwrite('stage5colonies.png', col)
-    
-    # Filter everything but e coli (red dots)
-    cv2.imwrite('stage6ecoli.png', filterecoli(noyel))
+    high=highpass(sqr,mask)
+    numpy.save("high", high)
+    cv2.imwrite('high.png', high*192)
+
+    col, ecoli, bubbles=analyse(high)
+
+    # Combine into false color image
+    falsecolor=createfalsecolor(col, ecoli, bubbles)
+    cv2.imwrite('falsecolor.png', falsecolor)
     
     # Locate colonies
-    drawn=numpy.copy(noyel)
-    cols=findcolonies(col)
-    for col in cols:
-        rect=cv2.boundingRect(col)
-        cv2.rectangle(drawn, (rect[0]-2, rect[1]-2), (rect[0]+rect[2]+2, rect[1]+rect[3]+2), cv.Scalar(0,0,255))
-    cv2.imwrite('stage7cols.png', drawn)
-    
+    drawon=numpy.copy(sqr*mask)
+    numecoli, numtherm, numother = findbacteria(col, ecoli, bubbles, drawon)
+    cv2.imwrite('ided.png', drawon)
+    return numecoli, numtherm, numother 
+
 
 # Load images    
 img = cv2.imread('IMG_6182.JPG')
-processimage(img)
+numecoli, numtherm, numother = processimage(img)
 
-#cv2.imshow('img', nrm)
-#cv2.waitKey()
-#cv.Canny(gray, edges, 50, 200, 3)
-#cv.Smooth(gray, gray, cv.CV_GAUSSIAN, 9, 9)
-
-#storage = cv2.CreateMat(1, 2, cv.CV_32FC3)
-
-#scale = max(h, w) / 512.0
-#small = cv2.resize(img, (int(w/scale), int(h/scale)), interpolation=cv2.INTER_AREA)
-##cv.Smooth(small, small, cv.CV_GAUSSIAN, 9, 9)
-#cv2.GaussianBlur(small, (5, 5), 0)
-#gray=cv2.cvtColor(small, cv.CV_BGR2GRAY)
-#edges=cv2.Canny(gray, 100, 100)
-
-#circles=None
-#circles= cv2.HoughCircles(edges, cv.CV_HOUGH_GRADIENT, 2, 100, circles, 100, 100, 50, 256)
-
-##for i in xrange(0,len(circles[0])):
-#i=0
-#center=(circles[0][i][0],circles[0][i][1])
-#rad=circles[0][i][2]
-##cv2.circle(small, center, rad, cv.Scalar(255,0,0),1)
-
-##cv2.imshow('edges', edges)
-
-#roi = numpy.empty_like(small)
-#cv2.circle(roi, center, rad, cv.Scalar(255, 255, 255), -1, 8, 0) 
-#small=numpy.bitwise_and(roi, small)
- 
-##circlemat=cv2.at(
-
+print "EColi={0} Thermiform={1} Other={2}".format(numecoli, numtherm, numother)
