@@ -1,3 +1,4 @@
+/*
 #include <cv.h>
 #include <highgui.h>
 #include <math.h>
@@ -83,13 +84,13 @@ int main( int argc, char** argv )
   int rad = cvRound(circles[0][2]);
   //Debug
   printf("First circle in the array: (%d, %d), %d\nLast value of HoughCircles' 'param': %f\n", centerX, centerY, rad, param/0.9);
-  /*Mat debugImg(small);
+  Mat debugImg(small);
   circle(debugImg, Point(centerX, centerY), rad, Scalar(0,0,255), 3, 8, 0);
   namedWindow("Small", CV_WINDOW_KEEPRATIO);
   imshow("Small", debugImg );
   waitKey(0);
-  */
   
+
   /// Extracting petri-film circle and its RGB channels
   /// from the small image
   int newRad = rad+PETRI_FILM_MARGIN;
@@ -232,4 +233,4 @@ int main( int argc, char** argv )
   
   
   return 0;
-}
+}*/
