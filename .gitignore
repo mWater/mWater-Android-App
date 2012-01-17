@@ -9,6 +9,8 @@ assets/analytics_website_script.html
 
 bin
 gen
+obj
+libs
 
 # Compiled source #
 ###################
