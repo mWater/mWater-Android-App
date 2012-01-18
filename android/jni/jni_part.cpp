@@ -183,7 +183,10 @@ void FindCircle(jint width, jint height, Mat& mbgra) {
         // Check circularity
         double perimeter=arcLength(convex, true);
         double area=contourArea(convex);
-        double circularity = 4*3.14159*area/(perimeter*perimeter);
+        double circularity = 4*3.14159265*area/(perimeter*perimeter);
+
+        if (circularity<0.9)
+        	continue;
 
 //        // Not quite as neat and simple:
 //        ostringstream temp;
@@ -191,9 +194,9 @@ void FindCircle(jint width, jint height, Mat& mbgra) {
 //        putText(mbgra, temp.str(), Point(width/2,height/2), FONT_HERSHEY_SIMPLEX, 0.3, Scalar(0,255,0,255));
 
         if (circularity<0.995)
-            drawContours(mbgra, hulls, 0, Scalar(0, 0, 255,255), 1);
+            drawContours(mbgra, hulls, 0, Scalar(0, 0, 255,255), 2);
         else
-            drawContours(mbgra, hulls, 0, Scalar(0,255,0,255), 1);
+            drawContours(mbgra, hulls, 0, Scalar(0,255,0,255), 2);
 
         //polylines(mbgra, convex, true, Scalar(0,255,0,255), 2);
         break;
@@ -224,7 +227,7 @@ void FindCircle(jint width, jint height, Mat& mbgra) {
 
 
 extern "C" {
-JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_Sample3View_FindFeatures(JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv, jintArray bgra)
+JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmSnapPreviewView_Process(JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv, jintArray bgra)
 {
 	// Get input and output arrays
     jbyte* _yuv  = env->GetByteArrayElements(yuv, 0);

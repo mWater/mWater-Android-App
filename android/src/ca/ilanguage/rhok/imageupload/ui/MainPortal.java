@@ -120,7 +120,7 @@ public class MainPortal extends Activity {
 //                intent.putExtra(EXTRA_WATER_SOURCE_CODE, mImageFileName );
 //                startActivity(intent);
 		//Use this button temporarily to test the OpenCV activity on your machine:
-		Intent intent = new Intent(this, Sample3Native.class);
+		Intent intent = new Intent(this, PetrifilmSnapActivity.class);
 		startActivity(intent);
 	}
 
