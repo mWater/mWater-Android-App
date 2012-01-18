@@ -48,6 +48,9 @@ JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_Sample3View_FindFea
 	    int centerY = cvRound(circles[0][1]);
 	    int rad = cvRound(circles[0][2]);
 
+	    // HACK: Reduce radius because of HoughCircles imprecision!
+	    rad*=0.95;
+
 	    // Draw red circle
 	    circle(mbgra, Point(centerX, centerY), rad, Scalar(0,0,255,255));
 
@@ -60,19 +63,69 @@ JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_Sample3View_FindFea
 			Mat mask = Mat(rad*2, rad*2, CV_8UC1, Scalar(0));
 			circle(mask, Point(rad, rad), rad, Scalar(255), -1);
 
-			// Copy square to signed
-			Mat squareCopy = Mat(rad*2, rad*2, CV_16SC4);
-			square.convertTo(squareCopy, CV_16SC4);
+			Mat mask4C = Mat(rad*2, rad*2, CV_8UC4, Scalar(0,0,0,255));
+			circle(mask4C, Point(rad, rad), rad, Scalar(255,255,255,255), -1);
 
-			// Create high-pass
-			Mat blurred = squareCopy.clone();
-			blur(blurred, blurred, Size(50,50));
-			Mat highpass = squareCopy - blurred + 192;
-			Mat highpass8 = Mat(rad*2, rad*2, CV_8UC4);
+//			// Copy square to signed 32
+//			Mat squareCopy;
+//			square.convertTo(squareCopy, CV_32SC4);
+//
+//			// Mask circle
+//			squareCopy |= mask;
+
+			// Create low-pass filter, only within mask
+			Mat blurred;
+			Mat blurredCount;
+			int blursize=square.rows/8;
+			boxFilter(square & mask4C, blurred, CV_32FC4, Size(blursize,blursize), Point(-1,-1), false, BORDER_CONSTANT);
+			boxFilter(mask4C, blurredCount, CV_32FC4, Size(blursize,blursize), Point(-1,-1), false, BORDER_CONSTANT);
+			blurred = blurred / (blurredCount/255);
+
+			// High-pass image
+			Mat highpass;
+			square.convertTo(highpass, CV_32FC4);
+			highpass = highpass / blurred * 200;
 
 			// Convert back to 8-bit, resetting alpha
+			Mat highpass8;
 			highpass.convertTo(highpass8, CV_8UC4);
 			highpass8 |= Mat(rad*2, rad*2, CV_8UC4, Scalar(0,0,0,255));
+
+			// Mask outside of circle to background
+			highpass8.setTo(Scalar(200,200,200,255), 255-mask);
+
+			// Split into channels
+		    split(highpass8, rgbPlanes);
+
+		    // Find colonies
+		    Mat colthresh;
+		    threshold(rgbPlanes[1], colthresh, 160, 200, CV_THRESH_BINARY_INV); // Should be 150 or so
+
+		    vector<vector<Point> > contours;
+		    //vector<Vec4i> hierarchy;
+		    findContours(colthresh, contours, CV_RETR_LIST, CHAIN_APPROX_NONE);
+		    for (int i=0; i<contours.size(); i++)
+		    {
+		        Rect rect=boundingRect(contours[i]);
+
+		        int neighsize=square.rows/50;
+		        // Ignore if too large
+		        if (rect.height>neighsize || rect.width>neighsize)
+		        	continue;
+
+		        Point center = Point(rect.x+rect.width/2, rect.y+rect.height/2);
+
+		        // Draw rectangle
+			    rectangle(highpass8,
+			    		Rect(rect.x-neighsize, rect.y-neighsize, rect.width+neighsize*2, rect.height+neighsize*2),
+			    		Scalar(0,0,255,255));
+
+//		        // Draw green arrow
+//		        line(highpass8, center, Point(center.x+30, center.y+30), Scalar(0,255,0,255));
+//		        line(highpass8, center, Point(center.x+10, center.y), Scalar(0,255,0,255));
+//		        line(highpass8, center, Point(center.x, center.y+10), Scalar(0,255,0,255));
+		    }
+
 			highpass8.copyTo(square, mask);
 	    }
 	}
