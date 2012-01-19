@@ -1,7 +1,12 @@
 package ca.ilanguage.rhok.imageupload.ui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import ca.ilanguage.rhok.imageupload.R;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -27,7 +32,6 @@ public class PetrifilmSnapActivity extends Activity implements PictureCallback {
 		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		// setContentView(new PetrifilmSnapPreviewView(this));
 		setContentView(R.layout.petrifilm_snap_view);
 	}
 
@@ -46,6 +50,8 @@ public class PetrifilmSnapActivity extends Activity implements PictureCallback {
 			Toast.makeText(getApplicationContext(), "Camera locked", 0).show();
 			return;
 		}
+		
+		// TODO focus, flash, resolution
 
 		camera.takePicture(null, null, this);
 	}
@@ -53,11 +59,28 @@ public class PetrifilmSnapActivity extends Activity implements PictureCallback {
 	public void onPictureTaken(byte[] data, Camera camera) {
 		camera.release();
 
-		Intent intent = new Intent(this, SampleListActivity.class);
-		startActivity(intent);
+		String guid = getIntent().getStringExtra("guid");
+		String filename = "petri_" + guid + ".jpg";
 
-		Toast.makeText(getApplicationContext(),
-				"Captured image of size " + data.length / 1024, 0).show();
+		FileOutputStream fos;
+		try {
+			fos = openFileOutput(filename, Context.MODE_PRIVATE);
+			fos.write(data);
+			fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+
+		Intent result = new Intent();
+		setResult(RESULT_OK, result);
+
+		finish();
 	}
 
 }
