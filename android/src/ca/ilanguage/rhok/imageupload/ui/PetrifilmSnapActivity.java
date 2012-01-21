@@ -1,5 +1,6 @@
 package ca.ilanguage.rhok.imageupload.ui;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,32 +40,42 @@ public class PetrifilmSnapActivity extends Activity implements PictureCallback {
 		Button capture = (Button) findViewById(R.id.capture);
 		capture.setEnabled(false);
 
+		// Take picture
+		PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView) findViewById(R.id.preview);
+		Camera camera = previewView.getCamera();
+		camera.takePicture(null, null, this);
+
+		// // Remove view
+		// PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView)
+		// findViewById(R.id.preview);
+		// ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
+		// mainView.removeView(previewView);
+		//
+		// // Take picture
+		// camera = Camera.open();
+		// if (camera == null) {
+		// Toast.makeText(getApplicationContext(), "Camera locked", 0).show();
+		// return;
+		// }
+		//
+		// // TODO focus, flash, resolution
+		//
+		//
+		// camera.takePicture(null, null, this);
+	}
+
+	public void onPictureTaken(byte[] data, Camera camera) {
+		// camera.release();
+
 		// Remove view
 		PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView) findViewById(R.id.preview);
 		ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
 		mainView.removeView(previewView);
 
-		// Take picture
-		camera = Camera.open();
-		if (camera == null) {
-			Toast.makeText(getApplicationContext(), "Camera locked", 0).show();
-			return;
-		}
-		
-		// TODO focus, flash, resolution
-
-		camera.takePicture(null, null, this);
-	}
-
-	public void onPictureTaken(byte[] data, Camera camera) {
-		camera.release();
-
-		String guid = getIntent().getStringExtra("guid");
-		String filename = "petri_" + guid + ".jpg";
-
+		String filepath = getIntent().getStringExtra("filepath");
 		FileOutputStream fos;
 		try {
-			fos = openFileOutput(filename, Context.MODE_PRIVATE);
+			fos = new FileOutputStream(filepath);
 			fos.write(data);
 			fos.close();
 		} catch (FileNotFoundException e) {
@@ -78,6 +89,8 @@ public class PetrifilmSnapActivity extends Activity implements PictureCallback {
 		}
 
 		Intent result = new Intent();
+		result.putExtra("guid", getIntent().getStringExtra("guid"));
+		result.putExtra("filepath", filepath);
 		setResult(RESULT_OK, result);
 
 		finish();
