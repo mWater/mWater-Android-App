@@ -27,7 +27,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
-					<value>c:/android-ndk-r7/ndk-build.cmd</value>
+					<value>${ANDROID_NDK_DIR}/ndk-build.cmd</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildLocation</key>
