@@ -38,6 +38,7 @@ public class SampleListActivity extends ListActivity {
 		String guid=UUID.randomUUID().toString();
 		File file = new File(getExternalFilesDir(null), "petri_" + guid + ".jpg");
 		intent.putExtra("filepath", file.getAbsolutePath());
+		intent.putExtra("guid", guid);
 
 		startActivityForResult(intent, PETRI_IMAGE_REQUEST);
 	}
