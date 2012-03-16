@@ -7,6 +7,7 @@ import android.content.Context;
 public class App {
 
 	public static String getOriginalImageFolder(Context context) {
-		return context.getExternalFilesDir(null).getAbsolutePath();
+		File f = context.getExternalFilesDir(null);
+		return f.getAbsolutePath()+f.pathSeparator+"orig";
 	}
 }
