@@ -23,22 +23,8 @@
         android:smallScreens="true" />
     <application
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" android:theme="@android:style/Theme.Black">
-        <!--
-        activity
-            android:label="@string/app_name"
-            android:name=".AndroidBacterialCountingActivity" >
-        </activity
-        -->
-        <activity
-            android:label="@string/app_name"
-            android:name=".ui.MainPortal" >
-            <!-- <intent-filter >
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
-
+        android:label="@string/app_name"
+        android:debuggable="true">       
         <activity
             android:label="@string/app_name"
             android:name=".ui.SampleListActivity" >
@@ -48,23 +34,6 @@
             </intent-filter>
         </activity>
         
-        <activity
-            android:label="@string/app_name"
-            android:name=".ui.GridViewSourceSelection" >
-        </activity>
-            
-        <activity
-            android:label="@string/app_name"
-            android:name=".ui.ServerSync" >
-        </activity>
-        <activity
-            android:label="@string/app_name"
-            android:name=".pref.SetPreferencesActivity" >
-        </activity>
-        <activity
-            android:label="@string/app_name"
-            android:name=".service.TakePicture" >
-        </activity>
         <activity android:name=".ui.PetrifilmSnapActivity"
                   android:label="@string/app_name"
                   android:screenOrientation="landscape"
@@ -76,9 +45,6 @@
                   android:configChanges="keyboardHidden|orientation">
             
         </activity>
-        <service android:name="ca.ilanguage.rhok.imageupload.service.ImageUploadService" />
         
-        <provider android:name=".db.ImageUploadHistoryProvider"
-                  android:authorities="ca.ilanguage.rhok.imageupload.db.ImageUploadHistory" />
     </application>
 </manifest>
