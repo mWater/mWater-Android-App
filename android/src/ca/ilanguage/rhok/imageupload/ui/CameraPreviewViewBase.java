@@ -110,8 +110,11 @@ public abstract class CameraPreviewViewBase extends SurfaceView implements Surfa
 
             synchronized (this) {
                 try {
-                    this.wait();
+                    this.wait(1000);
+                    if (mFrame==null)
+                    	continue;
                     bmp = processFrame(mFrame);
+                    mFrame=null;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

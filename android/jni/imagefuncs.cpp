@@ -123,6 +123,8 @@ void removeyellow(Mat& img) {
 
 	double lambda = mean(g.mul(b-g))[0]/mean(g.mul(g)-2*g.mul(b)+b.mul(b))[0];
 
+	LOGI("Remove yellow lambda = %f", lambda);
+
 	bgr[1]=bgr[1]*(1+lambda)-bgr[0]*lambda;
 
 	// Also reset blue
