@@ -6,7 +6,7 @@
 
     <view
         class="ca.ilanguage.rhok.imageupload.ui.PetrifilmCameraView" 
-        android:id="@+id/preview"
+        android:id="@+id/CameraView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"

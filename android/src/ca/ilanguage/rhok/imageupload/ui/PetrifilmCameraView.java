@@ -7,11 +7,6 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 
 class PetrifilmCameraView extends CameraPreviewViewBase {
-
-//	public PetrifilmSnapPreviewView(Context context) {
-//		super(context, null);
-//	}
-//
 	public PetrifilmCameraView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}

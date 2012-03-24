@@ -18,7 +18,7 @@ public class ProcessImageActivity extends Activity implements Runnable {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.process_image_view);
+		setContentView(R.layout.process_image_activity);
 
 		inPath = getIntent().getStringExtra("inpath");
 		outPath = getIntent().getStringExtra("outpath");

@@ -32,27 +32,24 @@ void createPreview(Mat mbgra) {
 	int height = mbgra.size[0];
 
 	vector<Point> contour = findCircle(mbgra);
-	if (contour.size() == 0)
-		return;
+	if (contour.size() > 0) {
+		// Draw contour
+		vector<vector<Point> > hulls;
+		hulls.push_back(contour);
 
-	// Draw contour
-	vector<vector<Point> > hulls;
-	hulls.push_back(contour);
+		// Check circularity
+		double circularity = calcCircularity(contour);
 
-	// Check circularity
-	double circularity = calcCircularity(contour);
-
-	if (circularity < 0.995)
-		drawContours(mbgra, hulls, 0, Scalar(0, 0, 255, 255), 2);
-	else
-		drawContours(mbgra, hulls, 0, Scalar(0, 255, 0, 255), 2);
-
+		if (circularity < 0.995)
+			drawContours(mbgra, hulls, 0, Scalar(0, 0, 255, 255), 2);
+		else
+			drawContours(mbgra, hulls, 0, Scalar(0, 255, 0, 255), 2);
+	}
 	// Draw cross-hairs
 	line(mbgra, Point(width * 0.5, height * 0.4),
 			Point(width * 0.5, height * 0.6), Scalar(0, 0, 0, 255), 2);
 	line(mbgra, Point(width * 0.4, height * 0.5),
 			Point(width * 0.6, height * 0.5), Scalar(0, 0, 0, 255), 2);
-
 }
 
 Mat process(Mat input, int& colonies) {
@@ -60,7 +57,7 @@ Mat process(Mat input, int& colonies) {
 }
 
 extern "C" {
-JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmSnapPreviewView_Process(
+JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmCameraView_Process(
 		JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
 		jintArray bgra) {
 	// Get input and output arrays

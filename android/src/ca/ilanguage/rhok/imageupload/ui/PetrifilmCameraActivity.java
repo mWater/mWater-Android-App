@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import ca.ilanguage.rhok.imageupload.App;
 import ca.ilanguage.rhok.imageupload.R;
 import android.app.Activity;
 import android.content.Context;
@@ -19,8 +20,9 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class PetrifilmCameraActivity extends Activity implements PictureCallback {
-	private static final String TAG = "Sample::Activity";
+public class PetrifilmCameraActivity extends Activity implements
+		PictureCallback {
+	private static final String TAG = "ca.ilanguage.rhok";
 	Camera camera;
 
 	public PetrifilmCameraActivity() {
@@ -33,7 +35,7 @@ public class PetrifilmCameraActivity extends Activity implements PictureCallback
 		Log.i(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.petrifilm_snap_view);
+		setContentView(R.layout.petrifilm_camera_activity);
 	}
 
 	public void onCaptureClick(View v) {
@@ -41,56 +43,38 @@ public class PetrifilmCameraActivity extends Activity implements PictureCallback
 		capture.setEnabled(false);
 
 		// Take picture
-		PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView) findViewById(R.id.preview);
+		PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
 		Camera camera = previewView.getCamera();
 		camera.takePicture(null, null, this);
-
-		// // Remove view
-		// PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView)
-		// findViewById(R.id.preview);
-		// ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
-		// mainView.removeView(previewView);
-		//
-		// // Take picture
-		// camera = Camera.open();
-		// if (camera == null) {
-		// Toast.makeText(getApplicationContext(), "Camera locked", 0).show();
-		// return;
-		// }
-		//
 		// // TODO focus, flash, resolution
-		//
-		//
-		// camera.takePicture(null, null, this);
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
-		// camera.release();
-
 		// Remove view
-		PetrifilmSnapPreviewView previewView = (PetrifilmSnapPreviewView) findViewById(R.id.preview);
+		PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
 		ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
 		mainView.removeView(previewView);
 
-		String filepath = getIntent().getStringExtra("filepath");
+		String filename = getIntent().getStringExtra("filename");
+		String filepath = App.getOriginalImageFolder(this) + File.separator
+				+ filename;
 		FileOutputStream fos;
 		try {
 			fos = new FileOutputStream(filepath);
 			fos.write(data);
 			fos.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, e.toString());
 			return;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.e(TAG, e.toString());
 			return;
 		}
 
+		Log.d(TAG, "Wrote file " + filename);
+
 		Intent result = new Intent();
-		result.putExtra("guid", getIntent().getStringExtra("guid"));
-		result.putExtra("filepath", filepath);
+		result.putExtra("filename", filename);
 		setResult(RESULT_OK, result);
 
 		finish();

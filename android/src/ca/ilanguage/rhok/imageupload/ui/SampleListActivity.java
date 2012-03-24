@@ -1,23 +1,22 @@
 package ca.ilanguage.rhok.imageupload.ui;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.UUID;
 
-import ca.ilanguage.rhok.imageupload.PetrifilmAnalysisResults;
-import ca.ilanguage.rhok.imageupload.PetrifilmImageProcessor;
+import ca.ilanguage.rhok.imageupload.App;
 import ca.ilanguage.rhok.imageupload.R;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class SampleListActivity extends ListActivity {
+	private static final String TAG = "ca.ilanguage.rhok";
 	static final String[] Samples = new String[] { "Water Source #1",
 			"Street #3 Sample" };
 
@@ -34,12 +33,9 @@ public class SampleListActivity extends ListActivity {
 	}
 
 	public void onNewSampleClick(View v) {
-		Intent intent = new Intent(this, PetrifilmSnapActivity.class);
+		Intent intent = new Intent(this, PetrifilmCameraActivity.class);
 		String guid=UUID.randomUUID().toString();
-		File file = new File(getExternalFilesDir(null), "petri_" + guid + ".jpg");
-		intent.putExtra("filepath", file.getAbsolutePath());
-		intent.putExtra("guid", guid);
-
+		intent.putExtra("filename", "petri_" + guid + ".jpg");
 		startActivityForResult(intent, PETRI_IMAGE_REQUEST);
 	}
 
@@ -51,19 +47,18 @@ public class SampleListActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == PETRI_IMAGE_REQUEST && resultCode == RESULT_OK) {
-			String guid = data.getStringExtra("guid");
-			String filepath = data.getStringExtra("filepath");
+			String filename = data.getStringExtra("filename");
 
 			Intent intent = new Intent(this, ProcessImageActivity.class);
-			intent.putExtra("inpath", filepath);
+			intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
+			intent.putExtra("outpath", App.getProcessedImageFolder(this) + File.separator + filename);
 
-			File file = new File(getExternalFilesDir(null), "processed_" + guid + ".jpg");
-			intent.putExtra("outpath", file.getAbsolutePath());
-
+			Log.d(TAG, "Calling process image");
 			startActivityForResult(intent, PROCESS_IMAGE_REQUEST);
 		}
 
 		if (requestCode == PROCESS_IMAGE_REQUEST && resultCode == RESULT_OK) {
+			Log.d(TAG, "Called process image");
 			String outpath = data.getStringExtra("outpath");
 
 			// Launch image viewer
