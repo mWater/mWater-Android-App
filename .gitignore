@@ -2,10 +2,10 @@
 NonPublicConstants.java
 assets/analytics_website_script.html
 
-
+.cproject
 .project
 .settings
-#.classpath
+.classpath
 
 bin
 gen

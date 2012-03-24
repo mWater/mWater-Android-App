@@ -16,10 +16,6 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/open_settings"
-        android:title="Settings" />
-    <item android:id="@+id/language_settings"
-        android:title="Language" />
     <item android:id="@+id/issue_tracker"
         android:title="Bugs" />
     <item android:id="@+id/result_folder"

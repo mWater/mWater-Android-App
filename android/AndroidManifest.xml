@@ -43,9 +43,6 @@
                   android:configChanges="keyboardHidden|orientation">
             
         </activity>
-        <service android:name="ca.ilanguage.rhok.imageupload.service.ImageUploadService" />
         
-        <provider android:name=".db.ImageUploadHistoryProvider"
-                  android:authorities="ca.ilanguage.rhok.imageupload.db.ImageUploadHistory" />
     </application>
 </manifest>
