@@ -27,11 +27,11 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
-					<value>${ANDROID_NDK_DIR}/ndk-build.cmd</value>
+					<value>${ANDROID_NDK_BUILD}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildLocation</key>
-					<value>${workspace_loc:/AndroidBacterialCountingActivity}</value>
+					<value>${build_project}</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.cleanBuildTarget</key>

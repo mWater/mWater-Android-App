@@ -124,8 +124,9 @@ void removeyellow(Mat& img) {
 	double lambda = mean(g.mul(b-g))[0]/mean(g.mul(g)-2*g.mul(b)+b.mul(b))[0];
 
 	LOGI("Remove yellow lambda = %f", lambda);
-	// REMOVED BECAUSE NOT NEEDED ON IDEOS and lambda=0.53
-	//bgr[1]=bgr[1]*(1+lambda)-bgr[0]*lambda;
+	// Do not remove big lambdas, as lines are not problem in that case
+	if (lambda<0.2)
+		bgr[1]=bgr[1]*(1+lambda)-bgr[0]*lambda;
 
 	// Also reset blue
 	bgr[0]=bgr[1];
@@ -244,6 +245,23 @@ Mat findColonies(Mat& mbgr, int& colonies) {
 //		if (rect.height > neighsize*2 || rect.width > neighsize*2)
 //			continue;
 
+		// Determine colony blueness (ratio of absorbed red to red+green absorbed)
+		Mat colMat = highpass8(rect);
+		Scalar s = sum(colMat);
+		long redness = 200*rect.width*rect.height - s[1];
+		long blueness = 200*rect.width*rect.height - s[2];
+//		LOGI("%2d: redness=%d", i, redness);
+//		LOGI("%2d: blueness=%d", i, blueness);
+		float ratio = (float)blueness/(blueness+redness);
+		LOGI("At %d,%d : %f", rect.x, rect.y, ratio);
+
+		Scalar color;
+		if (ratio < 0.23)
+			color=Scalar(0, 0, 255, 255);
+		else if (ratio < 0.27)
+			color=Scalar(0, 255, 0, 255);
+		else
+			color=Scalar(255, 0, 0, 255);
 		Point center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 		// Draw rectangle
@@ -251,7 +269,7 @@ Mat findColonies(Mat& mbgr, int& colonies) {
 				highpass8,
 				Rect(rect.x - neighsize, rect.y - neighsize,
 						rect.width + neighsize * 2,
-						rect.height + neighsize * 2), Scalar(0, 0, 255, 255), 2);
+						rect.height + neighsize * 2), color, 2);
 
 		colonies++;
 //		// Draw rectangle
