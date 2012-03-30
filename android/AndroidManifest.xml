@@ -43,6 +43,6 @@
                   android:configChanges="keyboardHidden|orientation">
             
         </activity>
-        
+        <service android:name="PetriFilmProcessingIntentService"></service>
     </application>
 </manifest>
