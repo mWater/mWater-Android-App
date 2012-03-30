@@ -37,7 +37,7 @@ public class PetriFilmProcessingIntentService extends IntentService {
 			PetrifilmAnalysisResults results = processor.process(inPath);
 
 			FileOutputStream fos;
-			fos = new FileOutputStream(App.getOriginalImageFolder(this) + File.separator + outImage);
+			fos = new FileOutputStream(App.getProcessedImageFolder(this) + File.separator + outImage);
 			fos.write(results.jpeg);
 			fos.close();
 			
@@ -54,7 +54,8 @@ public class PetriFilmProcessingIntentService extends IntentService {
 	        OutputStream out = null;
 	        try {
 				out = new FileOutputStream(new File(App.getResultsFolder(this) + File.separator +outXML));
-				out.write(("<colonies ="+results.colonies+" />").getBytes());
+				out.write("<?xml version=\"1.0\"?>".getBytes());
+				out.write(("<colonies>"+results.colonies+"</colonies>").getBytes());
 				
 				out.flush();
 		        out.close();
