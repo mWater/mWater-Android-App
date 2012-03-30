@@ -53,7 +53,7 @@ public class PetriFilmProcessingIntentService extends IntentService {
 	      if (sd.canWrite()) {
 	        OutputStream out = null;
 	        try {
-				out = new FileOutputStream(new File(App.getXMLImageFolder(this) + File.separator +outXML));
+				out = new FileOutputStream(new File(App.getResultsFolder(this) + File.separator +outXML));
 				out.write(("<colonies ="+results.colonies+" />").getBytes());
 				
 				out.flush();

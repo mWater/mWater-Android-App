@@ -43,13 +43,7 @@ public class SampleListActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		Toast.makeText(getApplicationContext(), "Would open sample data for viewing", 0).show();
-		String filename = "testing.jpg";
-		// Send image to be processed and saved 
-        Intent intent = new Intent(this, PetriFilmProcessingIntentService.class);
-        intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
-		intent.putExtra("outimage",  filename);
-		Log.d(TAG, "Calling process image");
-		startService(intent);
+		
 	}
 
 	@Override
@@ -58,9 +52,9 @@ public class SampleListActivity extends ListActivity {
 			String filename = data.getStringExtra("filename");
 
 			// Send image to be processed and saved 
-	        Intent intent = new Intent(this, PetriFilmProcessingIntentService.class);
+			Intent intent = new Intent(this, PetriFilmProcessingIntentService.class);
 	        intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
-			intent.putExtra("outpath", App.getProcessedImageFolder(this) + File.separator + filename);
+			intent.putExtra("outimage",  filename);
 			Log.d(TAG, "Calling process image");
 			startService(intent);
 			
