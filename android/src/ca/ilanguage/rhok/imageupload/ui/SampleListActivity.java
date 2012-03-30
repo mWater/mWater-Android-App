@@ -53,9 +53,10 @@ public class SampleListActivity extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Toast.makeText(getApplicationContext(),
-				"Would open sample data for viewing", 0).show();
-
+		Intent intent = new Intent(this, SampleDetailsActivity.class);
+		intent.putExtra("filename", samples[position].replace("Pending - ", "").replace("Processed - ", "")+".jpg");
+		Log.d(TAG, "Showing processed image "+samples[position]);
+		startActivity(intent);
 	}
 
 	@Override
