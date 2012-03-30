@@ -12,22 +12,14 @@ class PetrifilmCameraView extends CameraPreviewViewBase {
 	}
 
 	@Override
-	protected Bitmap processFrame(byte[] data) {
-		int frameSize = getFrameWidth() * getFrameHeight();
-		int[] rgba = new int[frameSize];
-
-		Process(getFrameWidth(), getFrameHeight(), data, rgba);
-
-		Bitmap bmp = Bitmap.createBitmap(getFrameWidth(), getFrameHeight(),
-				Bitmap.Config.ARGB_8888);
-		bmp.setPixels(rgba, 0/* offset */, getFrameWidth() /* stride */, 0, 0,
-				getFrameWidth(), getFrameHeight());
-		return bmp;
+	protected void processFrame(byte[] data, Bitmap bitmap) {
+		Process(getFrameWidth(), getFrameHeight(), data, bitmap);
 	}
 
-	public native void Process(int width, int height, byte yuv[], int[] rgba);
+	public native void Process(int width, int height, byte yuv[], Bitmap bitmap);
 
 	static {
 		System.loadLibrary("native_sample");
 	}
+
 }
