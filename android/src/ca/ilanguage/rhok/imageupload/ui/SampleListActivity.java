@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.UUID;
 
 import ca.ilanguage.rhok.imageupload.App;
+import ca.ilanguage.rhok.imageupload.PetriFilmProcessingIntentService;
 import ca.ilanguage.rhok.imageupload.R;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -49,12 +50,13 @@ public class SampleListActivity extends ListActivity {
 		if (requestCode == PETRI_IMAGE_REQUEST && resultCode == RESULT_OK) {
 			String filename = data.getStringExtra("filename");
 
-			Intent intent = new Intent(this, ProcessImageActivity.class);
-			intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
+			// Send image to be processed and saved 
+	        Intent intent = new Intent(this, PetriFilmProcessingIntentService.class);
+	        intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
 			intent.putExtra("outpath", App.getProcessedImageFolder(this) + File.separator + filename);
-
 			Log.d(TAG, "Calling process image");
-			startActivityForResult(intent, PROCESS_IMAGE_REQUEST);
+			startService(intent);
+			
 		}
 
 		if (requestCode == PROCESS_IMAGE_REQUEST && resultCode == RESULT_OK) {
