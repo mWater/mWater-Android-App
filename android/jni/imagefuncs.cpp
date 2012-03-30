@@ -16,6 +16,31 @@
 
 using namespace cv;
 
+void createPreview(Mat mbgra) {
+	int width = mbgra.size[1];
+	int height = mbgra.size[0];
+
+	vector<Point> contour = findCircle(mbgra);
+	if (contour.size() > 0) {
+		// Draw contour
+		vector<vector<Point> > hulls;
+		hulls.push_back(contour);
+
+		// Check circularity
+		double circularity = calcCircularity(contour);
+
+		if (circularity < 0.99)
+			drawContours(mbgra, hulls, 0, Scalar(0, 0, 255, 255), 2);
+		else
+			drawContours(mbgra, hulls, 0, Scalar(0, 255, 0, 255), 2);
+	}
+	// Draw cross-hairs
+	line(mbgra, Point(width * 0.5, height * 0.45),
+			Point(width * 0.5, height * 0.55), Scalar(0, 0, 0, 255), 2);
+	line(mbgra, Point(width * 0.45, height * 0.5),
+			Point(width * 0.55, height * 0.5), Scalar(0, 0, 0, 255), 2);
+}
+
 /* Calculate the circularity of a contour */
 double calcCircularity(vector<Point> contour) {
 	// Check circularity
@@ -37,8 +62,8 @@ vector<Point> findCircle(Mat& mbgra) {
 
 	// Get center rectangle
 	Mat green = rgbPlanes[1];
-	Mat center = green(Range(height * 0.4, height * 0.6),
-			Range(width * 0.4, width * 0.6));
+	Mat center = green(Range(height * 0.45, height * 0.55),
+			Range(width * 0.45, width * 0.55));
 
 	// Get threshold for circle
 	double threshval = mean(center)[0] * 0.75;
@@ -60,7 +85,7 @@ vector<Point> findCircle(Mat& mbgra) {
 		if (!rect.contains(Point(width / 2, height / 2)))
 			continue;
 
-		if (rect.width < width * 0.25 || rect.height < height * 0.25)
+		if (rect.width < width * 0.2 || rect.height < height * 0.2)
 			continue;
 
 		// Check that center is inside
@@ -75,8 +100,8 @@ vector<Point> findCircle(Mat& mbgra) {
 		// Check circularity
 		double circularity = calcCircularity(convex);
 
-		if (circularity < 0.9)
-			continue;
+		//###if (circularity < 0.85)
+		//###	continue;
 
 		return convex;
 	}

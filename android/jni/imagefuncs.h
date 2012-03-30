@@ -4,9 +4,11 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+void createPreview(cv::Mat mbgra);
+
 double calcCircularity(std::vector<cv::Point> contour);
 
-std::vector<cv::Point> findCircle(cv::Mat& mbgra);
+std::vector<cv::Point> findCircle(cv::Mat& mrgba);
 
 cv::Mat highpass(cv::Mat& imagef, cv::Mat& mask3C, int blursize);
 

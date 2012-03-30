@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <android/log.h>
+#include <android/bitmap.h>
 
 #include "imagefuncs.h"
 
@@ -27,30 +28,6 @@ using namespace std;
 //	// put imwrite here to see debugging output of pipeline
 //}
 
-void createPreview(Mat mbgra) {
-	int width = mbgra.size[1];
-	int height = mbgra.size[0];
-
-	vector<Point> contour = findCircle(mbgra);
-	if (contour.size() > 0) {
-		// Draw contour
-		vector<vector<Point> > hulls;
-		hulls.push_back(contour);
-
-		// Check circularity
-		double circularity = calcCircularity(contour);
-
-		if (circularity < 0.995)
-			drawContours(mbgra, hulls, 0, Scalar(0, 0, 255, 255), 2);
-		else
-			drawContours(mbgra, hulls, 0, Scalar(0, 255, 0, 255), 2);
-	}
-	// Draw cross-hairs
-	line(mbgra, Point(width * 0.5, height * 0.4),
-			Point(width * 0.5, height * 0.6), Scalar(0, 0, 0, 255), 2);
-	line(mbgra, Point(width * 0.4, height * 0.5),
-			Point(width * 0.6, height * 0.5), Scalar(0, 0, 0, 255), 2);
-}
 
 Mat process(Mat input, int& colonies) {
 	return findColonies(input, colonies);
@@ -59,21 +36,26 @@ Mat process(Mat input, int& colonies) {
 extern "C" {
 JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmCameraView_Process(
 		JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
-		jintArray bgra) {
+		jobject bitmap) {
 	// Get input and output arrays
 	jbyte* _yuv = env->GetByteArrayElements(yuv, 0);
-	jint* _bgra = env->GetIntArrayElements(bgra, 0);
 
-	Mat myuv(height + height / 2, width, CV_8UC1, (unsigned char *) _yuv);
-	Mat mbgra(height, width, CV_8UC4, (unsigned char *) _bgra);
+	void* pixels;
+	if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
+		Mat myuv(height + height / 2, width, CV_8UC1, (unsigned char *) _yuv);
+		Mat mbgra(height, width, CV_8UC4, (unsigned char *) pixels);
 
-	// Please pay attention to BGRA byte order
-	// ARGB stored in java as int array becomes BGRA at native level
-	cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
+		// Please pay attention to BGRA byte order
+		// ARGB stored in java as int array becomes BGRA at native level
+		cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
 
-	createPreview(mbgra);
+		createPreview(mbgra);
 
-	env->ReleaseIntArrayElements(bgra, _bgra, 0);
+		cvtColor(mbgra, mbgra, CV_BGRA2RGBA);
+
+		AndroidBitmap_unlockPixels(env, bitmap);
+	}
+
 	env->ReleaseByteArrayElements(yuv, _yuv, 0);
 }
 

@@ -10,6 +10,6 @@ include $(OPENCV_MK_PATH)
 
 LOCAL_MODULE    := native_sample
 LOCAL_SRC_FILES := jni_part.cpp imagefuncs.cpp
-LOCAL_LDLIBS +=  -llog -ldl
+LOCAL_LDLIBS +=  -llog -ldl -ljnigraphics
 
 include $(BUILD_SHARED_LIBRARY)
