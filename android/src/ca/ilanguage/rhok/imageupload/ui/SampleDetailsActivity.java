@@ -25,21 +25,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SampleDetailsActivity extends Activity {
-	String filepath;
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.sample_details);
-		filepath = App.getProcessedImageFolder(this) + File.separator
-				+ getIntent().getStringExtra("filename");
+		String name = getIntent().getStringExtra("name");
+		File imagefile = new File(App.getProcessedImageFolder(this), name + ".jpg");
 		ImageView v = (ImageView) findViewById(R.id.result_image);
 
 		FileInputStream in;
 		BufferedInputStream buf;
 		try {
-			in = new FileInputStream(filepath);
+			in = new FileInputStream(imagefile);
 			buf = new BufferedInputStream(in);
 			Bitmap bMap = BitmapFactory.decodeStream(buf);
 			v.setImageBitmap(bMap);
@@ -54,11 +52,8 @@ public class SampleDetailsActivity extends Activity {
 		}
 		TextView t = (TextView) findViewById(R.id.result_text);
 		try {
-			filepath = App.getResultsFolder(this)
-					+ File.separator
-					+ getIntent().getStringExtra("filename").replace(".jpg",
-							".xml");
-			in = new FileInputStream(filepath);
+			File xmlfile = new File(App.getProcessedImageFolder(this), name + ".xml");
+			in = new FileInputStream(xmlfile);
 			BufferedReader source = new BufferedReader(
 					new InputStreamReader(in));
 
