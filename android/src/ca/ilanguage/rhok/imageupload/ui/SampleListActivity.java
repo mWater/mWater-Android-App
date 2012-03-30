@@ -37,7 +37,6 @@ public class SampleListActivity extends ListActivity {
 	List<Sample> samples;
 
 	static int PETRI_IMAGE_REQUEST = 1;
-//	static int PROCESS_IMAGE_REQUEST = 2;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -120,17 +119,6 @@ public class SampleListActivity extends ListActivity {
 			startService(intent);
 			new PopulateSamplesListTask().execute();
 		}
-
-//		if (requestCode == PROCESS_IMAGE_REQUEST && resultCode == RESULT_OK) {
-//			Log.d(TAG, "Called process image");
-//			String outpath = data.getStringExtra("outpath");
-//
-//			// Launch image viewer
-//			Intent intent = new Intent();
-//			intent.setAction(Intent.ACTION_VIEW);
-//			intent.setDataAndType(Uri.parse("file://" + outpath), "image/*");
-//			startActivity(intent);
-//		}
 	}
 
 	public class PopulateSamplesListTask extends AsyncTask<Void, Void, Boolean> {
