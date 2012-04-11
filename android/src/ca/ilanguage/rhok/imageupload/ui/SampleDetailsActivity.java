@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -52,7 +54,7 @@ public class SampleDetailsActivity extends Activity {
 		}
 		TextView t = (TextView) findViewById(R.id.result_text);
 		try {
-			File xmlfile = new File(App.getProcessedImageFolder(this), name + ".xml");
+			File xmlfile = new File(App.getResultsFolder(this), name + ".xml");
 			in = new FileInputStream(xmlfile);
 			BufferedReader source = new BufferedReader(
 					new InputStreamReader(in));
@@ -69,7 +71,14 @@ public class SampleDetailsActivity extends Activity {
 			 */
 //			Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(filepath);
 //			t.setText(d.getElementById("contours").getTextContent());
-			t.setText(contents);
+			Pattern pattern = Pattern.compile("[0-9][0-9]+");
+			Matcher matcher = pattern.matcher(contents);
+			String colonies = contents;
+			if (matcher.find()){
+				colonies = matcher.group(0);
+			}
+			t.setText(t.getText().toString()+" "+colonies);
+			
 		} catch (Exception e) {
 			Log.e("Error reading file", e.toString());
 		}
