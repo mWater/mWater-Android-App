@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!--  Common strings -->
+    <string name="app_name">Portable Microbiology Lab</string>
+    
+    <!-- main portal -->
+    <string name="create_water_source">Create a new water source</string>
+	<string name="create_water_sample">Create a new water sample</string>
+	<string name="sync_server">Synchronize with server</string>
+
+
+</resources>
