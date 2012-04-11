@@ -1,11 +1,12 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import ca.ilanguage.rhok.imageupload.PetrifilmAnalysisResults;
-import ca.ilanguage.rhok.imageupload.PetrifilmImageProcessor;
-import ca.ilanguage.rhok.imageupload.R;
+import com.github.androidimageprocessing.bacteria.PetrifilmAnalysisResults;
+import com.github.androidimageprocessing.bacteria.PetrifilmImageProcessor;
+
+import com.github.androidimageprocessing.bacteria.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

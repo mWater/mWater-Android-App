@@ -1,4 +1,4 @@
-package ca.ilanguage.rhok.imageupload;
+package com.github.androidimageprocessing.bacteria;
 
 public class Sample {
 	public String name;

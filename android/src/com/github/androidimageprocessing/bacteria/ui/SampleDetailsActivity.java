@@ -1,4 +1,4 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -16,8 +16,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import ca.ilanguage.rhok.imageupload.App;
-import ca.ilanguage.rhok.imageupload.R;
+import com.github.androidimageprocessing.bacteria.App;
+
+import com.github.androidimageprocessing.bacteria.R;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

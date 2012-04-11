@@ -1,14 +1,15 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import ca.ilanguage.rhok.imageupload.App;
-import ca.ilanguage.rhok.imageupload.PetriFilmProcessingIntentService;
-import ca.ilanguage.rhok.imageupload.R;
-import ca.ilanguage.rhok.imageupload.Sample;
+import com.github.androidimageprocessing.bacteria.App;
+import com.github.androidimageprocessing.bacteria.PetriFilmProcessingIntentService;
+import com.github.androidimageprocessing.bacteria.Sample;
+
+import com.github.androidimageprocessing.bacteria.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;

@@ -1,4 +1,4 @@
-package ca.ilanguage.rhok.imageupload;
+package com.github.androidimageprocessing.bacteria;
 
 import java.io.File;
 
