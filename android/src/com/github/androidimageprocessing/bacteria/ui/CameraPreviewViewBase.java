@@ -16,7 +16,7 @@ import android.view.SurfaceView;
 
 public abstract class CameraPreviewViewBase extends SurfaceView implements
 		SurfaceHolder.Callback, PreviewCallback {
-	private static final String TAG = "Sample::SurfaceView";
+	private static final String TAG = "PetrifilmTest::SurfaceView";
 
 	private Camera mCamera;
 	private SurfaceHolder mHolder;

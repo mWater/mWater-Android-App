@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.github.androidimageprocessing.bacteria.App;
 import com.github.androidimageprocessing.bacteria.PetriFilmProcessingIntentService;
-import com.github.androidimageprocessing.bacteria.Sample;
+import com.github.androidimageprocessing.bacteria.PetrifilmTest;
 
 import com.github.androidimageprocessing.bacteria.R;
 import android.app.AlertDialog;
@@ -31,11 +31,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SampleListActivity extends ListActivity {
+public class PetrifilmTestListActivity extends ListActivity {
 	private static final String TAG = "ca.ilanguage.rhok";
 	public static final int POPULATING_DIALOG = 54;
 
-	List<Sample> samples;
+	List<PetrifilmTest> petrifilmtests;
 
 	static int PETRI_IMAGE_REQUEST = 1;
 
@@ -43,15 +43,15 @@ public class SampleListActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample_list_activity);
+		setContentView(R.layout.list_activity);
 		refreshList();
 	}
 
-	public void onNewSampleClick(View v) {
+	public void onNewPetrifilmTestClick(View v) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-		alert.setTitle("New Sample");
-		alert.setMessage("Enter sample name");
+		alert.setTitle("New PetrifilmTest");
+		alert.setMessage("Enter petrifilm test code");
 
 		// Set an EditText view to get user input
 		final EditText input = new EditText(this);
@@ -60,7 +60,7 @@ public class SampleListActivity extends ListActivity {
 		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				String name = input.getText().toString();
-				Intent intent = new Intent(SampleListActivity.this,
+				Intent intent = new Intent(PetrifilmTestListActivity.this,
 						PetrifilmCameraActivity.class);
 				intent.putExtra("filename", name + ".jpg");
 				startActivityForResult(intent, PETRI_IMAGE_REQUEST);
@@ -84,7 +84,7 @@ public class SampleListActivity extends ListActivity {
 		{
 		    public void run() 
 		    {
-				new PopulateSamplesListTask().execute();
+				new PopulatePetrifilmTestsListTask().execute();
 		        handler.postDelayed(this, 1000);
 		    }
 		};
@@ -94,11 +94,11 @@ public class SampleListActivity extends ListActivity {
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Sample sample = samples.get(position);
-		if (sample.processed) {
-			Intent intent = new Intent(this, SampleDetailsActivity.class);
-			intent.putExtra("name", sample.name);
-			Log.d(TAG, "Showing processed image " + samples.get(position).name);
+		PetrifilmTest petrifilmtest = petrifilmtests.get(position);
+		if (petrifilmtest.processed) {
+			Intent intent = new Intent(this, PetrifilmTestDetailsActivity.class);
+			intent.putExtra("name", petrifilmtest.name);
+			Log.d(TAG, "Showing processed image " + petrifilmtests.get(position).name);
 			startActivity(intent);
 		} else {
 			Toast.makeText(this, "Still processing...", Toast.LENGTH_SHORT).show();
@@ -118,29 +118,29 @@ public class SampleListActivity extends ListActivity {
 			intent.putExtra("outimage", filename);
 			Log.d(TAG, "Calling process image");
 			startService(intent);
-			new PopulateSamplesListTask().execute();
+			new PopulatePetrifilmTestsListTask().execute();
 		}
 	}
 
-	public class PopulateSamplesListTask extends AsyncTask<Void, Void, Boolean> {
+	public class PopulatePetrifilmTestsListTask extends AsyncTask<Void, Void, Boolean> {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			File dir = new File(
 					App.getOriginalImageFolder(getApplicationContext()));
-			String[] sampleFiles = dir.list();
-			samples = new ArrayList<Sample>();
-			for (int s = 0; s < sampleFiles.length; s++) {
+			String[] petrifilmtestFiles = dir.list();
+			petrifilmtests = new ArrayList<PetrifilmTest>();
+			for (int s = 0; s < petrifilmtestFiles.length; s++) {
 				// Trim .jpg
-				Sample sample = new Sample();
-				sample.name = sampleFiles[s].substring(0,
-						sampleFiles[s].length() - 4);
+				PetrifilmTest petrifilmtest = new PetrifilmTest();
+				petrifilmtest.name = petrifilmtestFiles[s].substring(0,
+						petrifilmtestFiles[s].length() - 4);
 				File results = new File(
 						App.getResultsFolder(getApplicationContext()),
-						sample.name + ".xml");
+						petrifilmtest.name + ".xml");
 				if (results.exists())
-					sample.processed = true;
+					petrifilmtest.processed = true;
 
-				samples.add(sample);
+				petrifilmtests.add(petrifilmtest);
 			}
 			return true;
 		}
@@ -153,8 +153,8 @@ public class SampleListActivity extends ListActivity {
 		protected void onPostExecute(Boolean result) {
 			// Temporarily removing for auto-refresh. put back in when done by intent
 			//dismissDialog(POPULATING_DIALOG);
-			setListAdapter(new SampleAdapter(SampleListActivity.this,
-					R.layout.sample_list_row, samples));
+			setListAdapter(new PetrifilmTestAdapter(PetrifilmTestListActivity.this,
+					R.layout.list_row, petrifilmtests));
 		}
 	}
 
@@ -164,7 +164,7 @@ public class SampleListActivity extends ListActivity {
 		if (id == POPULATING_DIALOG) {
 			dialog = new ProgressDialog.Builder(this).setCancelable(true)
 					.setTitle("Please wait")
-					.setMessage("Populating samples, this may take a moment.")
+					.setMessage("Populating petrifilmtests, this may take a moment.")
 					.create();
 			return dialog;
 		} else {
@@ -173,13 +173,13 @@ public class SampleListActivity extends ListActivity {
 		return dialog;
 	}
 
-	class SampleAdapter extends ArrayAdapter<Sample> {
-		private List<Sample> items;
+	class PetrifilmTestAdapter extends ArrayAdapter<PetrifilmTest> {
+		private List<PetrifilmTest> items;
 
-		public SampleAdapter(Context context, int textViewResourceId,
-				List<Sample> samples) {
-			super(context, textViewResourceId, samples);
-			this.items = samples;
+		public PetrifilmTestAdapter(Context context, int textViewResourceId,
+				List<PetrifilmTest> petrifilmtests) {
+			super(context, textViewResourceId, petrifilmtests);
+			this.items = petrifilmtests;
 		}
 
 		@Override
@@ -187,9 +187,9 @@ public class SampleListActivity extends ListActivity {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.sample_list_row, null);
+				v = vi.inflate(R.layout.list_row, null);
 			}
-			Sample o = items.get(position);
+			PetrifilmTest o = items.get(position);
 			if (o != null) {
 				TextView tt = (TextView) v.findViewById(R.id.name);
 				TextView bt = (TextView) v.findViewById(R.id.state);

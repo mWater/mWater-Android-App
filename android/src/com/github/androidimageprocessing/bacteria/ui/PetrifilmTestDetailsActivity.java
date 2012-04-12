@@ -27,12 +27,12 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class SampleDetailsActivity extends Activity {
+public class PetrifilmTestDetailsActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample_details);
+		setContentView(R.layout.petrifilmtest_details);
 		String name = getIntent().getStringExtra("name");
 		File imagefile = new File(App.getProcessedImageFolder(this), name + ".jpg");
 		ImageView v = (ImageView) findViewById(R.id.result_image);
