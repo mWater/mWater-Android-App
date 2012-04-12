@@ -5,7 +5,7 @@
     android:layout_height="match_parent" >
 
     <view
-        class="ca.ilanguage.rhok.imageupload.ui.PetrifilmCameraView" 
+        class="com.github.androidimageprocessing.bacteria.ui.PetrifilmCameraView" 
         android:id="@+id/CameraView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
