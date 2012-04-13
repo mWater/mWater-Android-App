@@ -32,7 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PetrifilmTestListActivity extends ListActivity {
-	private static final String TAG = "ca.ilanguage.rhok";
+	private static final String TAG = "com.github.androidimageprocessing.bacteria";
 	public static final int POPULATING_DIALOG = 54;
 
 	List<PetrifilmTest> petrifilmtests;
@@ -73,35 +73,35 @@ public class PetrifilmTestListActivity extends ListActivity {
 						// Canceled.
 					}
 				});
-		
+
 		alert.show();
 	}
 
-	void refreshList() 
-	{
-		final Handler handler=new Handler();
-		final Runnable r = new Runnable()
-		{
-		    public void run() 
-		    {
+	void refreshList() {
+		final Handler handler = new Handler();
+		final Runnable r = new Runnable() {
+			public void run() {
 				new PopulatePetrifilmTestsListTask().execute();
-		        handler.postDelayed(this, 1000);
-		    }
+				handler.postDelayed(this, 3000);
+			}
 		};
 
-		handler.post(r);	
+		handler.post(r);
 	}
-	
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		PetrifilmTest petrifilmtest = petrifilmtests.get(position);
 		if (petrifilmtest.processed) {
 			Intent intent = new Intent(this, PetrifilmTestDetailsActivity.class);
 			intent.putExtra("name", petrifilmtest.name);
-			Log.d(TAG, "Showing processed image " + petrifilmtests.get(position).name);
+			Log.d(TAG,
+					"Showing processed image "
+							+ petrifilmtests.get(position).name);
 			startActivity(intent);
 		} else {
-			Toast.makeText(this, "Still processing...", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Still processing...", Toast.LENGTH_SHORT)
+					.show();
 		}
 	}
 
@@ -122,13 +122,16 @@ public class PetrifilmTestListActivity extends ListActivity {
 		}
 	}
 
-	public class PopulatePetrifilmTestsListTask extends AsyncTask<Void, Void, Boolean> {
+	public class PopulatePetrifilmTestsListTask extends
+			AsyncTask<Void, Void, Boolean> {
+		List<PetrifilmTest> tests;
+
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			File dir = new File(
 					App.getOriginalImageFolder(getApplicationContext()));
 			String[] petrifilmtestFiles = dir.list();
-			petrifilmtests = new ArrayList<PetrifilmTest>();
+			tests = new ArrayList<PetrifilmTest>();
 			for (int s = 0; s < petrifilmtestFiles.length; s++) {
 				// Trim .jpg
 				PetrifilmTest petrifilmtest = new PetrifilmTest();
@@ -140,21 +143,24 @@ public class PetrifilmTestListActivity extends ListActivity {
 				if (results.exists())
 					petrifilmtest.processed = true;
 
-				petrifilmtests.add(petrifilmtest);
+				tests.add(petrifilmtest);
 			}
 			return true;
 		}
 
 		protected void onPreExecute() {
-			// Temporarily removing for auto-refresh. put back in when done by intent
-			//showDialog(POPULATING_DIALOG);
+			// Temporarily removing for auto-refresh. put back in when done by
+			// intent
+			// showDialog(POPULATING_DIALOG);
 		}
 
 		protected void onPostExecute(Boolean result) {
-			// Temporarily removing for auto-refresh. put back in when done by intent
-			//dismissDialog(POPULATING_DIALOG);
-			setListAdapter(new PetrifilmTestAdapter(PetrifilmTestListActivity.this,
-					R.layout.list_row, petrifilmtests));
+			// Temporarily removing for auto-refresh. put back in when done by
+			// intent
+			// dismissDialog(POPULATING_DIALOG);
+			petrifilmtests = tests;
+			setListAdapter(new PetrifilmTestAdapter(
+					PetrifilmTestListActivity.this, R.layout.list_row, petrifilmtests));
 		}
 	}
 
@@ -162,9 +168,11 @@ public class PetrifilmTestListActivity extends ListActivity {
 	protected Dialog onCreateDialog(int id) {
 		Dialog dialog;
 		if (id == POPULATING_DIALOG) {
-			dialog = new ProgressDialog.Builder(this).setCancelable(true)
+			dialog = new ProgressDialog.Builder(this)
+					.setCancelable(true)
 					.setTitle("Please wait")
-					.setMessage("Populating petrifilmtests, this may take a moment.")
+					.setMessage(
+							"Populating petrifilmtests, this may take a moment.")
 					.create();
 			return dialog;
 		} else {

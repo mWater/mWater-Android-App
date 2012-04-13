@@ -16,62 +16,70 @@ import android.view.SurfaceView;
 
 public abstract class CameraPreviewViewBase extends SurfaceView implements
 		SurfaceHolder.Callback, PreviewCallback {
-	private static final String TAG = "PetrifilmTest::SurfaceView";
+	private static final String TAG = "com.github.androidimageprocessing.bacteria";
 
-	private Camera mCamera;
-	private SurfaceHolder mHolder;
-	private int mFrameWidth;
-	private int mFrameHeight;
+	private Camera camera;
+	private SurfaceHolder holder;
+	private int frameWidth;
+	private int frameHeight;
 
 	public CameraPreviewViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mHolder = getHolder();
-		mHolder.addCallback(this);
+		holder = getHolder();
+		holder.addCallback(this);
 		Log.i(TAG, "Instantiated new " + this.getClass());
 	}
 
 	public int getFrameWidth() {
-		return mFrameWidth;
+		return frameWidth;
 	}
 
 	public int getFrameHeight() {
-		return mFrameHeight;
+		return frameHeight;
 	}
 
 	public Camera getCamera() {
-		return mCamera;
+		return camera;
 	}
 
 	public void surfaceChanged(SurfaceHolder _holder, int format, int width,
 			int height) {
 		Log.i(TAG, "surfaceCreated");
-		if (mCamera != null) {
-			Camera.Parameters params = mCamera.getParameters();
+		if (camera != null) {
+			Camera.Parameters params = camera.getParameters();
 			List<Camera.Size> sizes = params.getSupportedPreviewSizes();
-			mFrameWidth = width;
-			mFrameHeight = height;
+			frameWidth = width;
+			frameHeight = height;
 
 			// selecting optimal camera preview size
 			{
 				double minDiff = Double.MAX_VALUE;
 				for (Camera.Size size : sizes) {
 					if (Math.abs(size.height - height) < minDiff) {
-						mFrameWidth = size.width;
-						mFrameHeight = size.height;
+						frameWidth = size.width;
+						frameHeight = size.height;
 						minDiff = Math.abs(size.height - height);
 					}
 				}
 			}
 
 			params.setPreviewSize(getFrameWidth(), getFrameHeight());
-			mCamera.setParameters(params);
+			camera.setParameters(params);
 			try {
-				mCamera.setPreviewDisplay(null);
+				camera.setPreviewDisplay(null);
 			} catch (IOException e) {
 				Log.e(TAG, "mCamera.setPreviewDisplay fails: " + e);
 			}
 			
-			mCamera.setPreviewCallback(this);
+			// Print focus modes
+			for (String focusMode : params.getSupportedFocusModes()) {
+				Log.i(TAG, "Focus modes: "+focusMode);
+			}
+//			Log.i(TAG, "Focus mode was: "+ params.getFocusMode());
+//			params.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
+			Log.i(TAG, "Focus mode is: "+ params.getFocusMode());
+			
+			camera.setPreviewCallback(this);
 //			mCamera.setPreviewCallbackWithBuffer(this);
 //			Camera.Size size = params.getPreviewSize();
 //			byte[] data = new byte[size.width
@@ -79,23 +87,23 @@ public abstract class CameraPreviewViewBase extends SurfaceView implements
 //					* ImageFormat
 //							.getBitsPerPixel(params.getPreviewFormat()) / 8];
 //			mCamera.addCallbackBuffer(data);
-			mCamera.startPreview();
+			camera.startPreview();
 		}
 	}
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.i(TAG, "surfaceCreated");
-		mCamera = Camera.open();
+		camera = Camera.open();
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.i(TAG, "surfaceDestroyed");
-		if (mCamera != null) {
+		if (camera != null) {
 			synchronized (this) {
-				mCamera.stopPreview();
-				mCamera.setPreviewCallback(null);
-				mCamera.release();
-				mCamera = null;
+				camera.stopPreview();
+				camera.setPreviewCallback(null);
+				camera.release();
+				camera = null;
 			}
 		}
 	}
@@ -112,11 +120,11 @@ public abstract class CameraPreviewViewBase extends SurfaceView implements
 
 		processFrame(data, bmp);
 
-		Canvas canvas = mHolder.lockCanvas();
+		Canvas canvas = holder.lockCanvas();
 		if (canvas != null) {
 			canvas.drawBitmap(bmp, (canvas.getWidth() - getFrameWidth()) / 2,
 					(canvas.getHeight() - getFrameHeight()) / 2, null);
-			mHolder.unlockCanvasAndPost(canvas);
+			holder.unlockCanvasAndPost(canvas);
 		}
 		//mCamera.addCallbackBuffer(data);
 	}

@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,7 @@ import android.widget.Toast;
 
 public class PetrifilmCameraActivity extends Activity implements
 		PictureCallback {
-	private static final String TAG = "ca.ilanguage.rhok";
-	Camera camera;
+	private static final String TAG = "com.github.androidimageprocessing.bacteria";
 
 	public PetrifilmCameraActivity() {
 		Log.i(TAG, "Instantiated new " + this.getClass());
@@ -40,14 +40,31 @@ public class PetrifilmCameraActivity extends Activity implements
 	}
 
 	public void onCaptureClick(View v) {
-		Button capture = (Button) findViewById(R.id.capture);
+		final Button capture = (Button) findViewById(R.id.capture);
 		capture.setEnabled(false);
 
 		// Take picture
 		PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
 		Camera camera = previewView.getCamera();
-		camera.takePicture(null, null, this);
-		// // TODO focus, flash, resolution
+
+		// Start auto-focus
+		camera.autoFocus(new AutoFocusCallback() {
+			public void onAutoFocus(boolean success, Camera camera) {
+				Log.i(TAG, "Autofocus success=" + success);
+				if (success)
+					camera.takePicture(null, null, PetrifilmCameraActivity.this);
+				else {
+					PetrifilmCameraActivity.this.runOnUiThread(new Runnable() {
+						public void run() {
+							Toast.makeText(PetrifilmCameraActivity.this,
+									"Unable to focus", Toast.LENGTH_SHORT)
+									.show();
+							capture.setEnabled(true);
+						}
+					});
+				}
+			}
+		});
 	}
 
 	public void onPictureTaken(byte[] data, Camera camera) {
