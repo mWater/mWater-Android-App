@@ -8,8 +8,8 @@
         android:id="@+id/new_sample"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:onClick="onNewSampleClick"
-        android:text="New Sample" />
+        android:onClick="onNewPetrifilmTestClick"
+        android:text="New Petrifilm Test" />
 
     <ListView
         android:id="@android:id/list"

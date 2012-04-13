@@ -1,4 +1,4 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import android.content.Context;
 import android.graphics.Bitmap;

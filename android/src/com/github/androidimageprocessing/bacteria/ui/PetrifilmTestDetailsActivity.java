@@ -1,4 +1,4 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -16,8 +16,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import ca.ilanguage.rhok.imageupload.App;
-import ca.ilanguage.rhok.imageupload.R;
+import com.github.androidimageprocessing.bacteria.App;
+
+import com.github.androidimageprocessing.bacteria.R;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,12 +27,12 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class SampleDetailsActivity extends Activity {
+public class PetrifilmTestDetailsActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample_details);
+		setContentView(R.layout.petrifilmtest_details);
 		String name = getIntent().getStringExtra("name");
 		File imagefile = new File(App.getProcessedImageFolder(this), name + ".jpg");
 		ImageView v = (ImageView) findViewById(R.id.result_image);

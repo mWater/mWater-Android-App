@@ -12,7 +12,7 @@
 
 #include "imagefuncs.h"
 
-#define APPNAME "ca.ilanguage.rhok.imageupload"
+#define APPNAME "com.github.androidimageprocessing.bacteria"
 
 #define OUTPUT_PIPELINE 1
 
@@ -34,7 +34,7 @@ Mat process(Mat input, int& colonies) {
 }
 
 extern "C" {
-JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmCameraView_Process(
+JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_PetrifilmCameraView_Process(
 		JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
 		jobject bitmap) {
 	// Get input and output arrays
@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_ui_PetrifilmCameraView
 	env->ReleaseByteArrayElements(yuv, _yuv, 0);
 }
 
-JNIEXPORT void JNICALL Java_ca_ilanguage_rhok_imageupload_PetrifilmImageProcessor_process(
+JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_PetrifilmImageProcessor_process(
 		JNIEnv* env, jobject thiz, jbyteArray jpeg, jobject results) {
 	jbyte* _jpeg = env->GetByteArrayElements(jpeg, 0);
 

@@ -1,12 +1,13 @@
-package ca.ilanguage.rhok.imageupload.ui;
+package com.github.androidimageprocessing.bacteria.ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import ca.ilanguage.rhok.imageupload.App;
-import ca.ilanguage.rhok.imageupload.R;
+import com.github.androidimageprocessing.bacteria.App;
+
+import com.github.androidimageprocessing.bacteria.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
