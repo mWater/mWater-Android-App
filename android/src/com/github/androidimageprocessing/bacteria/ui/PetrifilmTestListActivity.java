@@ -37,6 +37,8 @@ public class PetrifilmTestListActivity extends ListActivity {
 
 	List<PetrifilmTest> petrifilmtests;
 
+	UITimerTask timerTask = new UITimerTask();
+
 	static int PETRI_IMAGE_REQUEST = 1;
 
 	/** Called when the activity is first created. */
@@ -44,7 +46,22 @@ public class PetrifilmTestListActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_activity);
-		refreshList();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		timerTask.start(new Runnable() {
+			public void run() {
+				new PopulatePetrifilmTestsListTask().execute();
+			}
+		}, 3000);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		timerTask.stop();
 	}
 
 	public void onNewPetrifilmTestClick(View v) {
@@ -75,18 +92,6 @@ public class PetrifilmTestListActivity extends ListActivity {
 				});
 
 		alert.show();
-	}
-
-	void refreshList() {
-		final Handler handler = new Handler();
-		final Runnable r = new Runnable() {
-			public void run() {
-				new PopulatePetrifilmTestsListTask().execute();
-				handler.postDelayed(this, 3000);
-			}
-		};
-
-		handler.post(r);
 	}
 
 	@Override
@@ -160,7 +165,9 @@ public class PetrifilmTestListActivity extends ListActivity {
 			// dismissDialog(POPULATING_DIALOG);
 			petrifilmtests = tests;
 			setListAdapter(new PetrifilmTestAdapter(
-					PetrifilmTestListActivity.this, R.layout.list_row, petrifilmtests));
+					PetrifilmTestListActivity.this, R.layout.list_row,
+					petrifilmtests));
+			Log.d(TAG, "Refreshed list");
 		}
 	}
 

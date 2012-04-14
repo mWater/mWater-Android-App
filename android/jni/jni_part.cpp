@@ -36,7 +36,7 @@ Mat process(Mat input, int& colonies) {
 extern "C" {
 JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_PetrifilmCameraView_Process(
 		JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
-		jobject bitmap) {
+		jobject bitmap,  jobject results) {
 	// Get input and output arrays
 	jbyte* _yuv = env->GetByteArrayElements(yuv, 0);
 
@@ -49,7 +49,13 @@ JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_Petrif
 		// ARGB stored in java as int array becomes BGRA at native level
 		cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
 
-		createPreview(mbgra);
+		int foundCircle;
+		createPreview(mbgra, foundCircle);
+
+		// Set results
+		jclass resultsClass = env->GetObjectClass(results);
+		jfieldID foundCircleField = env->GetFieldID(resultsClass, "foundCircle", "Z");
+		env->SetBooleanField(results, foundCircleField, foundCircle ? JNI_TRUE : JNI_FALSE);
 
 		cvtColor(mbgra, mbgra, CV_BGRA2RGBA);
 

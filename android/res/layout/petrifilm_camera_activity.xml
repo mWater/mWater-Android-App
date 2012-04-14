@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <view
+     <view
         class="com.github.androidimageprocessing.bacteria.ui.PetrifilmCameraView" 
         android:id="@+id/CameraView"
         android:layout_width="fill_parent"
@@ -20,5 +20,15 @@
         android:layout_alignParentBottom="true"
         android:text="Capture"
         android:onClick="onCaptureClick" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        />
     
 </RelativeLayout>

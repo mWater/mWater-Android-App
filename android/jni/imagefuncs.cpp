@@ -1,24 +1,25 @@
 #include "imagefuncs.h"
 
-
 #define LOG_TAG "com.github.androidimageprocessing.bacteria"
 #ifdef ANDROID
 #include <android/log.h>
 #  define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #  define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #else
+#include <stdio.h>
 #  define QUOTEME_(x) #x
 #  define QUOTEME(x) QUOTEME_(x)
 #  define LOGI(...) printf("I/" LOG_TAG " (" __FILE__ ":" QUOTEME(__LINE__) "): " __VA_ARGS__)
 #  define LOGE(...) printf("E/" LOG_TAG "(" ")" __VA_ARGS__)
 #endif
 
-
 using namespace cv;
 
-void createPreview(Mat mbgra) {
+void createPreview(Mat mbgra, int& foundCircle) {
 	int width = mbgra.size[1];
 	int height = mbgra.size[0];
+
+	foundCircle = 0;
 
 	vector<Point> contour = findCircle(mbgra);
 	if (contour.size() > 0) {
@@ -29,11 +30,15 @@ void createPreview(Mat mbgra) {
 		// Check circularity
 		double circularity = calcCircularity(contour);
 
-		if (circularity < 0.99)
+		if (circularity < 0.99) {
 			drawContours(mbgra, hulls, 0, Scalar(0, 0, 255, 255), 2);
-		else
+		} else
+		{
+			foundCircle = 1;
 			drawContours(mbgra, hulls, 0, Scalar(0, 255, 0, 255), 2);
+		}
 	}
+
 	// Draw cross-hairs
 	line(mbgra, Point(width * 0.5, height * 0.45),
 			Point(width * 0.5, height * 0.55), Scalar(0, 0, 0, 255), 2);
@@ -49,7 +54,6 @@ double calcCircularity(vector<Point> contour) {
 	double circularity = 4 * 3.14159265 * area / (perimeter * perimeter);
 	return circularity;
 }
-
 
 /* Finds the circle in a region */
 vector<Point> findCircle(Mat& mbgra) {
@@ -108,13 +112,12 @@ vector<Point> findCircle(Mat& mbgra) {
 	return vector<Point>(0);
 }
 
-
 /* Highpass of the image 
-  image is a 3-channel 8-bit image
-  mask3C is a 3-channel mask with 255 for yes, 0 for no.
-  blursize is size of box filter applied
-  returns float image scaled around 1.0
-  */
+ image is a 3-channel 8-bit image
+ mask3C is a 3-channel mask with 255 for yes, 0 for no.
+ blursize is size of box filter applied
+ returns float image scaled around 1.0
+ */
 Mat highpass(Mat& image, Mat& mask3C, int blursize) {
 	// Create low-pass filter, only within mask
 	Mat blurred;
@@ -128,13 +131,12 @@ Mat highpass(Mat& image, Mat& mask3C, int blursize) {
 	Mat highpass;
 	image.convertTo(highpass, CV_32FC3);
 
-	Mat lowpass = blurred/blurredCount;
+	Mat lowpass = blurred / blurredCount;
 
-	highpass/=lowpass;
+	highpass /= lowpass;
 
-	return highpass/255;
+	return highpass / 255;
 }
-
 
 /* Removes yellow lines from the image by minimizing the edges when 
  calculating green*(1+lambda)-blue*lambda.
@@ -143,18 +145,19 @@ void removeyellow(Mat& img) {
 	vector<Mat> bgr;
 	split(img, bgr);
 
-	Mat g = bgr[1]-1.0;
-	Mat b = bgr[0]-1.0;
+	Mat g = bgr[1] - 1.0;
+	Mat b = bgr[0] - 1.0;
 
-	double lambda = mean(g.mul(b-g))[0]/mean(g.mul(g)-2*g.mul(b)+b.mul(b))[0];
+	double lambda = mean(g.mul(b - g))[0]
+			/ mean(g.mul(g) - 2 * g.mul(b) + b.mul(b))[0];
 
 	LOGI("Remove yellow lambda = %f", lambda);
 	// Do not remove big lambdas, as lines are not problem in that case
-	if (lambda<0.2)
-		bgr[1]=bgr[1]*(1+lambda)-bgr[0]*lambda;
+	if (lambda < 0.2)
+		bgr[1] = bgr[1] * (1 + lambda) - bgr[0] * lambda;
 
 	// Also reset blue
-	bgr[0]=bgr[1];
+	bgr[0] = bgr[1];
 
 	merge(bgr, img);
 }
@@ -175,8 +178,8 @@ Mat findColonies(Mat& mbgr, int& colonies) {
 	Rect petriRect = boundingRect(contour);
 	Mat petri = mbgr(petriRect);
 
-	LOGI("Contour rect (%d,%d,%d,%d)", petriRect.x, petriRect.y,
-			petriRect.width, petriRect.height);
+	LOGI(
+			"Contour rect (%d,%d,%d,%d)", petriRect.x, petriRect.y, petriRect.width, petriRect.height);
 
 	// Create overall mask
 	Mat maskBig = Mat(mbgr.size(), CV_8UC1, Scalar(0));
@@ -235,7 +238,7 @@ Mat findColonies(Mat& mbgr, int& colonies) {
 	removeyellow(highpass8);
 
 	// Remove noise
-	blur(highpass8, highpass8, Size(3,3));
+	blur(highpass8, highpass8, Size(3, 3));
 
 	// Split into channels
 	vector<Mat> rgbPlanes;
@@ -273,25 +276,24 @@ Mat findColonies(Mat& mbgr, int& colonies) {
 		// Determine colony blueness (ratio of absorbed red to red+green absorbed)
 		Mat colMat = highpass8(rect);
 		Scalar s = sum(colMat);
-		long redness = 200*rect.width*rect.height - s[1];
-		long blueness = 200*rect.width*rect.height - s[2];
+		long redness = 200 * rect.width * rect.height - s[1];
+		long blueness = 200 * rect.width * rect.height - s[2];
 //		LOGI("%2d: redness=%d", i, redness);
 //		LOGI("%2d: blueness=%d", i, blueness);
-		float ratio = (float)blueness/(blueness+redness);
+		float ratio = (float) blueness / (blueness + redness);
 		LOGI("At %d,%d : %f", rect.x, rect.y, ratio);
 
 		Scalar color;
 		if (ratio < 0.23)
-			color=Scalar(0, 0, 255, 255);
+			color = Scalar(0, 0, 255, 255);
 		else if (ratio < 0.27)
-			color=Scalar(0, 255, 0, 255);
+			color = Scalar(0, 255, 0, 255);
 		else
-			color=Scalar(255, 0, 0, 255);
+			color = Scalar(255, 0, 0, 255);
 		Point center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 		// Draw rectangle
-		rectangle(
-				highpass8,
+		rectangle(highpass8,
 				Rect(rect.x - neighsize, rect.y - neighsize,
 						rect.width + neighsize * 2,
 						rect.height + neighsize * 2), color, 2);

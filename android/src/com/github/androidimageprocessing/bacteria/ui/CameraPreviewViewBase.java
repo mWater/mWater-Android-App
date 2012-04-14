@@ -25,6 +25,9 @@ public abstract class CameraPreviewViewBase extends SurfaceView implements
 
 	public CameraPreviewViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		if (this.isInEditMode())
+			return;
+		
 		holder = getHolder();
 		holder.addCallback(this);
 		Log.i(TAG, "Instantiated new " + this.getClass());
