@@ -22,16 +22,22 @@
         android:normalScreens="true"
         android:smallScreens="true" />
     <application
-        android:icon="@drawable/bact"
+        android:icon="@drawable/mwater"
         android:label="@string/app_name" android:theme="@android:style/Theme.Black" 
         android:debuggable="true">
+
         <activity
             android:label="@string/app_name"
-            android:name=".ui.PetrifilmTestListActivity" >
+            android:name=".ui.MainActivity" 
+            android:screenOrientation="portrait">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:label="@string/app_name"
+            android:name=".ui.PetrifilmTestListActivity" >
         </activity>
         <activity android:name=".ui.PetrifilmCameraActivity"
                   android:label="@string/app_name"

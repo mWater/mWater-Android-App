@@ -2,7 +2,7 @@
 <resources>
 
 	<!--  Common strings -->
-    <string name="app_name">Portable Microbiology Lab</string>
+    <string name="app_name">mWater</string>
     
     <!-- main portal -->
     <string name="create_water_source">Create a new water source</string>
