@@ -27,121 +27,122 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class PetrifilmCameraActivity extends Activity implements
-		PictureCallback {
-	private static final String TAG = "com.github.androidimageprocessing.bacteria";
+PictureCallback {
+    private static final String TAG = "com.github.androidimageprocessing.bacteria";
 
-	UITimerTask timerTask = new UITimerTask();
-	int autoSnapTimer = 0;			// Timer 0-100 before auto-taking picture. 
-	boolean pictureInProgress; 		// True if picture taking is in progress
+    UITimerTask timerTask = new UITimerTask();
+    int autoSnapTimer = 0;			// Timer 0-100 before auto-taking picture. 
+    boolean pictureInProgress; 		// True if picture taking is in progress
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate");
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.petrifilm_camera_activity);
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.petrifilm_camera_activity);
 
-		ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-		progressBar.setMinimumWidth(100);
-	}
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setMinimumWidth(100);
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		timerTask.start(new Runnable() {
-			public void run() {
-				if (pictureInProgress)
-					return;
-				
-				ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
-				PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
+    @Override
+    public void onResume() {
+        super.onResume();
+        timerTask.start(new Runnable() {
+            public void run() {
+                if (pictureInProgress)
+                    return;
 
-				if (previewView.results.foundCircle) {
-					if (autoSnapTimer < 100) {
-						autoSnapTimer += 10;
-						progressBar.setProgress(autoSnapTimer);
-					} else {
-						// Take picture
-						Camera camera = previewView.getCamera();
-						startAutofocus(camera);
-					}
-				} else {
-					autoSnapTimer = 0;
-					progressBar.setProgress(autoSnapTimer);
-				}
-			}
-		}, 150);
-	}
+                ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+                PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
 
-	@Override
-	public void onPause() {
-		super.onPause();
-		timerTask.stop();
-	}
+                if (previewView.results.foundCircle) {
+                    if (autoSnapTimer < 100) {
+                        autoSnapTimer += 10;
+                        progressBar.setProgress(autoSnapTimer);
+                    } else {
+                        // Take picture
+                        Camera camera = previewView.getCamera();
+                        startAutofocus(camera);
+                    }
+                } else {
+                    autoSnapTimer = 0;
+                    progressBar.setProgress(autoSnapTimer);
+                }
+            }
+        }, 150);
+    }
 
-	public void onCaptureClick(View v) {
-		// Take picture
-		PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
-		Camera camera = previewView.getCamera();
-		startAutofocus(camera);
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+        timerTask.stop();
+    }
 
-	private void startAutofocus(Camera camera) {
-		final Button capture = (Button) findViewById(R.id.capture);
-		capture.setEnabled(false);
-		pictureInProgress = true;
+    public void onCaptureClick(View v) {
+        // Take picture
+        PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
+        Camera camera = previewView.getCamera();
+        startAutofocus(camera);
+    }
 
-		// Start auto-focus
-		camera.autoFocus(new AutoFocusCallback() {
-			public void onAutoFocus(boolean success, Camera camera) {
-				Log.i(TAG, "Autofocus success=" + success);
-				if (success)
-					camera.takePicture(null, null, PetrifilmCameraActivity.this);
-				else {
-					PetrifilmCameraActivity.this.runOnUiThread(new Runnable() {
-						public void run() {
-							Toast.makeText(PetrifilmCameraActivity.this,
-									"Unable to focus", Toast.LENGTH_SHORT)
-									.show();
-							capture.setEnabled(true);
-							pictureInProgress = false;
-						}
-					});
-				}
-			}
-		});
-	}
+    private void startAutofocus(Camera camera) {
+        final Button capture = (Button) findViewById(R.id.capture);
+        capture.setEnabled(false);
+        pictureInProgress = true;
 
-	public void onPictureTaken(byte[] data, Camera camera) {
-		// Remove view
-		PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
-		ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
-		mainView.removeView(previewView);
+        // Start auto-focus
+        camera.autoFocus(new AutoFocusCallback() {
+            public void onAutoFocus(boolean success, Camera camera) {
+                Log.i(TAG, "Autofocus success=" + success);
+                if (success)
+                    camera.takePicture(null, null, PetrifilmCameraActivity.this);
+                else {
+                    PetrifilmCameraActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(PetrifilmCameraActivity.this,
+                                    "Unable to focus", Toast.LENGTH_SHORT)
+                                    .show();
+                            capture.setEnabled(true);
+                            pictureInProgress = false;
+                        }
+                    });
+                }
+            }
+        });
+    }
 
-		String filename = getIntent().getStringExtra("filename");
-		String filepath = App.getOriginalImageFolder(this) + File.separator
-				+ filename;
-		FileOutputStream fos;
-		try {
-			fos = new FileOutputStream(filepath);
-			fos.write(data);
-			fos.close();
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, e.toString());
-			return;
-		} catch (IOException e) {
-			Log.e(TAG, e.toString());
-			return;
-		}
+    public void onPictureTaken(byte[] data, Camera camera) {
+        // Remove view
+        PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
+        ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
+        mainView.removeView(previewView);
 
-		Log.d(TAG, "Wrote file " + filename);
+        String filename = getIntent().getStringExtra("filename");
+        //String filepath = App.getOriginalImageFolder(this) + File.separator
+        //		+ filename;
+        FileOutputStream fos;
+        try {
+            String filepath = App.getOriginalImageFolder(this) + File.separator + filename;
+            fos = new FileOutputStream(filepath);
+            fos.write(data);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, e.toString());
+            return;
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            return;
+        }
 
-		Intent result = new Intent();
-		result.putExtra("filename", filename);
-		setResult(RESULT_OK, result);
+        Log.d(TAG, "Wrote file " + filename);
 
-		finish();
-	}
+        Intent result = new Intent();
+        result.putExtra("filename", filename);
+        setResult(RESULT_OK, result);
+
+        finish();
+    }
 
 }
