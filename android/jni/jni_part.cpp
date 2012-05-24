@@ -1,4 +1,4 @@
-#include <stdarg.h>
+//#include <stdarg.h>
 
 #include <jni.h>
 #include <opencv2/core/core.hpp>
@@ -8,7 +8,7 @@
 #include <vector>
 
 #include <android/log.h>
-#include <android/bitmap.h>
+//#include <android/bitmap.h>
 
 #include "imagefuncs.h"
 
@@ -30,68 +30,78 @@ using namespace std;
 
 
 Mat process(Mat input, int& colonies) {
-	return findColonies(input, colonies);
+    return findColonies(input, colonies);
 }
 
 extern "C" {
 JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_PetrifilmCameraView_Process(
-		JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
-		jobject bitmap,  jobject results) {
-	// Get input and output arrays
-	jbyte* _yuv = env->GetByteArrayElements(yuv, 0);
+        JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
+        jintArray processedRGBA,  jobject results) {
 
-	void* pixels;
-	if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
-		Mat myuv(height + height / 2, width, CV_8UC1, (unsigned char *) _yuv);
-		Mat mbgra(height, width, CV_8UC4, (unsigned char *) pixels);
+    jsize yuvLength = env->GetArrayLength(yuv);
+    jsize processedLength = env->GetArrayLength(processedRGBA);
 
-		// Please pay attention to BGRA byte order
-		// ARGB stored in java as int array becomes BGRA at native level
-		cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
+    // AR
+    jboolean isCopy;
 
-		int foundCircle;
-		createPreview(mbgra, foundCircle);
+    // Get input and output arrays
+    jbyte* pyuv = env->GetByteArrayElements(yuv, &isCopy);
+    jint* pprocessedRGBA = env->GetIntArrayElements(processedRGBA, &isCopy);
 
-		// Set results
-		jclass resultsClass = env->GetObjectClass(results);
-		jfieldID foundCircleField = env->GetFieldID(resultsClass, "foundCircle", "Z");
-		env->SetBooleanField(results, foundCircleField, foundCircle ? JNI_TRUE : JNI_FALSE);
+    //if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
+    Mat myuv(height + height / 2, width, CV_8UC1, (unsigned char *) pyuv);
+    Mat mbgra(height, width, CV_8UC4, (unsigned char *) pprocessedRGBA);
 
-		cvtColor(mbgra, mbgra, CV_BGRA2RGBA);
+    // Please pay attention to BGRA byte order
+    // ARGB stored in java as int array becomes BGRA at native level
+    cvtColor(myuv, mbgra, CV_YUV420sp2BGR, 4);
 
-		AndroidBitmap_unlockPixels(env, bitmap);
-	}
+    // don't need pyuv anymore, release the pin
+    env->ReleaseByteArrayElements(yuv, pyuv, 0);
 
-	env->ReleaseByteArrayElements(yuv, _yuv, 0);
+    int foundCircle;
+    createPreview(mbgra, foundCircle);
+
+    // Set results
+    jclass resultsClass = env->GetObjectClass(results);
+    jfieldID foundCircleField = env->GetFieldID(resultsClass, "foundCircle", "Z");
+    env->SetBooleanField(results, foundCircleField, foundCircle ? JNI_TRUE : JNI_FALSE);
+
+    //cvtColor(mbgra, mbgra, CV_BGRA2RGBA); // AR - not required anymore
+
+    //	AndroidBitmap_unlockPixels(env, bitmap);
+    //}
+    env->ReleaseIntArrayElements(processedRGBA, pprocessedRGBA, 0);
+
 }
 
 JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_PetrifilmImageProcessor_process(
-		JNIEnv* env, jobject thiz, jbyteArray jpeg, jobject results) {
-	jbyte* _jpeg = env->GetByteArrayElements(jpeg, 0);
+        JNIEnv* env, jobject thiz, jbyteArray jpeg, jobject results) {
+    jbyte* _jpeg = env->GetByteArrayElements(jpeg, 0);
 
-	// Open jpeg
-	Mat jpegdata = Mat(Size(1, env->GetArrayLength(jpeg)), CV_8UC1, _jpeg);
-	Mat input = imdecode(jpegdata, 1);
+    // Open jpeg
+    Mat jpegdata = Mat(Size(1, env->GetArrayLength(jpeg)), CV_8UC1, _jpeg);
+    Mat input = imdecode(jpegdata, 1);
 
-	// Process image
-	int colonies = 0;
-	Mat processed = process(input, colonies);
+    // Process image
+    int colonies = 0;
+    Mat processed = process(input, colonies);
 
-	// Encode jpeg
-	vector<uchar> encoded;
-	imencode(".jpg", processed, encoded);
+    // Encode jpeg
+    vector<uchar> encoded;
+    imencode(".jpg", processed, encoded);
 
-	jclass resultsClass = env->GetObjectClass(results);
+    jclass resultsClass = env->GetObjectClass(results);
 
-	jfieldID coloniesField = env->GetFieldID(resultsClass, "colonies", "I");
-	env->SetIntField(results, coloniesField, colonies);
+    jfieldID coloniesField = env->GetFieldID(resultsClass, "colonies", "I");
+    env->SetIntField(results, coloniesField, colonies);
 
-	jfieldID jpegField = env->GetFieldID(resultsClass, "jpeg", "[B");
-	jbyteArray jpegarr = env->NewByteArray(encoded.size());
-	env->SetByteArrayRegion(jpegarr, 0, encoded.size(),
-			(const signed char*) (&encoded[0]));
-	env->SetObjectField(results, jpegField, jpegarr);
-	env->DeleteLocalRef(jpegarr);
+    jfieldID jpegField = env->GetFieldID(resultsClass, "jpeg", "[B");
+    jbyteArray jpegarr = env->NewByteArray(encoded.size());
+    env->SetByteArrayRegion(jpegarr, 0, encoded.size(),
+            (const signed char*) (&encoded[0]));
+    env->SetObjectField(results, jpegField, jpegarr);
+    env->DeleteLocalRef(jpegarr);
 }
 
 }
