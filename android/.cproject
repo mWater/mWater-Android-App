@@ -46,9 +46,7 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="AndroidBacterialCountingActivity.null.584950733" name="AndroidBacterialCountingActivity"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/AndroidBacterialCountingActivity"/>
-	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="0.1783280158">
