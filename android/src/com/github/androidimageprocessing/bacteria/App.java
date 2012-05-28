@@ -8,6 +8,7 @@ import android.os.Environment;
 
 public class App {
 
+    public final static String FOLDER_DATA_ROOT = "Android/data";
     public final static String FOLDER_ORIGINAL = "original";
     public final static String FOLDER_PROCESSED = "processed";
     public final static String FOLDER_RESULTS = "results";
@@ -87,7 +88,7 @@ public class App {
         }
 
         File extPath = Environment.getExternalStorageDirectory();
-        String fullPath = extPath.getAbsolutePath() + File.separator + context.getPackageName() + File.separator + fileName;
+        String fullPath = extPath.getAbsolutePath() + File.separator + FOLDER_DATA_ROOT + File.separator + context.getPackageName() + File.separator + fileName;
         return fullPath;
     }
 }
