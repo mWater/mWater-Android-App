@@ -25,11 +25,11 @@ public class MainActivity extends Activity {
                 f.mkdirs();
             }
             if (App.isExternalFilePresent(getApplicationContext(), App.FOLDER_RESULTS) == false) {
-                File f = new File(App.getOriginalImageFolder(getApplicationContext()));
+                File f = new File(App.getResultsFolder(getApplicationContext()));
                 f.mkdirs();
             }
             if (App.isExternalFilePresent(getApplicationContext(), App.FOLDER_PROCESSED) == false) {
-                File f = new File(App.getOriginalImageFolder(getApplicationContext()));
+                File f = new File(App.getProcessedImageFolder(getApplicationContext()));
                 f.mkdirs();
             }
         } catch (IOException e) {

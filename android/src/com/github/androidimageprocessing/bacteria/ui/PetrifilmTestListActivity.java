@@ -122,7 +122,7 @@ public class PetrifilmTestListActivity extends ListActivity {
             // AR intent.putExtra("inpath", App.getOriginalImageFolder(this)
             //		+ File.separator + filename);
             try {
-                intent.putExtra("inpath", App.getOriginalImageFolder(this) + File.separator + filename);
+                intent.putExtra("inpath", App.getOriginalImageFolder(getApplicationContext()) + File.separator + filename);
             } catch (IOException e) {
                 // TODO Handle this exception (popup a dialog with the error)
                 Log.e(TAG, e.toString());

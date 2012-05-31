@@ -40,7 +40,7 @@ public class PetrifilmTestDetailsActivity extends Activity {
         FileInputStream in;
         BufferedInputStream buf;
         try {
-            File imagefile = new File(App.getProcessedImageFolder(this), name + ".jpg");
+            File imagefile = new File(App.getProcessedImageFolder(getApplicationContext()), name + ".jpg");
             in = new FileInputStream(imagefile);
             buf = new BufferedInputStream(in);
             Bitmap bMap = BitmapFactory.decodeStream(buf);
@@ -57,7 +57,7 @@ public class PetrifilmTestDetailsActivity extends Activity {
 
         TextView t = (TextView) findViewById(R.id.result_text);
         try {
-            File xmlfile = new File(App.getResultsFolder(this), name + ".xml");
+            File xmlfile = new File(App.getResultsFolder(getApplicationContext()), name + ".xml");
             in = new FileInputStream(xmlfile);
             BufferedReader source = new BufferedReader(
                     new InputStreamReader(in));

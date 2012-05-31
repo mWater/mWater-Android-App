@@ -92,56 +92,79 @@ PictureCallback {
         capture.setEnabled(false);
         pictureInProgress = true;
 
-        // Start auto-focus
+        // Start auto-focus //AR - take a picture even without auto-focus.
         camera.autoFocus(new AutoFocusCallback() {
             public void onAutoFocus(boolean success, Camera camera) {
                 Log.i(TAG, "Autofocus success=" + success);
-                if (success)
-                    camera.takePicture(null, null, PetrifilmCameraActivity.this);
-                else {
+                
+                if (!success) {
+                    //    camera.takePicture(null, null, PetrifilmCameraActivity.this);
+                    //else {
+                    // AR - We send a warning if we can't focus (TBD)
                     PetrifilmCameraActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(PetrifilmCameraActivity.this,
-                                    "Unable to focus", Toast.LENGTH_SHORT)
+                                    "Warning: unable to focus, the picture might not be of good quality", Toast.LENGTH_SHORT)
                                     .show();
-                            capture.setEnabled(true);
-                            pictureInProgress = false;
+                            
+                            //capture.setEnabled(true);
+                            //pictureInProgress = false;
                         }
                     });
                 }
             }
         });
+        
+      // Take a picture
+      camera.takePicture(null, null, PetrifilmCameraActivity.this);
     }
 
     public void onPictureTaken(byte[] data, Camera camera) {
+        boolean fileError = false;
+        
         // Remove view
         PetrifilmCameraView previewView = (PetrifilmCameraView) findViewById(R.id.CameraView);
         ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
         mainView.removeView(previewView);
 
         String filename = getIntent().getStringExtra("filename");
-        //String filepath = App.getOriginalImageFolder(this) + File.separator
+        //String filepath = App.getOriginalImageFolder(this) + File.separator // AR - inside try-catch
         //		+ filename;
-        FileOutputStream fos;
+        FileOutputStream fos = null;
         try {
-            String filepath = App.getOriginalImageFolder(this) + File.separator + filename;
+            String filepath = App.getOriginalImageFolder(getApplicationContext()) + File.separator + filename;
             fos = new FileOutputStream(filepath);
             fos.write(data);
             fos.close();
         } catch (FileNotFoundException e) {
             Log.e(TAG, e.toString());
-            return;
+            fileError = true;
+            //return;
         } catch (IOException e) {
             Log.e(TAG, e.toString());
-            return;
+            fileError = true;
+            //return;
         }
+        // AR - Trying to close the handle (if the error is on the fos.write
+        // you will have an dangling handle to a file)
+        if (fileError == true && fos != null) {
+            try {
+                 fos.close();
+            } catch (IOException e) {
+                // TODO: handle exception
+            }
+        }
+        
+        if (!fileError) {
+            Log.d(TAG, "Wrote file " + filename);
 
-        Log.d(TAG, "Wrote file " + filename);
-
-        Intent result = new Intent();
-        result.putExtra("filename", filename);
-        setResult(RESULT_OK, result);
-
+            Intent result = new Intent();
+            result.putExtra("filename", filename);
+            setResult(RESULT_OK, result);
+        } else {
+            Log.d(TAG, "Error writing the file " + filename);
+            // TODO AR handle this in a better way
+        }
         finish();
     }
 
