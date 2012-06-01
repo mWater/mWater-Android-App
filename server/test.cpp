@@ -105,6 +105,176 @@ int main( int argc, char** argv )
     split( petri, petriPlanes );
 
 #ifdef DEBUG
+    /// Histo-Quad
+    printf("\nHisto-Quad\n");
+#endif
+
+    // TODO Check Background function (instead of mean)
+    /// Calculate 4 background colors
+    Rect tmpRect;
+    Mat tmpROI;
+    Mat tmpMask;
+    //cv::Scalar tmpMean;
+    Scalar tmpBG[4];
+
+    /// Top region
+    tmpRect.x = 0;
+    tmpRect.y = 0;
+    tmpRect.width = petri.cols;
+    tmpRect.height = petri.rows / 2;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[0] = mean( tmpROI, tmpMask );
+
+    /// Buttom region
+    //tmpRect.x = 0;
+    tmpRect.y = petri.rows / 2;
+    //tmpRect.width = petri.cols;
+    //tmpRect.height = petri.rows / 2;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[1] = mean( tmpROI, tmpMask );
+
+    /// Left region
+    //tmpRect.x = 0;
+    tmpRect.y = 0;
+    tmpRect.width = petri.cols / 2;
+    tmpRect.height = petri.rows;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[2] = mean( tmpROI, tmpMask );
+
+    /// Right region
+    tmpRect.x = petri.cols / 2;
+    //tmpRect.y = 0;
+    //tmpRect.width = petri.cols / 2;
+    //tmpRect.height = petri.rows;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[3] = mean( tmpROI, tmpMask );
+
+#ifdef DEBUG
+    printf("Mean colors of regions (4 sides) of the petri film ( B , G , R):\nBefore Histo-Quad:\n");
+    printf("Top: %.1f, %.1f, %.1f\n",    tmpBG[0][0], tmpBG[0][1], tmpBG[0][2]);
+    printf("Buttom: %.1f, %.1f, %.1f\n", tmpBG[1][0], tmpBG[1][1], tmpBG[1][2]);
+    printf("Left: %.1f, %.1f, %.1f\n",   tmpBG[2][0], tmpBG[2][1], tmpBG[2][2]);
+    printf("Right: %.1f, %.1f, %.1f\n",  tmpBG[3][0], tmpBG[3][1], tmpBG[3][2]);
+
+    /*
+    Mat debugImg3_b4 = petriPlanes[0].clone();
+    namedWindow("B befor Histo-Quad", CV_WINDOW_KEEPRATIO);
+    imshow("B befor Histo-Quad", debugImg3_b4 );
+    */
+#endif
+
+    double m[2][3];
+    double l = sqrt(petri.cols*petri.cols + petri.rows*petri.rows)*PI/8;
+    double colorConst[2][3];
+    // TODO use the max instead of avgBG ?
+    double avgBG[3];
+    avgBG[0] = (tmpBG[0][0] + tmpBG[1][0] + tmpBG[2][0] + tmpBG[3][0] ) /4;
+    avgBG[1] = (tmpBG[0][1] + tmpBG[1][1] + tmpBG[2][1] + tmpBG[3][1] ) /4;
+    avgBG[2] = (tmpBG[0][2] + tmpBG[1][2] + tmpBG[2][2] + tmpBG[3][2] ) /4;
+    /// Top Left
+    m[0][0] = ( tmpBG[0][0] - tmpBG[2][0] ) / l;
+    colorConst[0][0] = tmpBG[2][0];
+    m[0][1] = ( tmpBG[0][1] - tmpBG[2][1] ) / l;
+    colorConst[0][1] = tmpBG[2][1];
+    m[0][2] = ( tmpBG[0][2] - tmpBG[2][2] ) / l;
+    colorConst[0][2] = tmpBG[2][2];
+    /// Buttom Right
+    m[1][0] = ( tmpBG[3][0] - tmpBG[1][0] ) / l;
+    colorConst[1][0] = tmpBG[1][0];
+    m[1][1] = ( tmpBG[3][1] - tmpBG[1][1] ) / l;
+    colorConst[1][1] = tmpBG[1][1];
+    m[1][2] = ( tmpBG[3][2] - tmpBG[1][2] ) / l;
+    colorConst[1][2] = tmpBG[1][2];
+    double row0 = petri.rows * (0.5 - PI/8);
+    double col0 = petri.cols * (0.5 - PI/8);
+
+    double intColors[2][3];
+    for( int row=0; row<petri.rows; row++) {
+        uchar* rowStartB = petriPlanes[0].ptr<uchar>(row);
+        uchar* rowStartG = petriPlanes[1].ptr<uchar>(row);
+        uchar* rowStartR = petriPlanes[2].ptr<uchar>(row);
+        double y = row - row0;
+        y /= sqrt(2);
+        for( int col=0; col<petri.cols; col += 1) {
+            double x = col - col0;
+            x /= sqrt(2);
+            double x2 = x - y + l/2;
+            double y2 = x + y - l/2;
+            /// Top Left
+            intColors[0][0] = m[0][0] * x2 + colorConst[0][0];
+            intColors[0][1] = m[0][1] * x2 + colorConst[0][1];
+            intColors[0][2] = m[0][2] * x2 + colorConst[0][2];
+            /// Buttom Right
+            intColors[1][0] = m[1][0] * x2 + colorConst[1][0];
+            intColors[1][1] = m[1][1] * x2 + colorConst[1][1];
+            intColors[1][2] = m[1][2] * x2 + colorConst[1][2];
+            //*(rowStart + col) = intColors[0];
+            *(rowStartB + col) += avgBG[0] - ( (intColors[1][0] - intColors[0][0]) / l * y2 + intColors[0][0] );
+            *(rowStartG + col) += avgBG[1] - ( (intColors[1][1] - intColors[0][1]) / l * y2 + intColors[0][1] );
+            *(rowStartR + col) += avgBG[2] - ( (intColors[1][2] - intColors[0][2]) / l * y2 + intColors[0][2] );
+        }
+    }
+
+    // FIXME I think we do not need "petri" Mat from here, but anyway......
+    merge(petriPlanes, petri);
+
+#ifdef DEBUG
+    /// Re-Calculate 4 background colors
+    /// Top region
+    tmpRect.x = 0;
+    tmpRect.y = 0;
+    tmpRect.width = petri.cols;
+    tmpRect.height = petri.rows / 2;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[0] = mean( tmpROI, tmpMask );
+
+    /// Buttom region
+    //tmpRect.x = 0;
+    tmpRect.y = petri.rows / 2;
+    //tmpRect.width = petri.cols;
+    //tmpRect.height = petri.rows / 2;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[1] = mean( tmpROI, tmpMask );
+
+    /// Left region
+    //tmpRect.x = 0;
+    tmpRect.y = 0;
+    tmpRect.width = petri.cols / 2;
+    tmpRect.height = petri.rows;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[2] = mean( tmpROI, tmpMask );
+
+    /// Right region
+    tmpRect.x = petri.cols / 2;
+    //tmpRect.y = 0;
+    //tmpRect.width = petri.cols / 2;
+    //tmpRect.height = petri.rows;
+    tmpROI = Mat(petri, tmpRect);
+    tmpMask = Mat(maskPlanes[0], tmpRect);
+    tmpBG[3] = mean( tmpROI, tmpMask );
+
+    printf("After Histo-Quad:\n");
+    printf("Top: %.1f, %.1f, %.1f\n",    tmpBG[0][0], tmpBG[0][1], tmpBG[0][2]);
+    printf("Buttom: %.1f, %.1f, %.1f\n", tmpBG[1][0], tmpBG[1][1], tmpBG[1][2]);
+    printf("Left: %.1f, %.1f, %.1f\n",   tmpBG[2][0], tmpBG[2][1], tmpBG[2][2]);
+    printf("Right: %.1f, %.1f, %.1f\n",  tmpBG[3][0], tmpBG[3][1], tmpBG[3][2]);
+    printf("Histo-Quad ends here\n\n");
+    /*
+    Mat debugImg3_after = petriPlanes[0].clone();
+    namedWindow("B after Histo-Quad", CV_WINDOW_KEEPRATIO);
+    imshow("B after Histo-Quad", debugImg3_after );
+    */
+#endif
+    /// Histo-Quad ends here
+
+#ifdef DEBUG
     //namedWindow("Mask", CV_WINDOW_KEEPRATIO);
     //imshow("Mask", mask );
     Mat debugImg2 = petri.clone();
@@ -178,7 +348,7 @@ int main( int argc, char** argv )
                 yellowG = *(centerPixelG + i);
             }
 
-            tmpBdist = fabs( yellowB - *(centerPixelB + i) );
+            tmpBdist = fabs( yellowB - *(centerPixelB - i) );
             if(tmpBdist < colorDist) {
                 colorDist = tmpBdist;
                 yellowG = *(centerPixelG - i);
