@@ -36,4 +36,10 @@ public class PetrifilmImageProcessor {
 	}
 
 	native void process(byte[] jpeg, PetrifilmAnalysisResults results);
+	
+    static {
+    	System.loadLibrary("opencv_java");
+        System.loadLibrary("native_sample");
+    }
+
 }

@@ -21,6 +21,7 @@ class PetrifilmCameraView extends CameraPreviewViewBase {
     public native void Process(int width, int height, byte[] yuv, int[] process, PetrifilmPreviewResults results);
 
     static {
+    	System.loadLibrary("opencv_java");
         System.loadLibrary("native_sample");
     }
 
