@@ -92,31 +92,25 @@ PictureCallback {
         capture.setEnabled(false);
         pictureInProgress = true;
 
-        // Start auto-focus //AR - take a picture even without auto-focus.
+        // Start auto-focus
         camera.autoFocus(new AutoFocusCallback() {
             public void onAutoFocus(boolean success, Camera camera) {
                 Log.i(TAG, "Autofocus success=" + success);
-                
-                if (!success) {
-                    //    camera.takePicture(null, null, PetrifilmCameraActivity.this);
-                    //else {
-                    // AR - We send a warning if we can't focus (TBD)
+                if (success)
+                    camera.takePicture(null, null, PetrifilmCameraActivity.this);
+                else {
                     PetrifilmCameraActivity.this.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(PetrifilmCameraActivity.this,
-                                    "Warning: unable to focus, the picture might not be of good quality", Toast.LENGTH_SHORT)
+                                    "Unable to focus. Please try again and/or move camera farther away", Toast.LENGTH_SHORT)
                                     .show();
-                            
-                            //capture.setEnabled(true);
-                            //pictureInProgress = false;
+                            capture.setEnabled(true);
+                            pictureInProgress = false;
                         }
                     });
                 }
             }
         });
-        
-      // Take a picture
-      camera.takePicture(null, null, PetrifilmCameraActivity.this);
     }
 
     public void onPictureTaken(byte[] data, Camera camera) {
