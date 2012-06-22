@@ -8,8 +8,18 @@ public abstract class SyncTable {
 	public static final String COLUMN_UID = "uid";
 	public static final String COLUMN_ROWVERSION = "rowversion";
 
+	private String[] syncColumns; // Columns, excluding any declared above
+	
 	public abstract String getTableName();
 	public abstract String getCreateSql();
+	
+	public SyncTable(String[] syncColumns) {
+		this.syncColumns = syncColumns;
+	}
+	
+	public String[] getSyncColumns() {
+		return syncColumns;
+	}
 	
 	public void onCreate(SQLiteDatabase database) {
 		database.execSQL(getCreateSql());
