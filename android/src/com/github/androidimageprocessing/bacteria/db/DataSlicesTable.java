@@ -11,16 +11,16 @@ import android.util.Log;
  */
 public class DataSlicesTable {
 	public static final String TABLE_NAME = "dataslices";
-	public static final String COLUMN_ID = "serveruntil";
+	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_SERVERUNTIL = "serveruntil";
 
 	public String getTableName() { return TABLE_NAME; }
 	
 	public String getCreateSql() {
 		return "create table " 
-				+ getTableName()
-				+ "(" 
-				+ COLUMN_ID + " text not null PRIMARY KEY "
+				+ TABLE_NAME
+				+ " (" 
+				+ COLUMN_ID + " text not null PRIMARY KEY, "
 				+ COLUMN_SERVERUNTIL + " text not null"
 				+ ");";
 	}

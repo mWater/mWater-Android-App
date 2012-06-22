@@ -3,7 +3,6 @@ package com.github.androidimageprocessing.bacteria.db;
 import com.github.androidimageprocessing.bacteria.db.ChangeSet.Table;
 
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class SyncClientImpl implements SyncClient {
@@ -61,6 +60,7 @@ public class SyncClientImpl implements SyncClient {
 		// WHERE tablename=? AND action='I'
 		// AND NOT EXISTS (SELECT NULL FROM syncchanges AS sc2 WHERE tablename=?
 		// AND sc2.rowuid=sc1.rowuid AND action='D'))
+		// TODO substite row names
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ").append(SyncTable.COLUMN_UID);
 
@@ -88,6 +88,7 @@ public class SyncClientImpl implements SyncClient {
 		// WHERE tablename=? AND action='U'
 		// AND NOT EXISTS (SELECT NULL FROM syncchanges AS sc2 WHERE tablename=?
 		// AND sc2.rowuid=sc1.rowuid AND (action='D' OR action='I'))
+		// TODO substite row names
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ").append(SyncTable.COLUMN_UID);
 
@@ -102,7 +103,7 @@ public class SyncClientImpl implements SyncClient {
 		sql.append(" AND NOT EXISTS (SELECT NULL FROM ");
 		sql.append(SyncChangesTable.TABLE_NAME).append(" AS sc2 WHERE tablename=? AND sc2.");
 		sql.append(SyncChangesTable.COLUMN_ROWUID).append("=sc1.").append(SyncChangesTable.COLUMN_ROWUID);
-		sql.append(" AND (action='D' OR action='I'))");
+		sql.append(" AND (action='D' OR action='I')))");
 
 		return db.rawQuery(sql.toString(), new String[] { syncTable.getTableName(), syncTable.getTableName() });
 	}
@@ -111,15 +112,18 @@ public class SyncClientImpl implements SyncClient {
 		// Get deletes
 		// e.g.
 		// SELECT DISTINCT rowuid FROM syncchanges
-		// WHERE tablename=? AND action='D'
+		// WHERE tablename=? AND action='D' 
+		// AND NOT EXISTS (SELECT NULL FROM FROM syncchanges AS sc1
+		// WHERE tablename=? AND sc2.rowuid=sc1.rowuid AND action='I')
+		// TODO substite row names
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT DISTINCT ").append(SyncChangesTable.COLUMN_ROWUID);
-
 		sql.append(" FROM ").append(SyncChangesTable.TABLE_NAME);
-		sql.append(SyncChangesTable.COLUMN_ROWUID).append(" FROM ").append(SyncChangesTable.TABLE_NAME);
-		sql.append(" WHERE tablename=? AND action='D'");
+		sql.append(" AS sc1 WHERE tablename=? AND action='D'");
+		sql.append(" AND NOT EXISTS (SELECT NULL FROM ");
+		sql.append(SyncChangesTable.TABLE_NAME).append(" AS sc2 WHERE tablename=? AND sc2.rowuid=sc1.rowuid AND action='I')");
 
-		return db.rawQuery(sql.toString(), new String[] { syncTable.getTableName() });
+		return db.rawQuery(sql.toString(), new String[] { syncTable.getTableName(), syncTable.getTableName() });
 	}
 
 	public void markChangeSetSent(String until) {
