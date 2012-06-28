@@ -39,6 +39,10 @@
         </activity>
         <activity
             android:label="@string/app_name"
+            android:name=".ui.SourcesActivity" >
+        </activity>
+        <activity
+            android:label="@string/app_name"
             android:name=".ui.PetrifilmTestListActivity" >
         </activity>
         <activity android:name=".ui.PetrifilmCameraActivity"
@@ -52,7 +56,9 @@
                   android:configChanges="keyboardHidden|orientation">
 
         </activity>
-        <service android:name="PetriFilmProcessingIntentService"></service>
-        
+        <service android:name=".PetriFilmProcessingIntentService"></service>
+        <provider android:name="com.github.androidimageprocessing.bacteria.db.MWaterContentProvider"
+             android:authorities="com.github.androidimageprocessing.bacteria" />
+        <activity android:name=".ui.SourceDetailActivity"></activity>
    </application>
 </manifest>

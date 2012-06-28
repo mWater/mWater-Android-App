@@ -5,11 +5,11 @@ import java.util.UUID;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
-import com.github.androidimageprocessing.bacteria.db.ChangeSet;
-import com.github.androidimageprocessing.bacteria.db.CompleteDataSlice;
-import com.github.androidimageprocessing.bacteria.db.DataSlice;
-import com.github.androidimageprocessing.bacteria.db.SyncClientImpl;
-import com.github.androidimageprocessing.bacteria.db.SyncTable;
+import com.github.androidimageprocessing.bacteria.dbsync.ChangeSet;
+import com.github.androidimageprocessing.bacteria.dbsync.CompleteDataSlice;
+import com.github.androidimageprocessing.bacteria.dbsync.DataSlice;
+import com.github.androidimageprocessing.bacteria.dbsync.SyncClientImpl;
+import com.github.androidimageprocessing.bacteria.dbsync.SyncTable;
 
 public class SyncClientImplTests extends AndroidTestCase {
 	TestSyncDatabase testSyncDatabase = new TestSyncDatabase();

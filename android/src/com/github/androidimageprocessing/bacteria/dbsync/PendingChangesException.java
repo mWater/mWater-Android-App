@@ -1,4 +1,4 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
 /**
  * Exception thrown when there are pending changes in a database.

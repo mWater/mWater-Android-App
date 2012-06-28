@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
-import com.github.androidimageprocessing.bacteria.db.SyncChangesTable;
+import com.github.androidimageprocessing.bacteria.dbsync.SyncChangesTable;
 
 public class SyncTableTests extends AndroidTestCase {
 	TestSyncDatabase testSyncDatabase = new TestSyncDatabase();

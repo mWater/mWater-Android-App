@@ -41,6 +41,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main_activity);
     }
 
+    public void onSourcesClick(View v) {
+        Intent intent = new Intent(this,
+                SourcesActivity.class);
+        startActivity(intent);
+    }
+
     public void onTestsClick(View v) {
         Intent intent = new Intent(this,
                 PetrifilmTestListActivity.class);

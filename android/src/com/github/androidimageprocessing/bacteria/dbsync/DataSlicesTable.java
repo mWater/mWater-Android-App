@@ -1,30 +1,27 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
- * Table which stores a list of changes that have been made since the last upload
+ * Table which stores information about data slices that 
+ * have been downloaded
  * @author Clayton
  *
  */
-public class SyncChangesTable {
-	public static final String TABLE_NAME = "syncchanges";
+public class DataSlicesTable {
+	public static final String TABLE_NAME = "dataslices";
 	public static final String COLUMN_ID = "id";
-	public static final String COLUMN_TABLENAME = "tablename";
-	public static final String COLUMN_ROWUID = "rowuid";
-	public static final String COLUMN_ACTION = "action";
+	public static final String COLUMN_SERVERUNTIL = "serveruntil";
 
 	public String getTableName() { return TABLE_NAME; }
 	
 	public String getCreateSql() {
 		return "create table " 
 				+ TABLE_NAME
-				+ "(" 
-				+ COLUMN_ID + " integer primary key autoincrement, " 
-				+ COLUMN_TABLENAME + " text not null, " 
-				+ COLUMN_ROWUID + " text not null, "
-				+ COLUMN_ACTION + " text not null"
+				+ " (" 
+				+ COLUMN_ID + " text not null PRIMARY KEY, "
+				+ COLUMN_SERVERUNTIL + " text not null"
 				+ ");";
 	}
 	

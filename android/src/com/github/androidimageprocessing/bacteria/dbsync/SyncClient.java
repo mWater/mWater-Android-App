@@ -1,4 +1,4 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
 /**
  * Interface implemented by a client database which is capable of

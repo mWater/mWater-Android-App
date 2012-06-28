@@ -1,10 +1,10 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public abstract class SyncTable {
-	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_UID = "uid";
 	public static final String COLUMN_ROWVERSION = "rowversion";
 
@@ -86,6 +86,9 @@ public abstract class SyncTable {
 				+ oldVersion + " to " + newVersion
 				+ ", which will destroy all old data");
 		database.execSQL("DROP TABLE IF EXISTS " + getTableName());
+		database.execSQL("DROP TRIGGER IF EXISTS inserttrigger" + getTableName());
+		database.execSQL("DROP TRIGGER IF EXISTS updatetrigger" + getTableName());
+		database.execSQL("DROP TRIGGER IF EXISTS deletetrigger" + getTableName());
 		onCreate(database);
 	}
 }

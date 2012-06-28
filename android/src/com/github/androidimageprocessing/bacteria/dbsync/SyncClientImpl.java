@@ -1,6 +1,6 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
-import com.github.androidimageprocessing.bacteria.db.ChangeSet.Table;
+import com.github.androidimageprocessing.bacteria.dbsync.ChangeSet.Table;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

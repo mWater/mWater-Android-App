@@ -1,4 +1,4 @@
-package com.github.androidimageprocessing.bacteria.db;
+package com.github.androidimageprocessing.bacteria.dbsync;
 
 /**
  * Exception thrown by a sync server

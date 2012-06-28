@@ -1,7 +1,7 @@
 package com.github.androidimageprocessing.bacteria.test;
 
-import com.github.androidimageprocessing.bacteria.db.SyncChangesTable;
-import com.github.androidimageprocessing.bacteria.db.DataSlicesTable;
+import com.github.androidimageprocessing.bacteria.dbsync.DataSlicesTable;
+import com.github.androidimageprocessing.bacteria.dbsync.SyncChangesTable;
 
 import android.content.ContentValues;
 import android.content.Context;

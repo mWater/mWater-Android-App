@@ -1,6 +1,6 @@
 package com.github.androidimageprocessing.bacteria.test;
 
-import com.github.androidimageprocessing.bacteria.db.SyncTable;
+import com.github.androidimageprocessing.bacteria.dbsync.SyncTable;
 
 public class TestSyncTable extends SyncTable {
 	public static final String TABLE_NAME = "test";
