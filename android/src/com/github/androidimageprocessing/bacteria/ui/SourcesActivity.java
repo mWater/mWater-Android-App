@@ -50,21 +50,6 @@ public class SourcesActivity extends FragmentActivity implements LoaderManager.L
 			}
 		});
 		registerForContextMenu(listView);
-
-//		// Add sample rows
-//		Cursor c = getContentResolver().query(MWaterContentProvider.SOURCES_URI, null, null, null, null);
-//		if (c.getCount() < 2) {
-//			ContentValues cv = new ContentValues();
-//			cv.put("code", "12345");
-//			cv.put("name", "Tap #1");
-//			cv.put("desc", "City center");
-//			getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
-//
-//			cv.put("code", "12346");
-//			cv.put("name", "River");
-//			cv.put("desc", "Before intake");
-//			getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
-//		}
 	}
 
 	@Override
