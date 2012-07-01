@@ -3,6 +3,7 @@ package com.github.androidimageprocessing.bacteria.ui;
 import java.io.File;
 import java.io.IOException;
 
+import com.actionbarsherlock.app.SherlockActivity;
 import com.github.androidimageprocessing.bacteria.App;
 import com.github.androidimageprocessing.bacteria.R;
 
@@ -12,7 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class MainActivity extends Activity {
+public class MainActivity extends SherlockActivity {
     private static final String TAG = "com.github.androidimageprocessing.bacteria";
 
     @Override

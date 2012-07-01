@@ -63,6 +63,10 @@ public class DataBinder {
 		}
 	}
 
+	public void revert() {
+		load(true);
+	}
+	
 	void load(boolean includeModified) {
 		if (uri == null)
 			return;
@@ -70,7 +74,11 @@ public class DataBinder {
 		// Requery
 		Cursor cursor = contentResolver.query(uri, null, null, null, null);
 		if (!cursor.moveToFirst())
-			throw new IllegalStateException("Row does not exist: " + uri);
+		{
+			// Non-existant row. Do not bind
+			cursor.close();
+			return;
+		}
 
 		ContentValues content = new ContentValues();
 		DatabaseUtils.cursorRowToContentValues(cursor, content);
@@ -80,6 +88,7 @@ public class DataBinder {
 			if (!elem.isModified() || includeModified)
 				elem.Load(content);
 		}
+		cursor.close();
 	}
 
 	void handleContentChange() {
