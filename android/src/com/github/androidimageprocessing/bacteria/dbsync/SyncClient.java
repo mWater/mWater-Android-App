@@ -18,7 +18,7 @@ public interface SyncClient {
 	 * on the client before "until" have been uploaded
 	 * @param until taken from changeset that was sent
 	 */
-	void markChangeSetSent(String until);
+	void markChangeSetSent(long until);
 
 	/**
 	 * Attempts to apply the specified changeset for a slice
@@ -28,7 +28,7 @@ public interface SyncClient {
 
 	/**
 	 * Gets the moment of the last changes for a slice have been downloaded 
-	 * @return "since" string, or null if never downloaded
+	 * @return "until" sequence number, or 0 if never downloaded
 	 */
-	String getSince(DataSlice dataSlice);	
+	long getUntil(DataSlice dataSlice);	
 }

@@ -21,7 +21,7 @@ public class DataSlicesTable {
 				+ TABLE_NAME
 				+ " (" 
 				+ COLUMN_ID + " text not null PRIMARY KEY, "
-				+ COLUMN_SERVERUNTIL + " text not null"
+				+ COLUMN_SERVERUNTIL + " integer not null"
 				+ ");";
 	}
 	

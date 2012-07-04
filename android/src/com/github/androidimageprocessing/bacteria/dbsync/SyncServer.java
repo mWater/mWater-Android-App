@@ -7,7 +7,7 @@ public interface SyncServer {
 	 * @param since point after which to download changes
 	 * @return changes or null if none
 	 */
-	ChangeSet downloadChangeSet(DataSlice dataSlice, String since) throws SyncServerException;
+	ChangeSet downloadChangeSet(DataSlice dataSlice, long since) throws SyncServerException;
 	
 	/**
 	 * Uploads change set

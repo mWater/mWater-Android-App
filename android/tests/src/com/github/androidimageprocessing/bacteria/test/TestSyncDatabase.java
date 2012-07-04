@@ -5,6 +5,7 @@ import com.github.androidimageprocessing.bacteria.dbsync.SyncChangesTable;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 public class TestSyncDatabase {
@@ -31,7 +32,11 @@ public class TestSyncDatabase {
 		
 		return db;
 	}
-	
+
+	public Cursor query() {
+		return db.query(TestSyncTable.TABLE_NAME, null, null, null, null, null, null);
+	}
+
 	public void insert(String uid, int rowversion) {
 		ContentValues values = new ContentValues();
 		values.put(TestSyncTable.COLUMN_UID, uid);

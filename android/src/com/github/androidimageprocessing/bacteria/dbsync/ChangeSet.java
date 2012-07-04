@@ -3,16 +3,16 @@ package com.github.androidimageprocessing.bacteria.dbsync;
 import android.database.Cursor;
 
 /**
- * Contains a list of changes to rows in a database up until a certain
- * moment.
+ * Contains a list of changes to rows in a database up until a certain moment.
+ * 
  * @author Clayton
- *
+ * 
  */
 public class ChangeSet {
-	private String until;
+	private long until;
 	private Table[] tables;
 
-	public ChangeSet(String until, Table[] tables) {
+	public ChangeSet(long until, Table[] tables) {
 		this.until = until;
 		this.tables = tables;
 	}
@@ -20,33 +20,44 @@ public class ChangeSet {
 	/**
 	 * Until which moment change set contains
 	 */
-	public String getUntil() {
+	public long getUntil() {
 		return until;
 	}
-	
+
 	/**
 	 * Tables in the change set in topological order
 	 */
 	public Table[] getTables() {
 		return tables;
 	}
-	
+
+	/**
+	 * Get a table by name
+	 * 
+	 * @returns null if not included
+	 */
+	public Table getTable(String tableName) {
+		for (Table table : tables) {
+			if (table.tableName == tableName)
+				return table;
+		}
+		return null;
+	}
+
 	/**
 	 * Contains the changes for a single table.
+	 * 
 	 * @author Clayton
-	 *
+	 * 
 	 */
 	static public class Table {
-		/**
-		 * Rows to be inserted. Includes row version
-		 */
-		public Cursor inserts;
-		
+		public String tableName;
+
 		/**
 		 * Rows to be updated. Includes row version
 		 */
-		public Cursor updates;
-		
+		public Cursor upserts;
+
 		/**
 		 * UID only of rows to be deleted
 		 */

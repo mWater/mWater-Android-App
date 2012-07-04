@@ -16,8 +16,8 @@ public class Synchronizer {
 		boolean repeatDownload; // Set when upload was done after changes gotten
 		do {
 			// Download change set
-			String since = client.getSince(dataSlice);
-			ChangeSet downloadSet = server.downloadChangeSet(dataSlice, since);
+			long until = client.getUntil(dataSlice);
+			ChangeSet downloadSet = server.downloadChangeSet(dataSlice, until);
 			if (downloadSet == null)
 				return;
 			

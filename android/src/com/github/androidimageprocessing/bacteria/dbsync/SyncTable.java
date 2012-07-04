@@ -3,6 +3,26 @@ package com.github.androidimageprocessing.bacteria.dbsync;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+/**
+ * SyncTable is a database table which is designed to have changes synchronized
+ * with a central server. It uses a series of triggers to record when changes 
+ * are made to its rows. It also stores a row version with each row so that
+ * the server is able to correctly merge changes made against older copies
+ * of rows.
+ * 
+ * Row version is always zero for newly created local rows. As soon as the 
+ * server receives the row, it begins versioning it at version 1. The client
+ * does not receive a copy back of the row from the server, but the version 
+ * numbers remain different until the first update. 
+ * 
+ * That is, the row versions on the client refer to the row version against
+ * which the changes are being made.
+ * 
+ * Deletes should always cascade, as server might not send deletes of child
+ * rows.
+ * @author Clayton
+ *
+ */
 public abstract class SyncTable {
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_UID = "uid";
@@ -31,6 +51,7 @@ public abstract class SyncTable {
 	}
 
 	String getInsertTriggerSql() {
+		// Create a trigger which is fired when new rows are inserted with a row version of 0
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("inserttrigger").append(getTableName());
@@ -48,11 +69,14 @@ public abstract class SyncTable {
 	}
 
 	String getUpdateTriggerSql() {
+		// Create a trigger which is fired when rows are updated without changing the row version
+		// and without setting row version to -1
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("updatetrigger").append(getTableName());
 		sql.append(" AFTER UPDATE ON ").append(getTableName());
 		sql.append(" WHEN new.").append(COLUMN_ROWVERSION).append("=old.").append(COLUMN_ROWVERSION);
+		sql.append(" AND new.").append(COLUMN_ROWVERSION).append("<>-1");
 		sql.append(" BEGIN INSERT INTO ").append(SyncChangesTable.TABLE_NAME);
 		sql.append(" (").append(SyncChangesTable.COLUMN_TABLENAME);
 		sql.append(", ").append(SyncChangesTable.COLUMN_ROWUID);
@@ -65,6 +89,8 @@ public abstract class SyncTable {
 	}
 	
 	String getDeleteTriggerSql() {
+		// Create a trigger which is fired when rows with a non-negative row version are deleted
+		// To avoid firing, first update row version to -1
 		StringBuilder sql = new StringBuilder();
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("deletetrigger").append(getTableName());
