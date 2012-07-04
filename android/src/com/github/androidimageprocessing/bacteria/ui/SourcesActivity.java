@@ -17,14 +17,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.view.ContextMenu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class SourcesActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 	public static final String TAG = SourcesActivity.class.getSimpleName();

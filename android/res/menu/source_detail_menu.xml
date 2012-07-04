@@ -12,11 +12,4 @@
         android:showAsAction="withText"
         android:title="Delete">
     </item>
-    <item
-        android:id="@+id/menu_undo"
-        android:icon="@drawable/content_undo"
-        android:showAsAction="withText"
-        android:title="Undo">
-    </item>
-
 </menu>
