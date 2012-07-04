@@ -49,6 +49,7 @@ public class SyncClientImpl implements SyncClient {
 	private Table getTableChangeSet(SyncTable syncTable) {
 		Table table = new Table();
 
+		table.tableName = syncTable.getTableName();
 		table.upserts = getUpserts(syncTable, table);
 		table.deletes = getDeletes(syncTable, table);
 
@@ -89,7 +90,7 @@ public class SyncClientImpl implements SyncClient {
 		// TODO substite row names
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT DISTINCT ").append(SyncChangesTable.COLUMN_ROWUID);
-		sql.append(" FROM ").append(SyncChangesTable.TABLE_NAME);
+		sql.append(" AS ").append(SyncTable.COLUMN_UID).append(" FROM ").append(SyncChangesTable.TABLE_NAME);
 		sql.append(" AS sc1 WHERE tablename=? AND action='D'");
 		sql.append(" AND NOT EXISTS (SELECT NULL FROM ");
 		sql.append(SyncChangesTable.TABLE_NAME).append(" AS sc2 WHERE tablename=? AND sc2.rowuid=sc1.rowuid AND action='I')");
@@ -156,33 +157,37 @@ public class SyncClientImpl implements SyncClient {
 		for (String colName : syncTable.getSyncColumns())
 			colsIgnore.remove(colName);
 
-		while (upserts.moveToNext()) {
-			ContentValues values = new ContentValues();
-			DatabaseUtils.cursorRowToContentValues(upserts, values);
+		if (upserts.moveToFirst()) {
+			do {
+				ContentValues values = new ContentValues();
+				DatabaseUtils.cursorRowToContentValues(upserts, values);
 
-			// Remove columns to ignore
-			for (String colName : colsIgnore)
-				values.remove(colName);
+				// Remove columns to ignore
+				for (String colName : colsIgnore)
+					values.remove(colName);
 
-			// Attempt update
-			// TODO updates uid to same value
-			if (db.update(syncTable.getTableName(), values, SyncTable.COLUMN_UID + "=?", new String[] { values.getAsString(SyncTable.COLUMN_UID) }) == 0) {
-				// Insert since not present
-				db.insert(syncTable.getTableName(), null, values);
-			}
+				// Attempt update
+				// TODO updates uid to same value
+				if (db.update(syncTable.getTableName(), values, SyncTable.COLUMN_UID + "=?", new String[] { values.getAsString(SyncTable.COLUMN_UID) }) == 0) {
+					// Insert since not present
+					db.insert(syncTable.getTableName(), null, values);
+				}
+			} while (upserts.moveToNext());
 		}
 	}
 
 	void applyDeletes(SyncTable syncTable, Cursor deletes) {
-		while (deletes.moveToNext()) {
-			String uid = deletes.getString(deletes.getColumnIndex(SyncTable.COLUMN_UID));
-			
-			// Set row version to -1 first
-			ContentValues values = new ContentValues();
-			values.put(SyncTable.COLUMN_ROWVERSION, -1);
-			
-			db.update(syncTable.getTableName(), values, SyncTable.COLUMN_UID + "=?", new String[] { uid });
-			db.delete(syncTable.getTableName(), SyncTable.COLUMN_UID + "=?", new String[] { uid });
+		if (deletes.moveToFirst()) {
+			do {
+				String uid = deletes.getString(deletes.getColumnIndex(SyncTable.COLUMN_UID));
+
+				// Set row version to -1 first
+				ContentValues values = new ContentValues();
+				values.put(SyncTable.COLUMN_ROWVERSION, -1);
+
+				db.update(syncTable.getTableName(), values, SyncTable.COLUMN_UID + "=?", new String[] { uid });
+				db.delete(syncTable.getTableName(), SyncTable.COLUMN_UID + "=?", new String[] { uid });
+			} while (deletes.moveToNext());
 		}
 	}
 
