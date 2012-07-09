@@ -38,7 +38,7 @@ public class ChangeSet {
 	 */
 	public Table getTable(String tableName) {
 		for (Table table : tables) {
-			if (table.tableName == tableName)
+			if (table.tableName.equals(tableName))
 				return table;
 		}
 		return null;

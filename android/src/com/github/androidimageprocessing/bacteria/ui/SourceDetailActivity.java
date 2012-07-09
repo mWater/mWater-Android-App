@@ -30,22 +30,25 @@ public class SourceDetailActivity extends SherlockFragmentActivity {
 
 		String id = getIntent().getStringExtra("id");
 		uri = Uri.withAppendedPath(MWaterContentProvider.SOURCES_URI, id);
-
-		// Setup action bar for tabs
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		actionBar.setDisplayShowTitleEnabled(true);
-
-		Bundle args = new Bundle();
-		args.putParcelable("uri", uri);
 		
-		Tab tab = actionBar.newTab().setText("Info")
-				.setTabListener(new TabListener<SourceDetailInfoFragment>(this, "info", SourceDetailInfoFragment.class, args));
-		actionBar.addTab(tab);
+		getSupportActionBar().setTitle("Source: 34256");
+		setContentView(R.layout.source3);
 
-		tab = actionBar.newTab().setText("Samples")
-				.setTabListener(new TabListener<SourceDetailInfoFragment>(this, "samples", SourceDetailInfoFragment.class, args));
-		actionBar.addTab(tab);
+//		// Setup action bar for tabs
+//		ActionBar actionBar = getSupportActionBar();
+//		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//		actionBar.setDisplayShowTitleEnabled(true);
+//
+//		Bundle args = new Bundle();
+//		args.putParcelable("uri", uri);
+//		
+//		Tab tab = actionBar.newTab().setText("Info")
+//				.setTabListener(new TabListener<SourceDetailInfoFragment>(this, "info", SourceDetailInfoFragment.class, args));
+//		actionBar.addTab(tab);
+//
+//		tab = actionBar.newTab().setText("Samples")
+//				.setTabListener(new TabListener<SourceDetailInfoFragment>(this, "samples", SourceDetailInfoFragment.class, args));
+//		actionBar.addTab(tab);
 	}
 
 	@Override

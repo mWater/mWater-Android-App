@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="right" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,38 +24,25 @@
                     android:layout_height="wrap_content"
                     android:text="Kitumba City Center Well"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No description" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                    android:paddingLeft="10dp"
+                    android:text="Well dug in 1995 next to main square"
+                    android:textColor="?android:textColorSecondary" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp" >
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="0"
-                        android:text="Type:"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    <Spinner
-                        android:id="@+id/spinner1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
+                    android:layout_weight="0"
+                    android:text="Type: Shallow Well"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
             </LinearLayout>
-
+
             <ImageButton
                 android:id="@+id/imageButton1"
                 android:layout_width="wrap_content"
@@ -65,46 +51,101 @@
                 android:maxHeight="120dp"
                 android:maxWidth="120dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/icon_water_source" />
+                android:src="@drawable/camera" />
 
         </LinearLayout>
 
         <View
-            android:id="@+id/View01"
+            android:id="@+id/Separator"
             style="@style/divider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <ImageView
-                android:id="@+id/imageView1"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/divider_vert"
+            android:dividerPadding="8dp"
+            android:orientation="horizontal"
+            android:showDividers="middle" >
+
+            <Button
+                android:id="@+id/Button03"
+                style="@style/cleanButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:adjustViewBounds="true"
-                android:maxHeight="32dp"
-                android:maxWidth="32dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/icon_sync" />
-
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Sample"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse" />
+
+            <Button
+                android:id="@+id/Button05"
+                style="@style/cleanButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@style/cleanButton"
+                android:text="Add Test" />
+
+            <Button
+                android:id="@+id/Button06"
+                style="@style/cleanButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Add Note" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/View03"
+            style="@style/divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/TextView06"
+            style="@style/sectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Location" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/divider_vert"
+            android:dividerPadding="8dp"
+            android:minHeight="48dp"
+            android:showDividers="middle" >
+
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="Location:"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal"
+                android:text="54m NE of here"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/textView7"
+
+            <Button
+                android:id="@+id/button1"
+                style="@style/cleanButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="Waiting for GPS"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:layout_weight="1"
+                android:text="Change" />
+
+            <Button
+                android:id="@+id/Button01"
+                style="@style/cleanButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Map" />
 
         </LinearLayout>
 
@@ -113,7 +154,7 @@
             style="@style/divider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
+
         <TextView
             android:id="@+id/TextView02"
             style="@style/sectionHeader"
@@ -126,14 +167,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="48dp" >
-
+
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
         android:paddingRight="10dp"
-        android:text="Jan 12, 2012" />
+        android:text="01/12/2012" />
 
     <TextView
         android:id="@+id/textView6"
@@ -160,7 +201,116 @@
 </LinearLayout>
 
 <View
-    android:id="@+id/Separator"
+    android:id="@+id/View05"
+    style="@style/divider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp" >
+
+    <TextView
+        android:id="@+id/TextView04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:paddingRight="10dp"
+        android:text="12/04/2011" />
+
+    <TextView
+        android:id="@+id/TextView03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:background="@color/test_ok"
+        android:padding="2dp"
+        android:text="E.Coli"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/TextView05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@color/test_good"
+        android:padding="2dp"
+        android:text="Ph"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0"
+        android:adjustViewBounds="true"
+        android:maxHeight="48dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_action_overflow_horiz" />
+
+</LinearLayout>
+
+<View
+    android:id="@+id/View04"
+    style="@style/divider"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+<TextView
+    android:id="@+id/TextView07"
+    style="@style/sectionHeader"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:text="Notes" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="48dp" >
+
+    <TextView
+        android:id="@+id/TextView09"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_vertical"
+        android:paddingRight="10dp"
+        android:text="01/12/2012" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:text="Noticed that pump handle is broken and has temporary fix."
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="5pt" />
+
+    <ImageView
+        android:id="@+id/ImageView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:adjustViewBounds="true"
+        android:maxHeight="48dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_action_overflow_horiz" />
+
+</LinearLayout>
+
+<View
+    android:id="@+id/View01"
     style="@style/divider"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />
