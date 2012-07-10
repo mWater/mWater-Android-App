@@ -12,7 +12,7 @@
 
 #include "imagefuncs.h"
 
-#define APPNAME "com.github.androidimageprocessing.bacteria"
+#define APPNAME "co.mwater.clientapp"
 
 #define OUTPUT_PIPELINE 1
 
@@ -34,7 +34,7 @@ Mat process(Mat input, int& colonies) {
 }
 
 extern "C" {
-JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_PetrifilmCameraView_Process(
+JNIEXPORT void JNICALL Java_co_mwater_clientapp_ui_PetrifilmCameraView_Process(
         JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
         jintArray processedRGBA,  jobject results) {
 
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_ui_Petrif
 
 }
 
-JNIEXPORT void JNICALL Java_com_github_androidimageprocessing_bacteria_PetrifilmImageProcessor_process(
+JNIEXPORT void JNICALL Java_co_mwater_clientapp_PetrifilmImageProcessor_process(
         JNIEnv* env, jobject thiz, jbyteArray jpeg, jobject results) {
     jbyte* _jpeg = env->GetByteArrayElements(jpeg, 0);
 

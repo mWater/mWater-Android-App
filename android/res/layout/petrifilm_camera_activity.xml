@@ -5,7 +5,7 @@
     android:layout_height="fill_parent" >
 
      <view
-        class="com.github.androidimageprocessing.bacteria.ui.PetrifilmCameraView" 
+        class="co.mwater.clientapp.ui.PetrifilmCameraView" 
         android:id="@+id/CameraView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

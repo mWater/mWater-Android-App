@@ -1,6 +1,6 @@
 #include "imagefuncs.h"
 
-#define LOG_TAG "com.github.androidimageprocessing.bacteria"
+#define LOG_TAG "co.mwater.clientapp"
 #ifdef ANDROID
 #include <android/log.h>
 #  define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
