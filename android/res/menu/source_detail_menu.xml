@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:id="@+id/menu_ok"
-        android:icon="@drawable/ic_action_done"
-        android:showAsAction="always|withText"
-        android:title="OK">
+        android:id="@+id/menu_star"
+        android:icon="@android:drawable/btn_star"
+        android:showAsAction="always" android:title="Favorite">
     </item>
     <item
         android:id="@+id/menu_delete"

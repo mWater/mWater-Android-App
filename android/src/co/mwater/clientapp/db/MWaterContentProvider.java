@@ -15,7 +15,16 @@ public class MWaterContentProvider extends SyncContentProvider {
 		
 		addUriHandler("sources", new CRUDUriHandler(this, helper, new SourcesTable()));
 		addUriHandler("sources/#", new CRUDUriHandler(this, helper, new SourcesTable()));
-		
+
+		addUriHandler("source_notes", new CRUDUriHandler(this, helper, new SourceNotesTable()));
+		addUriHandler("source_notes/#", new CRUDUriHandler(this, helper, new SourceNotesTable()));
+
+		addUriHandler("samples", new CRUDUriHandler(this, helper, new SamplesTable()));
+		addUriHandler("samples/#", new CRUDUriHandler(this, helper, new SamplesTable()));
+
+		addUriHandler("tests", new CRUDUriHandler(this, helper, new TestsTable()));
+		addUriHandler("tests/#", new CRUDUriHandler(this, helper, new TestsTable()));
+
 		return true;
 	}
 

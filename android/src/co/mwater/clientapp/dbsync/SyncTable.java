@@ -27,6 +27,7 @@ public abstract class SyncTable {
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_UID = "uid";
 	public static final String COLUMN_ROW_VERSION = "row_version";
+	public static final String COLUMN_CREATED_BY = "created_by";		// Optional field with enforced behavior when synced. Must be included in syncColumns
 
 	private String[] syncColumns; // Columns, excluding any declared above
 	

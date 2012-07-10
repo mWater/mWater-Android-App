@@ -15,14 +15,25 @@
         <item name="android:background">@drawable/divider</item>
     </style>
 
+    <!--  This doesn't work well. No idea why -->
     <style name="divider_vert">
         <item name="android:width">0.25dp</item>
+        <item name="android:height">32dp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:minWidth">0.25dp</item>
+        <item name="android:layout_width">0.25dp</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
         <item name="android:background">@drawable/divider_vert</item>
     </style>
 
     <style name="borderlessButton" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/borderless_button_background</item>
-    </style>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        </style>
 
     <style name="mainButton" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/borderless_button_background</item>
