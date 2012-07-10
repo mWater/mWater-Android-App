@@ -1,4 +1,4 @@
-package co.mwater.clientapp.ui;
+package co.mwater.clientapp.ui.petrifilm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import co.mwater.clientapp.App;
-import co.mwater.clientapp.ui.PetrifilmTestListActivity.PopulatePetrifilmTestsListTask;
+import co.mwater.clientapp.ui.petrifilm.PetrifilmTestListActivity.PopulatePetrifilmTestsListTask;
 
 import co.mwater.clientapp.R;
 

@@ -1,13 +1,9 @@
 package co.mwater.clientapp.ui;
 
-import co.mwater.clientapp.R;
-import co.mwater.clientapp.db.MWaterContentProvider;
-import co.mwater.clientapp.db.SourcesTable;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +11,20 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import co.mwater.clientapp.R;
+import co.mwater.clientapp.databinding.DataBinder;
+import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.SourceCodes;
+import co.mwater.clientapp.db.SourcesTable;
 
-public class SourceDetailBasicsDialogFragment extends DialogFragment implements OnClickListener {
+public class SourceDetailBasicsDialogFragment extends DialogFragment {
+	DataBinder dataBinder;
 	Uri uri;
 
+	public interface DialogListener {
+        void sourceCreated(String id);
+    }
+	
 	public SourceDetailBasicsDialogFragment(String id) {
 		// Load existing values if has id
 		if (id != null) {
@@ -28,57 +34,51 @@ public class SourceDetailBasicsDialogFragment extends DialogFragment implements 
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.source_detail_basics, container);
 
+		dataBinder = new DataBinder(getActivity().getContentResolver(), new Handler());
+		dataBinder.addTextView((TextView) view.findViewById(R.id.name), SourcesTable.COLUMN_NAME);
+		dataBinder.addTextView((TextView) view.findViewById(R.id.desc), SourcesTable.COLUMN_DESC);
+
 		// Load existing values if has id
-		if (uri != null) {
-			Cursor cursor = this.getActivity().getContentResolver().query(uri, null, null, null, null);
-			// Load fields
-			if (cursor.moveToFirst())
-			{
-				ContentValues values = new ContentValues();
-				DatabaseUtils.cursorRowToContentValues(cursor, values);
-				setText(view, R.id.name, values.getAsString(SourcesTable.COLUMN_NAME));
-				setText(view, R.id.desc, values.getAsString(SourcesTable.COLUMN_DESC));
+		if (uri != null)
+			dataBinder.loadFrom(uri);
+
+		// Wire up buttons
+		((Button) view.findViewById(R.id.ok)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) { 
+				onOKClick();
 			}
-			cursor.close();
-		}
-
-		Button okButton = (Button) view.findViewById(R.id.ok);
-		okButton.setOnClickListener(this);
-
-		Button cancelButton = (Button) view.findViewById(R.id.cancel);
-		cancelButton.setOnClickListener(this);
+		});
+		((Button) view.findViewById(R.id.cancel)).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) { 
+				dismiss();
+			}
+		});
 
 		getDialog().setTitle("Source Details");
 		return view;
 	}
 
-	void setText(View view, int id, String text) {
-		TextView textView = (TextView) view.findViewById(id);
-		if (text != null)
-			textView.setText(text);
-		else
-			textView.setText("");
-	}
-
-	public void onClick(View v) {
-		if (v.getId() == R.id.ok) {
-			// Save values
-			ContentValues values = new ContentValues();
-
-			this.dismiss();
+	private void onOKClick() {
+		boolean newlyCreated = false;
+		// Create row if non-existant
+		if (uri == null) {
+			ContentValues cv = new ContentValues();
+			cv.put("code", SourceCodes.getNewCode(this.getActivity()));
+			uri = getActivity().getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
+			newlyCreated = true;
 		}
-		if (v.getId() == R.id.cancel) {
-			this.dismiss();
-		}
+		
+		// Save values
+		dataBinder.saveTo(uri);
+
+		// Edit source if newly created
+		if (newlyCreated)
+			((DialogListener)getActivity()).sourceCreated(uri.getLastPathSegment());
+
+		this.dismiss();
 	}
 }

@@ -34,7 +34,7 @@ Mat process(Mat input, int& colonies) {
 }
 
 extern "C" {
-JNIEXPORT void JNICALL Java_co_mwater_clientapp_ui_PetrifilmCameraView_Process(
+JNIEXPORT void JNICALL Java_co_mwater_clientapp_ui_petrifilm_PetrifilmCameraView_Process(
         JNIEnv* env, jobject thiz, jint width, jint height, jbyteArray yuv,
         jintArray processedRGBA,  jobject results) {
 

@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -24,7 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class SourcesActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SourcesActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor>, SourceDetailBasicsDialogFragment.DialogListener {
 	public static final String TAG = SourcesActivity.class.getSimpleName();
 	private static final int LOADER_ID = 0x01;
 	private SimpleCursorAdapter adapter;
@@ -44,14 +45,14 @@ public class SourcesActivity extends SherlockFragmentActivity implements LoaderM
 				SourcesActivity.this.onItemClick(id);
 			}
 		});
-		
+
 		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.sources_menu, menu);
-		
+
 		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			public boolean onMenuItemClick(MenuItem item) {
 				createNewSource();
@@ -72,11 +73,9 @@ public class SourcesActivity extends SherlockFragmentActivity implements LoaderM
 	}
 
 	void createNewSource() {
-		// Create new row
-		ContentValues cv = new ContentValues();
-		cv.put("code", SourceCodes.getNewCode(this));
-		Uri uri = getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
-		editSource(uri.getLastPathSegment());
+		FragmentManager fm = getSupportFragmentManager();
+		SourceDetailBasicsDialogFragment basicsDialog = new SourceDetailBasicsDialogFragment(null);
+		basicsDialog.show(fm, "fragment_basics");
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -89,5 +88,9 @@ public class SourcesActivity extends SherlockFragmentActivity implements LoaderM
 
 	public void onLoaderReset(Loader<Cursor> cursorLoader) {
 		adapter.swapCursor(null);
+	}
+
+	public void sourceCreated(String id) {
+		editSource(id);
 	}
 }

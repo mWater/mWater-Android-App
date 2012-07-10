@@ -1,4 +1,4 @@
-package co.mwater.clientapp.ui;
+package co.mwater.clientapp.ui.petrifilm;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

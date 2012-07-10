@@ -1,4 +1,4 @@
-package co.mwater.clientapp.ui;
+package co.mwater.clientapp.ui.petrifilm;
 
 import java.io.File;
 import java.io.IOException;

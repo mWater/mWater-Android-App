@@ -38,7 +38,7 @@ public class DataBinder {
 		contentObserver = new DataBinderContentObserver(handler);
 		contentResolver.registerContentObserver(uri, true, contentObserver);
 
-		load(true);
+		load(uri, true);
 	}
 
 	public void unbind() {
@@ -50,6 +50,17 @@ public class DataBinder {
 	}
 
 	public void save() {
+		if (uri == null)
+			throw new IllegalArgumentException("Not bound");
+		saveTo(uri);
+	}
+
+	/**
+	 * Saves without binding
+	 * 
+	 * @param toUri
+	 */
+	public void saveTo(Uri toUri) {
 		ContentValues content = new ContentValues();
 
 		// Get contents to save
@@ -59,23 +70,27 @@ public class DataBinder {
 		}
 
 		if (content.size() > 0) {
-			contentResolver.update(uri, content, null, null);
+			contentResolver.update(toUri, content, null, null);
 		}
 	}
 
-	public void revert() {
-		load(true);
+	public void loadFrom(Uri fromUri) {
+		load(fromUri, true);
 	}
-	
-	void load(boolean includeModified) {
-		if (uri == null)
+
+	public void revert() {
+		load(uri, true);
+	}
+
+	void load(Uri loadUri, boolean includeModified) {
+		if (loadUri == null)
 			return;
 
 		// Requery
-		Cursor cursor = contentResolver.query(uri, null, null, null, null);
+		Cursor cursor = contentResolver.query(loadUri, null, null, null, null);
 		if (!cursor.moveToFirst())
 		{
-			// Non-existant row. Do not bind
+			// Non-existant row. Do not load
 			cursor.close();
 			return;
 		}
@@ -92,7 +107,7 @@ public class DataBinder {
 	}
 
 	void handleContentChange() {
-		load(false);
+		load(uri, false);
 	}
 
 	class DataBinderContentObserver extends ContentObserver {

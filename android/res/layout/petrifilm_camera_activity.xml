@@ -5,7 +5,7 @@
     android:layout_height="fill_parent" >
 
      <view
-        class="co.mwater.clientapp.ui.PetrifilmCameraView" 
+        class="co.mwater.clientapp.ui.petrifilm.PetrifilmCameraView" 
         android:id="@+id/CameraView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
