@@ -1,11 +1,8 @@
 package co.mwater.clientapp.ui;
 
-import co.mwater.clientapp.databinding.DataBinder;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SourcesTable;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -19,7 +16,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -29,13 +26,14 @@ import android.widget.Toast;
 
 public class SourceDetailActivity extends SherlockFragmentActivity implements LoaderCallbacks<Cursor> {
 	public static final String TAG = SourceDetailActivity.class.getSimpleName();
+	String id;
 	private Uri uri;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		String id = getIntent().getStringExtra("id");
+		id = getIntent().getStringExtra("id");
 		uri = Uri.withAppendedPath(MWaterContentProvider.SOURCES_URI, id);
 
 		setContentView(R.layout.source_detail_activity);
@@ -44,6 +42,12 @@ public class SourceDetailActivity extends SherlockFragmentActivity implements Lo
 		getSupportLoaderManager().initLoader(0, null, this);
 	}
 
+	public void onBasicsClick(View v) {
+        FragmentManager fm = getSupportFragmentManager();
+        SourceDetailBasicsDialogFragment basicsDialog = new SourceDetailBasicsDialogFragment(id);
+        basicsDialog.show(fm, "fragment_basics");
+	}
+	
 	public void onAddSampleClick(View v) {
 		// TODO
 		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
@@ -112,7 +116,6 @@ public class SourceDetailActivity extends SherlockFragmentActivity implements Lo
 			// TODO
 			setText(R.id.location, "230m NE");
 		}
-		cursor.close();
 	}
 
 	void setText(int id, String text) {
