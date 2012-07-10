@@ -30,17 +30,22 @@ public class SynchronizerTests extends AndroidTestCase {
 		db1 = testSyncDatabase1.setUp(getContext());
 		db2 = testSyncDatabase2.setUp(getContext());
 
+		RESTClient restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/resettests");
+		restClient.get();
+
+		restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/login");
+		restClient.addParam("username", "test");
+		restClient.addParam("password", "test");
+		String clientId1 = restClient.get();
+		String clientId2 = restClient.get();
+
 		clientImpl1 = new SyncClientImpl(db1, new SyncTable[] { new TestSyncTable() });
 		clientImpl2 = new SyncClientImpl(db2, new SyncTable[] { new TestSyncTable() });
-		serverImpl1 = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", "uidtest1");
-		serverImpl2 = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", "uidtest2");
+		serverImpl1 = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", clientId1);
+		serverImpl2 = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", clientId2);
 		
 		sync1 = new Synchronizer(clientImpl1, serverImpl1);
 		sync2 = new Synchronizer(clientImpl2, serverImpl2);
-
-		// Reset tests
-		RESTClient restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/resettests");
-		restClient.get();
 	}
 
 	@Override

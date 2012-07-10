@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/TableLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:stretchColumns="*" >
+
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+
+        <Button
+            android:id="@+id/sources"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/camera"
+            android:onClick="onSourcesClick"
+            android:text="Sources" />
+
+        <Button
+            android:id="@+id/samples"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/camera"
+            android:onClick="onSamplesClick"
+            android:text="Samples" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+
+        <Button
+            android:id="@+id/Button01"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/camera"
+            android:onClick="onTestsClick"
+            android:text="Tests" />
+
+        <Button
+            android:id="@+id/tests"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/camera"
+            android:onClick="onSyncClick"
+            android:text="Synchronize" />
+
+    </TableRow>
+
+</TableLayout>

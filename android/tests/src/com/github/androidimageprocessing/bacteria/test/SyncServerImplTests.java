@@ -21,11 +21,16 @@ public class SyncServerImplTests extends AndroidTestCase {
 		super.setUp();
 		db = testSyncDatabase.setUp(getContext());
 
-		serverImpl = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", "uidtest1");
-		
 		RESTClient restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/resettests");
 		restClient.get();
-	}
+
+		restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/login");
+		restClient.addParam("username", "test");
+		restClient.addParam("password", "test");
+		String clientId = restClient.get();
+
+		serverImpl = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", clientId);
+}
 
 	@Override
 	public void tearDown() throws Exception {

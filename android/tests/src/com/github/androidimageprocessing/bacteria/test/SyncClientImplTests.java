@@ -241,7 +241,7 @@ public class SyncClientImplTests extends AndroidTestCase {
 	public static ChangeSet createTestChangeSet(long until) {
 		ChangeSet.Table table = new ChangeSet.Table();
 		table.tableName = TestSyncTable.TABLE_NAME;
-		table.upserts = new MatrixCursor(new String[] { "uid", "rowversion", "a", "b" });
+		table.upserts = new MatrixCursor(new String[] { "uid", "row_version", "a", "b" });
 		table.deletes = new MatrixCursor(new String[] { "uid" });
 		ChangeSet changeSet = new ChangeSet(until, new ChangeSet.Table[] { table });
 		return changeSet;

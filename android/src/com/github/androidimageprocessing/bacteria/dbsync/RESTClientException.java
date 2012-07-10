@@ -1,13 +1,20 @@
 package com.github.androidimageprocessing.bacteria.dbsync;
 
+import java.io.IOException;
+
 public class RESTClientException extends Exception {
 	public final int responseCode;
-	
-	public RESTClientException(int responseCode)
-	{
+
+	public RESTClientException(IOException innerException) {
+		super(innerException);
+		responseCode = -1;
+	}
+
+	public RESTClientException(int responseCode, IOException innerException) {
+		super(innerException);
 		this.responseCode = responseCode;
 	}
-	
+
 	/**
 	 * 
 	 */

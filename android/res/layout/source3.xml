@@ -72,7 +72,7 @@
 
             <Button
                 android:id="@+id/Button03"
-                style="@style/cleanButton"
+                style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -81,16 +81,16 @@
 
             <Button
                 android:id="@+id/Button05"
-                style="@style/cleanButton"
+                style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="@style/cleanButton"
+                android:hint="@style/borderlessButton"
                 android:text="Add Test" />
 
             <Button
                 android:id="@+id/Button06"
-                style="@style/cleanButton"
+                style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -133,7 +133,7 @@
 
             <Button
                 android:id="@+id/button1"
-                style="@style/cleanButton"
+                style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -141,7 +141,7 @@
 
             <Button
                 android:id="@+id/Button01"
-                style="@style/cleanButton"
+                style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

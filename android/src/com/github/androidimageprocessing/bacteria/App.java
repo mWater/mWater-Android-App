@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 public class App {
 
@@ -12,7 +13,28 @@ public class App {
     public final static String FOLDER_ORIGINAL = "original";
     public final static String FOLDER_PROCESSED = "processed";
     public final static String FOLDER_RESULTS = "results";
+	private static final String TAG = App.class.getCanonicalName();
 
+    public static void setup(Context context)   {
+        try {
+            if (App.isExternalFilePresent(context, App.FOLDER_ORIGINAL) == false) {
+                File f = new File(App.getOriginalImageFolder(context));
+                f.mkdirs();
+            }
+            if (App.isExternalFilePresent(context, App.FOLDER_RESULTS) == false) {
+                File f = new File(App.getResultsFolder(context));
+                f.mkdirs();
+            }
+            if (App.isExternalFilePresent(context, App.FOLDER_PROCESSED) == false) {
+                File f = new File(App.getProcessedImageFolder(context));
+                f.mkdirs();
+            }
+        } catch (IOException e) {
+            // TODO Handle this exception (popup a dialog with the error)
+            Log.e(TAG, e.toString());
+        }
+    }
+    
     /**
      * Checks if the file (or directory) exists in the external storage.
      * @param context Android Context.

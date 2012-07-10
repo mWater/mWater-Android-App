@@ -20,6 +20,10 @@ public abstract class SyncDatabaseHelper extends SQLiteOpenHelper {
 		this.syncTables = syncTables;
 	}
 
+	public SyncTable[] getSyncTables() {
+		return syncTables;
+	}
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		new DataSlicesTable().onCreate(db);

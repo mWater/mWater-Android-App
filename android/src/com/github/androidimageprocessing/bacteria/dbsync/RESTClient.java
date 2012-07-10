@@ -18,11 +18,11 @@ public class RESTClient {
 
 	public RESTClient(String baseUrl) {
 		this.baseUrl = baseUrl;
-		query=new StringBuilder();
+		query = new StringBuilder();
 	}
 
 	public void addParam(String name, String value) {
-		if (query.length()>0)
+		if (query.length() > 0)
 			query.append("&");
 		query.append(name);
 		query.append("=");
@@ -33,8 +33,7 @@ public class RESTClient {
 		}
 	}
 
-	public String get() throws IOException, RESTClientException
-	{
+	public String get() throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
@@ -43,21 +42,29 @@ public class RESTClient {
 			throw new IllegalArgumentException(e);
 		}
 
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
 		try {
 			return readStreamString(connection.getInputStream());
-		}
-		catch (IOException ioex) {
-			int code = connection.getResponseCode();
-			throw new RESTClientException(code);
-		}
-		finally {
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				throw new RESTClientException(code, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
 			connection.disconnect();
 		}
 	}
-	
-	public String post() throws IOException, RESTClientException
-	{
+
+	public String post() throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
@@ -66,7 +73,13 @@ public class RESTClient {
 			throw new IllegalArgumentException(e);
 		}
 
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
 		try {
 			connection.setDoOutput(true); // Triggers POST.
 			connection.setFixedLengthStreamingMode(query.length());
@@ -86,18 +99,21 @@ public class RESTClient {
 			}
 
 			return readStreamString(connection.getInputStream());
-		}
-		catch (IOException ioex) {
-			int code = connection.getResponseCode();
-			throw new RESTClientException(code);
-		}
-		finally {
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				throw new RESTClientException(code, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
 			connection.disconnect();
 		}
 	}
 
 	String readStreamString(InputStream inputStream) throws IOException {
-		final char[] buffer = new char[8*1024];
+		final char[] buffer = new char[8 * 1024];
 		StringBuilder out = new StringBuilder();
 		Reader in;
 		try {
@@ -105,19 +121,19 @@ public class RESTClient {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e);
 		}
-		
+
 		try {
-		  int read;
-		  do {
-		    read = in.read(buffer, 0, buffer.length);
-		    if (read>0) {
-		      out.append(buffer, 0, read);
-		    }
-		  } while (read>=0);
+			int read;
+			do {
+				read = in.read(buffer, 0, buffer.length);
+				if (read > 0) {
+					out.append(buffer, 0, read);
+				}
+			} while (read >= 0);
 		} finally {
 			in.close();
 		}
-		return out.toString();	
+		return out.toString();
 	}
-	
+
 }

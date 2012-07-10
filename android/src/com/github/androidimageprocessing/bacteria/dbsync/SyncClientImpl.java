@@ -153,7 +153,7 @@ public class SyncClientImpl implements SyncClient {
 
 		// Remove known columns
 		colsIgnore.remove(SyncTable.COLUMN_UID);
-		colsIgnore.remove(SyncTable.COLUMN_ROWVERSION);
+		colsIgnore.remove(SyncTable.COLUMN_ROW_VERSION);
 		for (String colName : syncTable.getSyncColumns())
 			colsIgnore.remove(colName);
 
@@ -183,7 +183,7 @@ public class SyncClientImpl implements SyncClient {
 
 				// Set row version to -1 first
 				ContentValues values = new ContentValues();
-				values.put(SyncTable.COLUMN_ROWVERSION, -1);
+				values.put(SyncTable.COLUMN_ROW_VERSION, -1);
 
 				db.update(syncTable.getTableName(), values, SyncTable.COLUMN_UID + "=?", new String[] { uid });
 				db.delete(syncTable.getTableName(), SyncTable.COLUMN_UID + "=?", new String[] { uid });

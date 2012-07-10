@@ -23,19 +23,17 @@ public class SyncServerImpl implements SyncServer {
 	}
 
 	public ChangeSet downloadChangeSet(DataSlice dataSlice, long since) throws SyncServerException {
-		RESTClient restClient = new RESTClient(serverUrl+"download");
+		RESTClient restClient = new RESTClient(serverUrl + "download");
 		restClient.addParam("clientuid", clientUid);
-		restClient.addParam("since", since+"");
+		restClient.addParam("since", since + "");
+		restClient.addParam("slice", dataSlice.getSliceId());
 		try {
 			String cs = restClient.get();
-			JSONObject csjson=new JSONObject(cs);
+			JSONObject csjson = new JSONObject(cs);
 			return jsonSerializer.deserialize(csjson);
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
-			throw new SyncServerException();
 		} catch (RESTClientException e) {
 			e.printStackTrace();
-			throw new SyncServerException();
+			throw new SyncServerException(e.getMessage(), e);
 		} catch (JSONException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -46,19 +44,16 @@ public class SyncServerImpl implements SyncServer {
 		try {
 			JSONObject csjson = jsonSerializer.serialize(changeSet);
 
-			RESTClient restClient = new RESTClient(serverUrl+"upload");
+			RESTClient restClient = new RESTClient(serverUrl + "upload");
 			restClient.addParam("clientuid", clientUid);
 			restClient.addParam("changeset", csjson.toString());
-			
+
 			restClient.post();
 		} catch (JSONException e) {
 			throw new IllegalArgumentException(e);
-		} catch (IOException ioex) {
-			ioex.printStackTrace();
-			throw new SyncServerException();
 		} catch (RESTClientException e) {
 			e.printStackTrace();
-			throw new SyncServerException();
+			throw new SyncServerException(e.getMessage(), e);
 		}
 	}
 

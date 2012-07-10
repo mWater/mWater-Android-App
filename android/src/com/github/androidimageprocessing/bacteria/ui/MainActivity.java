@@ -1,63 +1,49 @@
 package com.github.androidimageprocessing.bacteria.ui;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.actionbarsherlock.app.SherlockActivity;
 import com.github.androidimageprocessing.bacteria.App;
 import com.github.androidimageprocessing.bacteria.R;
+import com.github.androidimageprocessing.bacteria.db.MWaterServer;
+import com.github.androidimageprocessing.bacteria.dbsync.CompleteDataSlice;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends SherlockActivity {
-    private static final String TAG = "com.github.androidimageprocessing.bacteria";
+	private static final String TAG = MainActivity.class.getCanonicalName();
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        try {
-            // AR - it's better to check them here than inside the getters
-            if (App.isExternalFilePresent(getApplicationContext(), App.FOLDER_ORIGINAL) == false) {
-                File f = new File(App.getOriginalImageFolder(getApplicationContext()));
-                f.mkdirs();
-            }
-            if (App.isExternalFilePresent(getApplicationContext(), App.FOLDER_RESULTS) == false) {
-                File f = new File(App.getResultsFolder(getApplicationContext()));
-                f.mkdirs();
-            }
-            if (App.isExternalFilePresent(getApplicationContext(), App.FOLDER_PROCESSED) == false) {
-                File f = new File(App.getProcessedImageFolder(getApplicationContext()));
-                f.mkdirs();
-            }
-        } catch (IOException e) {
-            // TODO Handle this exception (popup a dialog with the error)
-            Log.e(TAG, e.toString());
-        }
+		// Setup application
+		App.setup(this);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-    }
+		// Go to login screen if not logged in
+		if (MWaterServer.getClientId(this) == null) {
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivityForResult(intent, 0);
+		}
 
-    public void onSourcesClick(View v) {
-        Intent intent = new Intent(this,
-                SourcesActivity.class);
-        startActivity(intent);
-    }
+		setContentView(R.layout.main_activity2);
+	}
 
-    public void onTestsClick(View v) {
-        Intent intent = new Intent(this,
-                PetrifilmTestListActivity.class);
-        startActivity(intent);
-    }
+	public void onSourcesClick(View v) {
+		Intent intent = new Intent(this, SourcesActivity.class);
+		startActivity(intent);
+	}
 
-    public void onResultsClick(View v) {
-        Intent intent = new Intent(this,
-                PetrifilmTestListActivity.class);
-        startActivity(intent);
-    }
+	public void onSamplesClick(View v) {
+	}
+
+	public void onTestsClick(View v) {
+		Intent intent = new Intent(this, PetrifilmTestListActivity.class);
+		startActivity(intent);
+	}
+
+	public void onSyncClick(View v) {
+		SyncTask syncTask = new SyncTask(this);
+		syncTask.execute(new CompleteDataSlice());
+	}
 }
-

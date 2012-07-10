@@ -37,10 +37,10 @@ public class TestSyncDatabase {
 		return db.query(TestSyncTable.TABLE_NAME, null, null, null, null, null, null);
 	}
 
-	public void insert(String uid, int rowversion) {
+	public void insert(String uid, int rowVersion) {
 		ContentValues values = new ContentValues();
 		values.put(TestSyncTable.COLUMN_UID, uid);
-		values.put(TestSyncTable.COLUMN_ROWVERSION, rowversion);
+		values.put(TestSyncTable.COLUMN_ROW_VERSION, rowVersion);
 		values.put(TestSyncTable.COLUMN_A, "apple");
 		values.put(TestSyncTable.COLUMN_B, "banana");
 
@@ -53,9 +53,9 @@ public class TestSyncDatabase {
 		}
 	}
 
-	public void update(String uid, String a, int rowversion) {
+	public void update(String uid, String a, int rowVersion) {
 		ContentValues values = new ContentValues();
-		values.put(TestSyncTable.COLUMN_ROWVERSION, rowversion);
+		values.put(TestSyncTable.COLUMN_ROW_VERSION, rowVersion);
 		values.put(TestSyncTable.COLUMN_A, a);
 
 		try {

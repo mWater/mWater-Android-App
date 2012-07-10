@@ -21,7 +21,7 @@ public class TestSyncTable extends SyncTable {
 		return "create table " + getTableName() 
 				+ "(" + COLUMN_ID + " integer primary key autoincrement, " 
 				+ COLUMN_UID + " text not null, " 
-				+ COLUMN_ROWVERSION + " integer not null default 0, "
+				+ COLUMN_ROW_VERSION + " integer not null default 0, "
 				+ COLUMN_A + " text, " 
 				+ COLUMN_B  + " text "
 				+ ");";

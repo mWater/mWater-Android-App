@@ -26,7 +26,7 @@ import android.util.Log;
 public abstract class SyncTable {
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_UID = "uid";
-	public static final String COLUMN_ROWVERSION = "rowversion";
+	public static final String COLUMN_ROW_VERSION = "row_version";
 
 	private String[] syncColumns; // Columns, excluding any declared above
 	
@@ -56,7 +56,7 @@ public abstract class SyncTable {
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("inserttrigger").append(getTableName());
 		sql.append(" AFTER INSERT ON ").append(getTableName());
-		sql.append(" WHEN new.").append(COLUMN_ROWVERSION).append("=0");
+		sql.append(" WHEN new.").append(COLUMN_ROW_VERSION).append("=0");
 		sql.append(" BEGIN INSERT INTO ").append(SyncChangesTable.TABLE_NAME);
 		sql.append(" (").append(SyncChangesTable.COLUMN_TABLENAME);
 		sql.append(", ").append(SyncChangesTable.COLUMN_ROWUID);
@@ -75,8 +75,8 @@ public abstract class SyncTable {
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("updatetrigger").append(getTableName());
 		sql.append(" AFTER UPDATE ON ").append(getTableName());
-		sql.append(" WHEN new.").append(COLUMN_ROWVERSION).append("=old.").append(COLUMN_ROWVERSION);
-		sql.append(" AND new.").append(COLUMN_ROWVERSION).append("<>-1");
+		sql.append(" WHEN new.").append(COLUMN_ROW_VERSION).append("=old.").append(COLUMN_ROW_VERSION);
+		sql.append(" AND new.").append(COLUMN_ROW_VERSION).append("<>-1");
 		sql.append(" BEGIN INSERT INTO ").append(SyncChangesTable.TABLE_NAME);
 		sql.append(" (").append(SyncChangesTable.COLUMN_TABLENAME);
 		sql.append(", ").append(SyncChangesTable.COLUMN_ROWUID);
@@ -95,7 +95,7 @@ public abstract class SyncTable {
 		sql.append("CREATE TRIGGER IF NOT EXISTS ");
 		sql.append("deletetrigger").append(getTableName());
 		sql.append(" AFTER DELETE ON ").append(getTableName());
-		sql.append(" WHEN old.").append(COLUMN_ROWVERSION).append(">=0");
+		sql.append(" WHEN old.").append(COLUMN_ROW_VERSION).append(">=0");
 		sql.append(" BEGIN INSERT INTO ").append(SyncChangesTable.TABLE_NAME);
 		sql.append(" (").append(SyncChangesTable.COLUMN_TABLENAME);
 		sql.append(", ").append(SyncChangesTable.COLUMN_ROWUID);
