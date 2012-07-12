@@ -20,31 +20,39 @@ public class Synchronizer {
 			ChangeSet downloadSet = server.downloadChangeSet(dataSlice, until);
 			if (downloadSet == null)
 				return;
-			
-			// Only repeat if another upload is needed
-			repeatDownload = false;
+			try {
 
-			// Apply, trying until uploads are no longer required
-			boolean uploadNeeded;
-			do {
-				try {
-					client.applyChangeSet(downloadSet, dataSlice);
-					uploadNeeded = false;
-				} catch (PendingChangesException pce) {
-					// Perform upload and try again
-					uploadNeeded = true;
-					repeatDownload = true;
-					upload();
-				}
-			} while (uploadNeeded);
+				// Only repeat if another upload is needed
+				repeatDownload = false;
+
+				// Apply, trying until uploads are no longer required
+				boolean uploadNeeded;
+				do {
+					try {
+						client.applyChangeSet(downloadSet, dataSlice);
+						uploadNeeded = false;
+					} catch (PendingChangesException pce) {
+						// Perform upload and try again
+						uploadNeeded = true;
+						repeatDownload = true;
+						upload();
+					}
+				} while (uploadNeeded);
+			} finally {
+				downloadSet.close();
+			}
 		} while (repeatDownload);
 	}
 
 	private void upload() throws SyncServerException {
 		ChangeSet uploadSet = client.getChangeSet();
-		if (uploadSet != null) {
+		if (uploadSet == null)
+			return;
+		try {
 			server.uploadChangeSet(uploadSet);
 			client.markChangeSetSent(uploadSet.getUntil());
+		} finally {
+			uploadSet.close();
 		}
 	}
 

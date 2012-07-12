@@ -198,8 +198,12 @@ public class SyncClientImpl implements SyncClient {
 
 	public long getUntil(DataSlice dataSlice) {
 		Cursor cursor = db.query(DataSlicesTable.TABLE_NAME, null, DataSlicesTable.COLUMN_ID + "=?", new String[] { dataSlice.getSliceId() }, null, null, null);
-		if (!cursor.moveToFirst())
-			return 0;
-		return cursor.getLong(cursor.getColumnIndexOrThrow(DataSlicesTable.COLUMN_SERVERUNTIL));
+		try {
+			if (!cursor.moveToFirst())
+				return 0;
+			return cursor.getLong(cursor.getColumnIndexOrThrow(DataSlicesTable.COLUMN_SERVERUNTIL));
+		} finally {
+			cursor.close();
+		}
 	}
 }

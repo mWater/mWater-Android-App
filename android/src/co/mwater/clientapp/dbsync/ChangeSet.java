@@ -32,6 +32,18 @@ public class ChangeSet {
 	}
 
 	/**
+	 * Always call when done with changeset
+	 */
+	public void close() {
+		for (Table table : tables) {
+			if (table.upserts != null)
+				table.upserts.close();
+			if (table.deletes != null)
+				table.deletes.close();
+		}
+	}
+
+	/**
 	 * Get a table by name
 	 * 
 	 * @returns null if not included

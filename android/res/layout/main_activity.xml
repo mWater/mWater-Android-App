@@ -11,42 +11,64 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
             android:id="@+id/sources"
             style="@style/mainButton"
-            android:drawableTop="@drawable/camera"
+            android:drawableTop="@drawable/mwater"
             android:onClick="onSourcesClick"
             android:text="Sources" />
-
+
         <Button
-            android:id="@+id/samples"
+            android:id="@+id/Button03"
             style="@style/mainButton"
-            android:drawableTop="@drawable/camera"
-            android:onClick="onSamplesClick"
-            android:text="Samples" />
+            android:drawableTop="@drawable/mwater"
+            android:onClick="onTestsClick"
+            android:text="Map" />
 
     </TableRow>
-
+
     <TableRow
         android:id="@+id/tableRow2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
-            android:id="@+id/Button01"
+            android:id="@+id/samples"
             style="@style/mainButton"
-            android:drawableTop="@drawable/camera"
-            android:onClick="onTestsClick"
-            android:text="Tests" />
-
+            android:drawableTop="@drawable/mwater"
+            android:onClick="onSamplesClick"
+            android:text="Samples" />
+
         <Button
             android:id="@+id/tests"
             style="@style/mainButton"
-            android:drawableTop="@drawable/camera"
+            android:drawableTop="@drawable/mwater"
+            android:onClick="onTestsClick"
+            android:text="Tests" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/TableRow01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+
+        <Button
+            android:id="@+id/sync"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/mwater"
             android:onClick="onSyncClick"
             android:text="Synchronize" />
+
+        <Button
+            android:id="@+id/Button02"
+            style="@style/mainButton"
+            android:drawableTop="@drawable/mwater"
+            android:onClick="onSyncClick"
+            android:text="Settings" />
 
     </TableRow>
 

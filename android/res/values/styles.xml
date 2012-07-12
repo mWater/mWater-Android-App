@@ -37,7 +37,9 @@
 
     <style name="mainButton" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/borderless_button_background</item>
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">24dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical|center_horizontal</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
