@@ -11,18 +11,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
             android:id="@+id/sources"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_source"
             android:onClick="onSourcesClick"
             android:text="Sources" />
-
+
         <Button
             android:id="@+id/Button03"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_map"
             android:text="Map" />
 
     </TableRow>
@@ -32,18 +32,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
             android:id="@+id/samples"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_sample"
             android:onClick="onSamplesClick"
             android:text="Samples" />
 
         <Button
             android:id="@+id/tests"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_test"
             android:onClick="onTestsClick"
             android:text="Tests" />
 
@@ -54,18 +54,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
             android:id="@+id/sync"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_sync"
             android:onClick="onSyncClick"
             android:text="Synchronize" />
-
+
         <Button
             android:id="@+id/Button02"
             style="@style/mainButton"
-            android:drawableTop="@drawable/mwater"
+            android:drawableTop="@drawable/ic_settings"
             android:text="Settings" />
 
     </TableRow>
