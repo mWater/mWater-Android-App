@@ -8,12 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp" >
-
+            android:paddingBottom="16dp" >
+
             <ImageButton
                 android:id="@+id/photo"
                 android:layout_width="wrap_content"
@@ -22,7 +22,7 @@
                 android:maxHeight="120dp"
                 android:maxWidth="120dp"
                 android:scaleType="centerInside"
-                android:src="@drawable/camera" />
+                android:src="@drawable/well" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -31,26 +31,29 @@
                 android:clickable="true"
                 android:onClick="onBasicsClick"
                 android:orientation="vertical" >
-
+
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Kitumba Public Tap"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
                 <TextView
                     android:id="@+id/desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10dp"
+                    android:text="Installed in central market in 1990"
                     android:textColor="?android:textColorSecondary" />
-
+
                 <TextView
                     android:id="@+id/source_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0"
+                    android:text="Type: Deep well"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
+
             </LinearLayout>
         </LinearLayout>
 
@@ -97,7 +100,7 @@
                 android:layout_width="0.25dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
-
+
             <Button
                 android:id="@+id/Button06"
                 style="@style/borderlessButton"
@@ -115,14 +118,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-
+
         <TextView
             android:id="@+id/TextView06"
             style="@style/sectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Location" />
+            android:text="LOCATION" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -174,14 +177,14 @@
             style="@style/divider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
+
         <TextView
             android:id="@+id/TextView02"
             style="@style/sectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Water Tests" />
+            android:text="WATER TESTS" />
 
         <fragment
             android:id="@+id/samplesSummary"
@@ -190,14 +193,41 @@
             android:layout_height="wrap_content"
             android:tag="samples_summary"
             tools:layout="@layout/sample_summary" />
-
+
         <TextView
             android:id="@+id/TextView07"
             style="@style/sectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Notes" />
+            android:text="NOTES" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:text="02/05/2012"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:textColorSecondary" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Well cover is cracked in several places. Replacement has been ordered."
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

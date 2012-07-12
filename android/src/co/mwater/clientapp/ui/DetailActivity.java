@@ -116,7 +116,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	 */
 	protected void setControlText(int id, String text) {
 		TextView textView = (TextView) findViewById(id);
-		textView.setText(text);
+		textView.setText(text != null ? text : "");
 	}
 
 	/**
@@ -160,7 +160,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		loadData();
 
 		// Redisplay if started
-		if (started)
+		if (started && rowValues != null)
 			displayData();
 	}
 

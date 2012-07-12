@@ -31,5 +31,12 @@
         <item>Automatic count</item>
         <item>Manual count</item>
     </string-array>
+
+    <string-array name="test_types">
+        <item>Petrifilm E. coli</item>
+        <item>10mL Colilert</item>
+        <item>100mL E. coli</item>
+        <item>UNC Compartmentalized Bag</item>
+    </string-array>
     
 </resources>

@@ -51,7 +51,7 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.sources_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.source_list_menu, menu);
 
 		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			public boolean onMenuItemClick(MenuItem item) {

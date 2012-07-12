@@ -18,13 +18,13 @@
     <!--  This doesn't work well. No idea why -->
     <style name="divider_vert">
         <item name="android:width">0.25dp</item>
-        <item name="android:height">32dp</item>
-        <item name="android:minHeight">32dp</item>
+        <item name="android:height">40dp</item>
+        <item name="android:minHeight">40dp</item>
         <item name="android:minWidth">0.25dp</item>
         <item name="android:layout_width">0.25dp</item>
-        <item name="android:layout_height">32dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
         <item name="android:background">@drawable/divider_vert</item>
     </style>
 

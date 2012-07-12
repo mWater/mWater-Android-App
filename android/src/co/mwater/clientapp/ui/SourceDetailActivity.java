@@ -68,20 +68,7 @@ public class SourceDetailActivity extends DetailActivity {
 		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
 		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
 
-		// Create test
-		// TODO choose type
-		String sampleUid = MWaterContentProvider.getSingleRow(this, sampleUri).getAsString(SamplesTable.COLUMN_UID);
-		values = new ContentValues();
-		values.put(TestsTable.COLUMN_SAMPLE, sampleUid);
-		values.put(TestsTable.COLUMN_CODE, OtherCodes.getNewCode(this));
-		values.put(TestsTable.COLUMN_TEST_TYPE, 0);
-		values.put(TestsTable.COLUMN_TEST_VERSION, 1);
-		values.put(TestsTable.COLUMN_STARTED_ON, System.currentTimeMillis() / 1000);
-		Uri testUri = getContentResolver().insert(MWaterContentProvider.TESTS_URI, values);
-
-		Intent intent = new Intent(this, PetrifilmTestDetailsActivity.class);
-		intent.putExtra("uri", testUri);
-		startActivity(intent);
+		new TestCreator(this, sampleUri).create();
 	}
 
 	public void onAddNoteClick(View v) {

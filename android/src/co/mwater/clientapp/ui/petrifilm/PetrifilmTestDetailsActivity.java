@@ -36,6 +36,8 @@ import android.widget.Toast;
 public class PetrifilmTestDetailsActivity extends DetailActivity implements OnClickListener {
 	private static final String TAG = PetrifilmTestDetailsActivity.class.getSimpleName();
 	static int PETRI_IMAGE_REQUEST = 1;
+	
+	boolean autoAnalysing = false; // TODO this could be done better
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,22 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 
 		setContentView(R.layout.petrifilm_detail_activity);
 	}
+	
+	/*
+E.Coli
+
+red=>10/1ml
+
+orange=1-10/1ml
+
+yellow=10-100/
+
+green=0-10/100ml
+
+blue=0/100ml
+
+(non-Javadoc)
+	 */
 
 	@Override
 	protected void displayData() {
@@ -60,10 +78,9 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 			setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC : pfr.autoTC);
 			setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
 
-			setSupportProgressBarIndeterminateVisibility(pfr.autoEcoli == null && pfr.manualEcoli == null);
+			autoAnalysing &= pfr.autoEcoli == null;
 		}
-		else
-			setSupportProgressBarIndeterminateVisibility(false);
+		setSupportProgressBarIndeterminateVisibility(autoAnalysing);
 		
 		((Button)findViewById(R.id.record_results)).setText(results != null ? "Edit Results" : "Record Results");
 
@@ -147,7 +164,9 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 
 			// Record that result was read
 			recordResultRead();
-
+			autoAnalysing = true;
+			setSupportProgressBarIndeterminateVisibility(true);
+			
 			// TODO record photo uid
 
 			// Send image to be processed and saved
