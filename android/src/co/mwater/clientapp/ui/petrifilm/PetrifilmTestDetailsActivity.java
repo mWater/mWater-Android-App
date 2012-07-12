@@ -60,7 +60,7 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 			setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC : pfr.autoTC);
 			setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
 
-			setSupportProgressBarIndeterminateVisibility(pfr.autoEcoli == null);
+			setSupportProgressBarIndeterminateVisibility(pfr.autoEcoli == null && pfr.manualEcoli == null);
 		}
 		else
 			setSupportProgressBarIndeterminateVisibility(false);
@@ -131,6 +131,9 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 			startActivityForResult(intent, PETRI_IMAGE_REQUEST);
 		}
 		else if (which == 1) {
+			// Record that result was read
+			recordResultRead();
+
 			Intent intent = new Intent(this, PetrifilmManualCountActivity.class);
 			intent.putExtra("uri", uri);
 			startActivity(intent);

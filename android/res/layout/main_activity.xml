@@ -18,12 +18,11 @@
             android:drawableTop="@drawable/mwater"
             android:onClick="onSourcesClick"
             android:text="Sources" />
-
+
         <Button
             android:id="@+id/Button03"
             style="@style/mainButton"
             android:drawableTop="@drawable/mwater"
-            android:onClick="onTestsClick"
             android:text="Map" />
 
     </TableRow>
@@ -62,12 +61,11 @@
             android:drawableTop="@drawable/mwater"
             android:onClick="onSyncClick"
             android:text="Synchronize" />
-
+
         <Button
             android:id="@+id/Button02"
             style="@style/mainButton"
             android:drawableTop="@drawable/mwater"
-            android:onClick="onSyncClick"
             android:text="Settings" />
 
     </TableRow>

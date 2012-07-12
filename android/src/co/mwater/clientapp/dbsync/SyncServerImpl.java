@@ -4,7 +4,12 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import co.mwater.clientapp.ui.SourceDetailActivity;
+
 public class SyncServerImpl implements SyncServer {
+	public static final String TAG = SyncServerImpl.class.getCanonicalName();
 	String serverUrl;
 	String clientUid;
 
@@ -29,6 +34,7 @@ public class SyncServerImpl implements SyncServer {
 		restClient.addParam("slice", dataSlice.getSliceId());
 		try {
 			String cs = restClient.get();
+			Log.d(TAG, "Got: " + cs);
 			JSONObject csjson = new JSONObject(cs);
 			return jsonSerializer.deserialize(csjson);
 		} catch (RESTClientException e) {
