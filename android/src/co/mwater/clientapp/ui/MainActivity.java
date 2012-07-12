@@ -1,9 +1,8 @@
 package co.mwater.clientapp.ui;
 
-import co.mwater.clientapp.App;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
-import co.mwater.clientapp.ui.petrifilm.PetrifilmTestListActivity;
+import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import co.mwater.clientapp.R;
@@ -20,7 +19,7 @@ public class MainActivity extends SherlockActivity {
 		super.onCreate(savedInstanceState);
 
 		// Setup application
-		App.setup(this);
+		PetrifilmImages.setup(this);
 
 		// Go to login screen if not logged in
 		if (MWaterServer.getClientId(this) == null) {
@@ -28,19 +27,21 @@ public class MainActivity extends SherlockActivity {
 			startActivityForResult(intent, 0);
 		}
 
-		setContentView(R.layout.main_activity2);
+		setContentView(R.layout.main_activity);
 	}
 
 	public void onSourcesClick(View v) {
-		Intent intent = new Intent(this, SourcesActivity.class);
+		Intent intent = new Intent(this, SourceListActivity.class);
 		startActivity(intent);
 	}
 
 	public void onSamplesClick(View v) {
+		Intent intent = new Intent(this, SampleListActivity.class);
+		startActivity(intent);
 	}
 
 	public void onTestsClick(View v) {
-		Intent intent = new Intent(this, PetrifilmTestListActivity.class);
+		Intent intent = new Intent(this, TestListActivity.class);
 		startActivity(intent);
 	}
 

@@ -5,13 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import co.mwater.clientapp.App;
-import co.mwater.clientapp.ui.petrifilm.PetrifilmTestListActivity.PopulatePetrifilmTestsListTask;
+import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
 
 import co.mwater.clientapp.R;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
@@ -21,14 +19,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView.PictureListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class PetrifilmCameraActivity extends Activity implements
 PictureCallback {
-    private static final String TAG = "co.mwater.clientapp";
+    private static final String TAG = PetrifilmCameraActivity.class.getCanonicalName();
 
     UITimerTask timerTask = new UITimerTask();
     int autoSnapTimer = 0;			// Timer 0-100 before auto-taking picture. 
@@ -122,11 +119,10 @@ PictureCallback {
         mainView.removeView(previewView);
 
         String filename = getIntent().getStringExtra("filename");
-        //String filepath = App.getOriginalImageFolder(this) + File.separator // AR - inside try-catch
-        //		+ filename;
+
         FileOutputStream fos = null;
         try {
-            String filepath = App.getOriginalImageFolder(getApplicationContext()) + File.separator + filename;
+            String filepath = PetrifilmImages.getOriginalImageFolder(getApplicationContext()) + File.separator + filename;
             fos = new FileOutputStream(filepath);
             fos.write(data);
             fos.close();

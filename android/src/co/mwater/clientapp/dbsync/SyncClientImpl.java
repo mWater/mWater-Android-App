@@ -26,11 +26,16 @@ public class SyncClientImpl implements SyncClient {
 			db.beginTransaction();
 
 			// Get until value
+			long until;
 			Cursor untilCursor = db.rawQuery("SELECT MAX(" + SyncChangesTable.COLUMN_ID + ") FROM " + SyncChangesTable.TABLE_NAME, null);
-			if (!untilCursor.moveToFirst() || untilCursor.isNull(0))
-				return null;
+			try {
+				if (!untilCursor.moveToFirst() || untilCursor.isNull(0))
+					return null;
 
-			long until = untilCursor.getLong(0);
+				until = untilCursor.getLong(0);
+			} finally {
+				untilCursor.close();
+			}
 
 			// For each table
 			ChangeSet.Table[] tableChangeSets = new ChangeSet.Table[syncTables.length];

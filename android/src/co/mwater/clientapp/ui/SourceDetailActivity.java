@@ -1,9 +1,12 @@
 package co.mwater.clientapp.ui;
 
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.OtherCodes;
+import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailsActivity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
@@ -12,50 +15,73 @@ import co.mwater.clientapp.R;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class SourceDetailActivity extends SherlockFragmentActivity implements LoaderCallbacks<Cursor> {
+public class SourceDetailActivity extends DetailActivity {
 	public static final String TAG = SourceDetailActivity.class.getSimpleName();
-	String id;
-	private Uri uri;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		id = getIntent().getStringExtra("id");
-		uri = Uri.withAppendedPath(MWaterContentProvider.SOURCES_URI, id);
-
 		setContentView(R.layout.source_detail_activity);
-		
-		// Load row
-		getSupportLoaderManager().initLoader(0, null, this);
+	}
+
+	@Override
+	protected void displayData() {
+		getSupportActionBar().setTitle("Source " + rowValues.getAsString(SourcesTable.COLUMN_CODE));
+		setControlText(R.id.name, rowValues.getAsString(SourcesTable.COLUMN_NAME));
+		setControlText(R.id.desc, rowValues.getAsString(SourcesTable.COLUMN_DESC));
+
+		// Look up type
+		String[] sourceTypes = getResources().getStringArray(R.array.source_types);
+		Integer sourceType = rowValues.getAsInteger(SourcesTable.COLUMN_SOURCE_TYPE);
+		String sourceTypeText;
+		if (sourceType == null || sourceType >= sourceTypes.length)
+			sourceTypeText = "?";
+		else
+			sourceTypeText = sourceTypes[sourceType];
+		setControlText(R.id.source_type, "Type: " + sourceTypeText);
+
+		// TODO
+		setControlText(R.id.location, "230m NE");
 	}
 
 	public void onBasicsClick(View v) {
-        FragmentManager fm = getSupportFragmentManager();
-        SourceDetailBasicsDialogFragment basicsDialog = new SourceDetailBasicsDialogFragment(id);
-        basicsDialog.show(fm, "fragment_basics");
+		// TODO
+		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
 	}
-	
+
 	public void onAddSampleClick(View v) {
 		// TODO
 		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
 	}
 
 	public void onAddTestClick(View v) {
-		// TODO
-		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
+		// Create sample linked to source
+		ContentValues values = new ContentValues();
+		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
+		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
+		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
+
+		// Create test
+		// TODO choose type
+		String sampleUid = MWaterContentProvider.getSingleRow(this, sampleUri).getAsString(SamplesTable.COLUMN_UID);
+		values = new ContentValues();
+		values.put(TestsTable.COLUMN_SAMPLE, sampleUid);
+		values.put(TestsTable.COLUMN_CODE, OtherCodes.getNewCode(this));
+		values.put(TestsTable.COLUMN_TEST_TYPE, 0);
+		values.put(TestsTable.COLUMN_TEST_VERSION, 1);
+		values.put(TestsTable.COLUMN_STARTED_ON, System.currentTimeMillis() / 1000);
+		Uri testUri = getContentResolver().insert(MWaterContentProvider.TESTS_URI, values);
+
+		Intent intent = new Intent(this, PetrifilmTestDetailsActivity.class);
+		intent.putExtra("uri", testUri);
+		startActivity(intent);
 	}
 
 	public void onAddNoteClick(View v) {
@@ -96,33 +122,5 @@ public class SourceDetailActivity extends SherlockFragmentActivity implements Lo
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Permanently delete source?").setPositiveButton("Yes", dialogClickListener).setNegativeButton("No", null).show();
-	}
-
-	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-		return new CursorLoader(this, uri, null, null, null, null);
-	}
-
-	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-		// Load fields
-		if (cursor.moveToFirst())
-		{
-			ContentValues values = new ContentValues();
-			DatabaseUtils.cursorRowToContentValues(cursor, values);
-			getSupportActionBar().setTitle("Source #" + values.getAsString(SourcesTable.COLUMN_CODE));
-			setText(R.id.name, values.getAsString(SourcesTable.COLUMN_NAME));
-			setText(R.id.desc, values.getAsString(SourcesTable.COLUMN_DESC));
-			setText(R.id.source_type, "Type: " + SourcesTable.getLocalizedSourceType(values.getAsInteger(SourcesTable.COLUMN_SOURCE_TYPE)));
-
-			// TODO
-			setText(R.id.location, "230m NE");
-		}
-	}
-
-	void setText(int id, String text) {
-		TextView textView = (TextView) findViewById(id);
-		textView.setText(text);
-	}
-
-	public void onLoaderReset(Loader<Cursor> cursorLoader) {
 	}
 }

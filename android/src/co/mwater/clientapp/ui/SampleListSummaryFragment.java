@@ -16,7 +16,7 @@ public class SampleListSummaryFragment extends SherlockFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = getLayoutInflater(savedInstanceState).inflate(R.layout.sample_summary, container, false);
+		View view = inflater.inflate(R.layout.sample_summary, container, false);
 		return view;
 	}
 }

@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_co_mwater_clientapp_ui_petrifilm_PetrifilmCameraView
 
 }
 
-JNIEXPORT void JNICALL Java_co_mwater_clientapp_PetrifilmImageProcessor_process(
+JNIEXPORT void JNICALL Java_co_mwater_clientapp_petrifilmanalysis_PetrifilmImageProcessor_process(
         JNIEnv* env, jobject thiz, jbyteArray jpeg, jobject results) {
     jbyte* _jpeg = env->GetByteArrayElements(jpeg, 0);
 

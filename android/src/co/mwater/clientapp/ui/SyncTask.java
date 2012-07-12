@@ -8,7 +8,6 @@ import co.mwater.clientapp.dbsync.SyncServerException;
 import co.mwater.clientapp.dbsync.SyncServerImpl;
 import co.mwater.clientapp.dbsync.Synchronizer;
 
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +31,7 @@ public class SyncTask extends AsyncTask<DataSlice, Void, SyncServerException> {
 	@Override
 	protected void onPostExecute(SyncServerException result) {
 		dialog.dismiss();
+		dialog = null;
 
 		if (result == null)
 			Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();

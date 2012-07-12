@@ -11,9 +11,10 @@ public class SourcesTable extends SyncTable {
 	public static final String COLUMN_LAT = "latitude";
 	public static final String COLUMN_LONG = "longitude";
 	public static final String COLUMN_RISK = "risk";
+	public static final String COLUMN_PHOTO = "photo";
 
 	public SourcesTable() {
-		super(new String[] { COLUMN_CODE, COLUMN_SOURCE_TYPE, COLUMN_NAME, COLUMN_DESC, COLUMN_LAT, COLUMN_LONG, COLUMN_RISK, COLUMN_CREATED_BY });
+		super(new String[] { COLUMN_CODE, COLUMN_SOURCE_TYPE, COLUMN_NAME, COLUMN_DESC, COLUMN_LAT, COLUMN_LONG, COLUMN_RISK, COLUMN_PHOTO, COLUMN_CREATED_BY });
 	}
 
 	@Override
@@ -37,12 +38,8 @@ public class SourcesTable extends SyncTable {
 				+ COLUMN_LAT + " numeric (9,6), "
 				+ COLUMN_LONG + " numeric (9,6), "
 				+ COLUMN_RISK + " integer, "
+				+ COLUMN_PHOTO + " text, "
 				+ COLUMN_CREATED_BY + " text"
 				+ ");";
-	}
-	
-	public static String getLocalizedSourceType(Object sourceType) {
-		// TODO
-		return "Well";
 	}
 }

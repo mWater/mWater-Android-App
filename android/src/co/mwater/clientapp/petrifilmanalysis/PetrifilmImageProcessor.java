@@ -1,4 +1,4 @@
-package co.mwater.clientapp;
+package co.mwater.clientapp.petrifilmanalysis;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;

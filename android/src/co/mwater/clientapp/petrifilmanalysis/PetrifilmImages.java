@@ -1,4 +1,4 @@
-package co.mwater.clientapp;
+package co.mwater.clientapp.petrifilmanalysis;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,26 +7,21 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-public class App {
+public class PetrifilmImages {
 
     public final static String FOLDER_DATA_ROOT = "Android/data";
     public final static String FOLDER_ORIGINAL = "original";
     public final static String FOLDER_PROCESSED = "processed";
-    public final static String FOLDER_RESULTS = "results";
-	private static final String TAG = App.class.getCanonicalName();
+	private static final String TAG = PetrifilmImages.class.getCanonicalName();
 
     public static void setup(Context context)   {
         try {
-            if (App.isExternalFilePresent(context, App.FOLDER_ORIGINAL) == false) {
-                File f = new File(App.getOriginalImageFolder(context));
+            if (PetrifilmImages.isExternalFilePresent(context, PetrifilmImages.FOLDER_ORIGINAL) == false) {
+                File f = new File(PetrifilmImages.getOriginalImageFolder(context));
                 f.mkdirs();
             }
-            if (App.isExternalFilePresent(context, App.FOLDER_RESULTS) == false) {
-                File f = new File(App.getResultsFolder(context));
-                f.mkdirs();
-            }
-            if (App.isExternalFilePresent(context, App.FOLDER_PROCESSED) == false) {
-                File f = new File(App.getProcessedImageFolder(context));
+            if (PetrifilmImages.isExternalFilePresent(context, PetrifilmImages.FOLDER_PROCESSED) == false) {
+                File f = new File(PetrifilmImages.getProcessedImageFolder(context));
                 f.mkdirs();
             }
         } catch (IOException e) {
@@ -49,28 +44,11 @@ public class App {
     }
 
     public static String getOriginalImageFolder(Context context) throws IOException {
-        //File f = context.getExternalFilesDir(null);
-        //File f2 = new File(f.getAbsolutePath(), "original");
-        //f2.mkdirs(); // AR not here, but inside the onCreate of the main Activity
-        //return f2.getAbsolutePath();
         return buildExternalPath(context, FOLDER_ORIGINAL);
     }
 
     public static String getProcessedImageFolder(Context context) throws IOException {
-        //File f = context.getExternalFilesDir(null);
-        //File f2 = new File(f.getAbsolutePath(), "processed");
-        //f2.mkdirs(); // AR not here, but inside the onCreate of the main Activity
-        //return f2.getAbsolutePath();
         return buildExternalPath(context, FOLDER_PROCESSED);
-    }
-
-
-    public static String getResultsFolder(Context context) throws IOException {
-        //File f = context.getExternalFilesDir(null);
-        //File f2 = new File(f.getAbsolutePath(), "results");
-        //f2.mkdirs(); // AR not here, but inside the onCreate of the main Activity
-        //return f2.getAbsolutePath();
-        return buildExternalPath(context, FOLDER_RESULTS);
     }
 
     /**
@@ -81,7 +59,6 @@ public class App {
      * @throws IOException Thrown if the external storage is not available or not writeable.
      */
     public static String buildExternalPath(Context context, String fileName) throws IOException {
-
         // The following code has been taken from the Android dev guide:
         // http://developer.android.com/guide/topics/data/data-storage.html#filesExternal
         boolean mExternalStorageAvailable = false;

@@ -12,9 +12,10 @@ public class TestsTable extends SyncTable {
 	public static final String COLUMN_READ_ON = "read_on";
 	public static final String COLUMN_RESULTS = "results";
 	public static final String COLUMN_NOTES = "notes";
+	public static final String COLUMN_PHOTO = "photo";
 
 	public TestsTable() {
-		super(new String[] { COLUMN_SAMPLE, COLUMN_TEST_TYPE, COLUMN_TEST_VERSION, COLUMN_CODE, COLUMN_STARTED_ON, COLUMN_READ_ON, COLUMN_RESULTS, COLUMN_NOTES, COLUMN_CREATED_BY });
+		super(new String[] { COLUMN_SAMPLE, COLUMN_TEST_TYPE, COLUMN_TEST_VERSION, COLUMN_CODE, COLUMN_STARTED_ON, COLUMN_READ_ON, COLUMN_RESULTS, COLUMN_NOTES, COLUMN_PHOTO, COLUMN_CREATED_BY });
 	}
 
 	@Override
@@ -38,6 +39,8 @@ public class TestsTable extends SyncTable {
 				+ COLUMN_STARTED_ON + " integer, "
 				+ COLUMN_READ_ON + " integer, "
 				+ COLUMN_RESULTS + " text, "
+				+ COLUMN_NOTES + " text, "
+				+ COLUMN_PHOTO + " text, "
 				+ COLUMN_CREATED_BY + " text, "
 				+ "FOREIGN KEY (" + COLUMN_SAMPLE + ") REFERENCES " + SamplesTable.TABLE_NAME + "(" + SamplesTable.COLUMN_UID + ") ON DELETE CASCADE "
 				+ ");";

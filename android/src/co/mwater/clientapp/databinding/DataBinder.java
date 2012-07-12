@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Handler;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class DataBinder {
@@ -29,6 +30,10 @@ public class DataBinder {
 
 	public void addTextView(TextView control, String column) {
 		elements.add(new TextViewDataBinderElement(column, control));
+	}
+
+	public void addSpinner(Spinner control, String column) {
+		elements.add(new SpinnerDataBinderElement(column, control));
 	}
 
 	public void bind(Uri uri) {
@@ -71,6 +76,18 @@ public class DataBinder {
 
 		if (content.size() > 0) {
 			contentResolver.update(toUri, content, null, null);
+		}
+	}
+
+	/**
+	 * Saves without binding
+	 * 
+	 * @param toUri
+	 */
+	public void saveAllTo(ContentValues values) {
+		// Get contents to save
+		for (DataBinderElement elem : elements) {
+				elem.Save(values);
 		}
 	}
 

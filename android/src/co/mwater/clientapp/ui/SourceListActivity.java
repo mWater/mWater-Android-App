@@ -25,24 +25,24 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class SourcesActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor>, SourceDetailBasicsDialogFragment.DialogListener {
-	public static final String TAG = SourcesActivity.class.getSimpleName();
+public class SourceListActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+	public static final String TAG = SourceListActivity.class.getSimpleName();
 	private static final int LOADER_ID = 0x01;
 	private SimpleCursorAdapter adapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sources);
+		setContentView(R.layout.source_list);
 
-		adapter = new SimpleCursorAdapter(this, R.layout.sources_row, null, new String[] { "code", "name", "desc" }, new int[] { R.id.code, R.id.name,
+		adapter = new SimpleCursorAdapter(this, R.layout.source_row, null, new String[] { "code", "name", "desc" }, new int[] { R.id.code, R.id.name,
 				R.id.desc }, Adapter.NO_SELECTION);
 		ListView listView = (ListView) findViewById(R.id.list);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			// @Override
 			public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-				SourcesActivity.this.onItemClick(id);
+				SourceListActivity.this.onItemClick(id);
 			}
 		});
 
@@ -63,19 +63,19 @@ public class SourcesActivity extends SherlockFragmentActivity implements LoaderM
 	}
 
 	void onItemClick(long id) {
-		editSource(id + "");
+		editSource(id);
 	}
 
-	void editSource(String id) {
+	void editSource(long id) {
 		Intent intent = new Intent(this, SourceDetailActivity.class);
-		intent.putExtra("id", id);
+		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SOURCES_URI, id + ""));
 		startActivity(intent);
 	}
 
 	void createNewSource() {
 		FragmentManager fm = getSupportFragmentManager();
-		SourceDetailBasicsDialogFragment basicsDialog = new SourceDetailBasicsDialogFragment(null);
-		basicsDialog.show(fm, "fragment_basics");
+		SourceCreateDialog createDialog = new SourceCreateDialog();
+		createDialog.show(fm, "dialog_create");
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -88,9 +88,5 @@ public class SourcesActivity extends SherlockFragmentActivity implements LoaderM
 
 	public void onLoaderReset(Loader<Cursor> cursorLoader) {
 		adapter.swapCursor(null);
-	}
-
-	public void sourceCreated(String id) {
-		editSource(id);
 	}
 }

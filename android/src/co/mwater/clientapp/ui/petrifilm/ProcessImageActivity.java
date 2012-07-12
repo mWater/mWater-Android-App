@@ -3,10 +3,10 @@ package co.mwater.clientapp.ui.petrifilm;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import co.mwater.clientapp.PetrifilmAnalysisResults;
-import co.mwater.clientapp.PetrifilmImageProcessor;
 
 import co.mwater.clientapp.R;
+import co.mwater.clientapp.petrifilmanalysis.PetrifilmAnalysisResults;
+import co.mwater.clientapp.petrifilmanalysis.PetrifilmImageProcessor;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!--  Common strings -->
+    <!-- Common strings -->
     <string name="app_name">mWater</string>
-    
+
     <!-- main portal -->
     <string name="create_water_source">Create a new water source</string>
-	<string name="create_water_sample">Create a new water sample</string>
-	<string name="sync_server">Synchronize with server</string>
+    <string name="create_water_sample">Create a new water sample</string>
+    <string name="sync_server">Synchronize with server</string>
 
+    <string-array name="source_types">
+        <item>Piped into dwelling</item>
+        <item>Piped into yard/plot</item>
+        <item>Public tap or standpipe</item>
+        <item>Tubewell</item>
+        <item>Borehole</item>
+        <item>Protected dug well</item>
+        <item>Protected spring</item>
+        <item>Rainwater catchment</item>
+        <item>Unprotected spring</item>
+        <item>Unprotected dug well</item>
+        <item>Cart with tank</item>
+        <item>Tanker-truck</item>
+        <item>Surface Water</item>
+        <item>Bottled Water</item>
+        <item>Public tank or basin</item>
+    </string-array>
 
+    <string-array name="petrifilm_record_popup">
+        <item>Automatic count</item>
+        <item>Manual count</item>
+    </string-array>
+    
 </resources>

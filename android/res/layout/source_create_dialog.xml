@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,9 +29,9 @@
             android:hint="Description (optional)"
             android:inputType="textMultiLine"
             android:minHeight="48dp" />
-
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
             <TextView
@@ -44,13 +44,15 @@
                 android:minHeight="48dp"
                 android:text="Type:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
             <Spinner
                 android:id="@+id/source_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:minWidth="280dp" />
+
         </LinearLayout>
 
         <CheckBox
@@ -66,15 +68,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom" >
-
+
         <Button
-            android:id="@+id/ok"
+            android:id="@+id/create"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_weight="1"
             android:onClick="onOKClick"
-            android:text="OK" />
+            android:text="Create" />
 
         <Button
             android:id="@+id/cancel"

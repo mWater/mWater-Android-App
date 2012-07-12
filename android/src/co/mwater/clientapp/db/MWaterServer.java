@@ -1,14 +1,12 @@
 package co.mwater.clientapp.db;
 
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 // TODO cleanup this class
 public class MWaterServer {
-	static final public String serverUrl = "http://192.168.0.2:8000/mwater/sync/";
+	static final public String serverUrl = "http://data.mwater.co/mwater/sync/";
 	
 	static public void login(Context context, String username, String clientId) {
 		SharedPreferences prefs = context.getSharedPreferences("Login", Context.MODE_PRIVATE);
