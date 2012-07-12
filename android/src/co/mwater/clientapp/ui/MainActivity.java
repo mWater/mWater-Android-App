@@ -21,12 +21,8 @@ public class MainActivity extends SherlockActivity {
 		// Setup application
 		PetrifilmImages.setup(this);
 
-		// Go to login screen if not logged in
-		if (MWaterServer.getClientId(this) == null) {
-			Intent intent = new Intent(this, LoginActivity.class);
-			startActivityForResult(intent, 0);
-		}
-
+		// TODO force login
+		
 		setContentView(R.layout.main_activity);
 	}
 
@@ -46,6 +42,13 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	public void onSyncClick(View v) {
+		// Go to login screen if not logged in
+		if (MWaterServer.getClientId(this) == null) {
+			Intent intent = new Intent(this, LoginActivity.class);
+			startActivityForResult(intent, 0);
+			return;
+		}
+
 		SyncTask syncTask = new SyncTask(this);
 		syncTask.execute(new CompleteDataSlice());
 	}
