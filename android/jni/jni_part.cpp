@@ -29,8 +29,8 @@ using namespace std;
 //}
 
 
-Mat process(Mat input, int& colonies) {
-    return findColonies(input, colonies);
+Mat process(Mat input, int& ecoli, int& tc, int& other) {
+    return findColonies(input, ecoli, tc, other, 0);
 }
 
 extern "C" {
@@ -84,8 +84,8 @@ JNIEXPORT void JNICALL Java_co_mwater_clientapp_petrifilmanalysis_PetrifilmImage
     Mat input = imdecode(jpegdata, 1);
 
     // Process image
-    int colonies = 0;
-    Mat processed = process(input, colonies);
+    int ecoli = 0, tc = 0, other = 0;
+    Mat processed = process(input, ecoli, tc, other);
 
     // Encode jpeg
     vector<uchar> encoded;
@@ -93,8 +93,14 @@ JNIEXPORT void JNICALL Java_co_mwater_clientapp_petrifilmanalysis_PetrifilmImage
 
     jclass resultsClass = env->GetObjectClass(results);
 
-    jfieldID coloniesField = env->GetFieldID(resultsClass, "colonies", "I");
-    env->SetIntField(results, coloniesField, colonies);
+    jfieldID ecoliField = env->GetFieldID(resultsClass, "ecoli", "I");
+    env->SetIntField(results, ecoliField, ecoli);
+
+    jfieldID tcField = env->GetFieldID(resultsClass, "tc", "I");
+    env->SetIntField(results, tcField, tc);
+
+    jfieldID otherField = env->GetFieldID(resultsClass, "other", "I");
+    env->SetIntField(results, otherField, other);
 
     jfieldID jpegField = env->GetFieldID(resultsClass, "jpeg", "[B");
     jbyteArray jpegarr = env->NewByteArray(encoded.size());

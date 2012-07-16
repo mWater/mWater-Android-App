@@ -131,15 +131,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp" >
-
+
+            <ProgressBar
+                android:id="@+id/locationProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:visibility="gone" />
+
             <TextView
-                android:id="@+id/location"
+                android:id="@+id/locationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/accuracy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="+/-"
+                android:textSize="8sp" />
 
             <View
                 android:id="@+id/View08"
@@ -147,14 +162,15 @@
                 android:layout_width="0.25dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
-
+
             <Button
-                android:id="@+id/locationChange"
+                android:id="@+id/locationSet"
                 style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:text="Change" />
+                android:onClick="onLocationSetClick"
+                android:text="Set" />
 
             <View
                 android:id="@+id/View07"
@@ -162,14 +178,16 @@
                 android:layout_width="0.25dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
-
+
             <Button
                 android:id="@+id/locationMap"
                 style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:onClick="onLocationMapClick"
                 android:text="Map" />
+
         </LinearLayout>
 
         <View

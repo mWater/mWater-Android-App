@@ -73,7 +73,13 @@ public class ChangeSetJsonSerializer {
 			JSONArray jrow = jrows.getJSONArray(i);
 			RowBuilder rowBuilder = cursor.newRow();
 			for (int col = 0; col < jrow.length(); col++)
-				rowBuilder.add(jrow.get(col));
+			{
+				Object val = jrow.get(col);
+				if (val.equals(JSONObject.NULL))
+					rowBuilder.add(null);
+				else
+					rowBuilder.add(jrow.get(col));
+			}
 		}
 		return cursor;
 	}

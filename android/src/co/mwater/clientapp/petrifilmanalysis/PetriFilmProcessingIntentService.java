@@ -68,7 +68,10 @@ public class PetriFilmProcessingIntentService extends IntentService {
 
 			// Record results
 			ContentValues update = new ContentValues();
-			testResults.autoEcoli = results.colonies;
+			testResults.autoAlgo = 1;
+			testResults.autoEcoli = results.ecoli;
+			testResults.autoTC = results.tc;
+			testResults.autoOther = results.other;
 			update.put(TestsTable.COLUMN_RESULTS, TestResults.Petrifilm.toJson(testResults));
 
 			getContentResolver().update(testUri, update, null, null);

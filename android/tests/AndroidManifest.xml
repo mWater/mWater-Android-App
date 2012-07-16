@@ -8,7 +8,7 @@
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="com.github.androidimageprocessing.bacteria" />
+        android:targetPackage="co.mwater.clientapp" />
 
     <application
         android:icon="@drawable/ic_launcher"

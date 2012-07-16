@@ -14,4 +14,4 @@ cv::Mat highpass(cv::Mat& imagef, cv::Mat& mask3C, int blursize);
 
 void removeyellow(cv::Mat& img);
 
-cv::Mat findColonies(cv::Mat& mbgr, int& colonies);
+cv::Mat findColonies(cv::Mat& mbgr, int& ecoli, int& tc, int& other, int debug);

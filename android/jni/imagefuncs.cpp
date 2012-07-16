@@ -9,9 +9,10 @@
 #include <stdio.h>
 #  define QUOTEME_(x) #x
 #  define QUOTEME(x) QUOTEME_(x)
-#  define LOGI(...) printf("I/" LOG_TAG " (" __FILE__ ":" QUOTEME(__LINE__) "): " __VA_ARGS__)
+#  define LOGI(...) {printf(__VA_ARGS__); printf("\r\n");}
 #  define LOGE(...) printf("E/" LOG_TAG "(" ")" __VA_ARGS__)
 #endif
+/*#  define LOGI(...) printf("I/" LOG_TAG " (" __FILE__ ":" QUOTEME(__LINE__) "): " __VA_ARGS__)*/
 
 using namespace cv;
 
@@ -41,9 +42,9 @@ void createPreview(Mat mbgra, int& foundCircle) {
 
 	// Draw cross-hairs
 	line(mbgra, Point(width * 0.5, height * 0.45),
-			Point(width * 0.5, height * 0.55), Scalar(0, 0, 0, 255), 2);
+		Point(width * 0.5, height * 0.55), Scalar(0, 0, 0, 255), 2);
 	line(mbgra, Point(width * 0.45, height * 0.5),
-			Point(width * 0.55, height * 0.5), Scalar(0, 0, 0, 255), 2);
+		Point(width * 0.55, height * 0.5), Scalar(0, 0, 0, 255), 2);
 }
 
 /* Calculate the circularity of a contour */
@@ -67,7 +68,7 @@ vector<Point> findCircle(Mat& mbgra) {
 	// Get center rectangle
 	Mat green = rgbPlanes[1];
 	Mat center = green(Range(height * 0.45, height * 0.55),
-			Range(width * 0.45, width * 0.55));
+		Range(width * 0.45, width * 0.55));
 
 	// Get threshold for circle
 	double threshval = mean(center)[0] * 0.75;
@@ -94,7 +95,7 @@ vector<Point> findCircle(Mat& mbgra) {
 
 		// Check that center is inside
 		if (pointPolygonTest(contours[i], Point(width / 2, height / 2), false)
-				<= 0)
+			<= 0)
 			continue;
 
 		// Make contour convex
@@ -113,20 +114,20 @@ vector<Point> findCircle(Mat& mbgra) {
 }
 
 /* Highpass of the image 
- image is a 3-channel 8-bit image
- mask3C is a 3-channel mask with 255 for yes, 0 for no.
- blursize is size of box filter applied
- returns float image scaled around 1.0
- */
+image is a 3-channel 8-bit image
+mask3C is a 3-channel mask with 255 for yes, 0 for no.
+blursize is size of box filter applied
+returns float image scaled around 1.0
+*/
 Mat highpass(Mat& image, Mat& mask3C, int blursize) {
 	// Create low-pass filter, only within mask
 	Mat blurred;
 	Mat blurredCount;
 	boxFilter(image & mask3C, blurred, CV_32FC3, Size(blursize, blursize),
-			Point(-1, -1), false, BORDER_CONSTANT);
+		Point(-1, -1), false, BORDER_CONSTANT);
 
 	boxFilter(mask3C, blurredCount, CV_32FC3, Size(blursize, blursize),
-			Point(-1, -1), false, BORDER_CONSTANT);
+		Point(-1, -1), false, BORDER_CONSTANT);
 
 	Mat highpass;
 	image.convertTo(highpass, CV_32FC3);
@@ -139,8 +140,8 @@ Mat highpass(Mat& image, Mat& mask3C, int blursize) {
 }
 
 /* Removes yellow lines from the image by minimizing the edges when 
- calculating green*(1+lambda)-blue*lambda.
- */
+calculating green*(1+lambda)-blue*lambda.
+*/
 void removeyellow(Mat& img) {
 	vector<Mat> bgr;
 	split(img, bgr);
@@ -149,7 +150,7 @@ void removeyellow(Mat& img) {
 	Mat b = bgr[0] - 1.0;
 
 	double lambda = mean(g.mul(b - g))[0]
-			/ mean(g.mul(g) - 2 * g.mul(b) + b.mul(b))[0];
+	/ mean(g.mul(g) - 2 * g.mul(b) + b.mul(b))[0];
 
 	LOGI("Remove yellow lambda = %f", lambda);
 	// Do not remove big lambdas, as lines are not problem in that case
@@ -162,150 +163,397 @@ void removeyellow(Mat& img) {
 	merge(bgr, img);
 }
 
-Mat findColonies(Mat& mbgr, int& colonies) {
+
+
+Mat lowPass3C(Mat &img, Mat &mask3C, int blurSize) {
+	// Create low-pass filter, only within mask
+	Mat blurred;
+	Mat blurredCount;
+	boxFilter(img & mask3C, blurred, CV_32SC3, Size(blurSize, blurSize),
+		Point(-1, -1), false, BORDER_CONSTANT);
+	boxFilter(mask3C, blurredCount, CV_32SC3, Size(blurSize, blurSize),
+		Point(-1, -1), false, BORDER_CONSTANT);
+	blurred = blurred / (blurredCount / 255);
+	Mat blurred8;
+	blurred.convertTo(blurred8, CV_8UC3);
+	return blurred8;
+}
+
+Mat lowPass(Mat &img, Mat &mask, int blurSize) {
+	Mat mask3C = Mat(img.size(), CV_8UC3, Scalar(0, 0, 0));
+	mask3C.setTo(Scalar(255, 255, 255), mask);
+	return lowPass3C(img, mask3C, blurSize);
+}
+
+Mat findBackground(Mat& img, Mat& mask, int debug) {
+	float mm2px = img.size[0]/50.0;
+
+	Mat lowpass = lowPass(img, mask, (int)(5*mm2px) * 2 + 1);
+
+	// Get outliers and remove from mask
+	Mat diff1 = img-lowpass;
+	Mat diff2 = lowpass-img;
+	//imshow("diff1", diff1);
+	//imshow("diff2", diff2);
+	//waitKey(0);
+
+	Mat background1, background2;
+	threshold(diff1, background1, 10, 255, CV_THRESH_BINARY_INV);
+	threshold(diff2, background2, 10, 255, CV_THRESH_BINARY_INV);
+
+	//imshow("background1", background1);
+	//imshow("background2", background2);
+
+	// Get background mask
+	Mat bgmask = background1&background2;
+	Mat background = lowPass3C(img, bgmask, (int)(5*mm2px) * 2 + 1);
+
+	return background;
+}
+
+Mat findColonies(Mat& mbgr, int& ecoli, int& tc, int& other, int debug) {
 	int width = mbgr.size[1];
 	int height = mbgr.size[0];
 
-	LOGI("Find colonies on %d, %d", width, height);
+	// Initial smooth
+	Mat smooth;
+	blur(mbgr, smooth, Size(3,3));
 
-	vector<Point> contour = findCircle(mbgr);
+	if (debug)
+		LOGI("Find colonies on %d, %d", width, height);
+
+	vector<Point> contour = findCircle(smooth);
 	if (contour.size() == 0)
-		return Mat(100, 100, CV_8UC3, Scalar(0, 0, 255));
+		return Mat();
 
-	LOGI("Contour with %d points", contour.size());
+	if (debug)
+		LOGI("Contour with %d points", contour.size());
 
 	// Extract petri region
 	Rect petriRect = boundingRect(contour);
 	Mat petri = mbgr(petriRect);
 
-	LOGI(
-			"Contour rect (%d,%d,%d,%d)", petriRect.x, petriRect.y, petriRect.width, petriRect.height);
+	if (debug)
+		LOGI(
+		"Contour rect (%d,%d,%d,%d)", petriRect.x, petriRect.y, petriRect.width, petriRect.height);
+
+	if (debug)
+		imshow("petri", petri);
+	//	waitKey(0);
 
 	// Create overall mask
 	Mat maskBig = Mat(mbgr.size(), CV_8UC1, Scalar(0));
 	fillConvexPoly(maskBig, contour, Scalar(255));
 
-	LOGI("fillConvexPoly");
+	if (debug)
+		LOGI("fillConvexPoly");
 
 	// Create petri mask
 	Mat mask = maskBig(petriRect);
 
+	float mm2px = petri.size[0]/50.0;
+
 	// Erode mask to remove edge effects
-	Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(21, 21));
+	int edgeSize = (int)(0.5*mm2px);
+	Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(edgeSize*2+1, edgeSize*2+1));
 	erode(mask, mask, kernel);
 
-	LOGI("resized mask (%d,%d)", mask.size[1], mask.size[0]);
-
-	Mat mask3C = Mat(petri.size(), CV_8UC3, Scalar(0, 0, 0));
-	mask3C.setTo(Scalar(255, 255, 255), mask);
-
-	// Create low-pass filter, only within mask
-	Mat blurred;
-	Mat blurredCount;
-	int blursize = (petri.rows / 12) * 2 + 1;
-	boxFilter(petri & mask3C, blurred, CV_32FC3, Size(blursize, blursize),
-			Point(-1, -1), false, BORDER_CONSTANT);
-
-	LOGI("boxFilter #1");
-
-	boxFilter(mask3C, blurredCount, CV_32FC3, Size(blursize, blursize),
-			Point(-1, -1), false, BORDER_CONSTANT);
-
-	LOGI("boxFilter #2");
-	blurred = blurred / (blurredCount / 255);
-
-	LOGI("blurred");
+	Mat background = findBackground(petri, mask, debug);
 
 	// High-pass image
 	Mat highpass;
-	petri.convertTo(highpass, CV_32FC3);
-	highpass = highpass / blurred * 200;
+	highpass = (petri * 200) / background;
 
-	LOGI("highpassed");
-
-	// Convert back to 8-bit
-	Mat highpass8;
-	highpass.convertTo(highpass8, CV_8UC3);
-
-	LOGI("8-bitted");
+	if (debug)
+		LOGI("highpassed");
 
 	// Mask outside of circle to background
-	highpass8.setTo(Scalar(200, 200, 200), 255 - mask);
+	highpass.setTo(Scalar(200, 200, 200), 255 - mask);
 
-	LOGI("reset outside mask");
+	if (debug) {
+		LOGI("reset outside mask");
+		imwrite("highpass.png", highpass);//###
+	}
 
-	// Remove yellow lines
-	removeyellow(highpass8);
+	//imshow("highpass", highpass);
+
+	//// Remove yellow lines
+	//removeyellow(highpass8);
 
 	// Remove noise
-	blur(highpass8, highpass8, Size(3, 3));
+	//blur(highpass, highpass, Size(minsize, minsize));
 
 	// Split into channels
 	vector<Mat> rgbPlanes;
-	split(highpass8, rgbPlanes);
+	split(highpass, rgbPlanes);
 
 	// Find colonies
 	Mat colthresh;
-	threshold(rgbPlanes[1], colthresh, 150, 200, CV_THRESH_BINARY_INV);
+	threshold(rgbPlanes[1], colthresh, 115, 200, CV_THRESH_BINARY_INV);
 
-//	// Remove single pixels
-//	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
-//	erode(colthresh, colthresh, kernel);
+	// Find bubbles
+	Mat bubbles;
+	threshold(rgbPlanes[1], bubbles, 220, 255, CV_THRESH_BINARY);
 
-	int mingap = petri.rows / 100;
+	// Erode bubbles
+	int erodeSize = (int)(0.2*mm2px);
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(erodeSize, erodeSize));
+	erode(bubbles, bubbles, kernel);
+
+	// Dilate bubbles
+	int dilateSize = (int)(0.5*mm2px);
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(dilateSize, dilateSize));
+	dilate(bubbles, bubbles, kernel);
+
+	// Emit blueness map
+	Mat blueness = rgbPlanes[0]-rgbPlanes[2];
+	Mat greenness = rgbPlanes[1]-rgbPlanes[2];
+	Mat darkmask;
+	threshold(rgbPlanes[1], darkmask, 180, 255, CV_THRESH_BINARY_INV);
+	blueness |= greenness;
+	blueness &= darkmask;
+	blueness &= ~bubbles;
+	threshold(blueness, blueness, 12, 255, CV_THRESH_BINARY);
+
+	// Remove artifact pixels
+	int minbluesize = (int)(0.1*mm2px);
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(minbluesize, minbluesize));
+	erode(blueness, blueness, kernel);
+
+	if (debug) {
+		imshow("blueness", blueness);
+		imwrite("blueness.png", blueness);
+	}
+
+	// Remove bubbles from colonies
+	if (debug)
+	{
+		imshow("bubbles", bubbles);
+		imshow("precol", colthresh);
+	}
+	colthresh &= ~bubbles;
+
+	int innersize = (int)(0.2*mm2px);
+	int outersize = (int)(0.8*mm2px);
+
+	// Remove single pixels
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(innersize, innersize));
+	erode(colthresh, colthresh, kernel);
 
 	// Encompass entire colonies
-	kernel = getStructuringElement(MORPH_ELLIPSE, Size(mingap, mingap));
+	kernel = getStructuringElement(MORPH_ELLIPSE, Size(outersize, outersize));
 	dilate(colthresh, colthresh, kernel);
+
+	if (debug)
+		imshow("colthresh", colthresh);
 
 	vector<vector<Point> > contours;
 	findContours(colthresh, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
 
-	LOGI("Colony contours: %d", contours.size());
+	if (debug)
+		LOGI("Colony contours: %d", contours.size());
 
-	colonies = 0;
+	ecoli = 0;
+	tc = 0;
+	other = 0;
+
 	for (int i = 0; i < contours.size(); i++) {
 		Rect rect = boundingRect(contours[i]);
-
-		int neighsize = petri.rows / 50;
-
-//		// Ignore if too large
-//		if (rect.height > neighsize*2 || rect.width > neighsize*2)
-//			continue;
-
-		// Determine colony blueness (ratio of absorbed red to red+green absorbed)
-		Mat colMat = highpass8(rect);
-		Scalar s = sum(colMat);
-		long redness = 200 * rect.width * rect.height - s[1];
-		long blueness = 200 * rect.width * rect.height - s[2];
-//		LOGI("%2d: redness=%d", i, redness);
-//		LOGI("%2d: blueness=%d", i, blueness);
-		float ratio = (float) blueness / (blueness + redness);
-		LOGI("At %d,%d : %f", rect.x, rect.y, ratio);
-
-		Scalar color;
-		if (ratio < 0.23)
-			color = Scalar(0, 0, 255, 255);
-		else if (ratio < 0.27)
-			color = Scalar(0, 255, 0, 255);
-		else
-			color = Scalar(255, 0, 0, 255);
 		Point center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
 		// Draw rectangle
-		rectangle(highpass8,
-				Rect(rect.x - neighsize, rect.y - neighsize,
-						rect.width + neighsize * 2,
-						rect.height + neighsize * 2), color, 2);
+		int neighsize = (int)(1.0*mm2px);
+		Rect vicinity = Rect(rect.x - neighsize, rect.y - neighsize,
+			rect.width + neighsize * 2,
+			rect.height + neighsize * 2);
 
-		colonies++;
-//		// Draw rectangle
-//		rectangle(
-//				highpass8,
-//				Rect(rect.x, rect.y,
-//						rect.width,
-//						rect.height), Scalar(0, 0, 255, 255), 3);
+		Rect entire = Rect(0,0,highpass.size[1], highpass.size[0]);
+		vicinity = vicinity & entire;
+		if (vicinity.area()==0)
+			continue;
+
+		// Determine if bubbles in 1mm vicinity
+		Scalar bubblesum = sum(bubbles(vicinity));
+		double bubbleperc = (bubblesum[0]/255*100.0)/vicinity.area();
+		//		printf("bubble perc=%g\r\n", bubbleperc);
+
+		// Determine if blueness in 1mm vicinity
+		Scalar bluenesssum = sum(blueness(vicinity));
+		double bluenessperc = (bluenesssum[0]/255*100.0)/vicinity.area();
+		//		printf("blueness perc=%g\r\n", bluenessperc);
+
+		Scalar color;
+		if (bluenessperc>1) {
+			ecoli++;
+			color = Scalar(255, 0, 0, 128);
+		}
+		else if (bubbleperc>7) {
+			tc++;
+			color=Scalar(0,0,255,128);
+		}
+		else {
+			other++;
+			color = Scalar(128,128,128,128);
+		}
+
+		// Draw rectangle
+		rectangle(highpass, vicinity, color, 2);
+
+		//		// Draw rectangle
+		//		rectangle(
+		//				highpass8,
+		//				Rect(rect.x, rect.y,
+		//						rect.width,
+		//						rect.height), Scalar(0, 0, 255, 255), 3);
 	}
 
-	return highpass8;
+	return highpass;
 }
+
+//Mat findColoniesOld(Mat& mbgr, int& ecoli, int& tc, int& other) {
+//	int width = mbgr.size[1];
+//	int height = mbgr.size[0];
+//
+//	LOGI("Find colonies on %d, %d", width, height);
+//
+//	vector<Point> contour = findCircle(mbgr);
+//	if (contour.size() == 0)
+//		return Mat(100, 100, CV_8UC3, Scalar(0, 0, 255));
+//
+//	LOGI("Contour with %d points", contour.size());
+//
+//	// Extract petri region
+//	Rect petriRect = boundingRect(contour);
+//	Mat petri = mbgr(petriRect);
+//
+//	LOGI(
+//		"Contour rect (%d,%d,%d,%d)", petriRect.x, petriRect.y, petriRect.width, petriRect.height);
+//
+//	// Create overall mask
+//	Mat maskBig = Mat(mbgr.size(), CV_8UC1, Scalar(0));
+//	fillConvexPoly(maskBig, contour, Scalar(255));
+//
+//	LOGI("fillConvexPoly");
+//
+//	// Create petri mask
+//	Mat mask = maskBig(petriRect);
+//
+//	// Erode mask to remove edge effects
+//	Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(21, 21));
+//	erode(mask, mask, kernel);
+//
+//	LOGI("resized mask (%d,%d)", mask.size[1], mask.size[0]);
+//
+//	Mat mask3C = Mat(petri.size(), CV_8UC3, Scalar(0, 0, 0));
+//	mask3C.setTo(Scalar(255, 255, 255), mask);
+//
+//	// Create low-pass filter, only within mask
+//	Mat blurred;
+//	Mat blurredCount;
+//	int blursize = (petri.rows / 12) * 2 + 1;
+//	boxFilter(petri & mask3C, blurred, CV_32FC3, Size(blursize, blursize),
+//		Point(-1, -1), false, BORDER_CONSTANT);
+//
+//	LOGI("boxFilter #1");
+//
+//	boxFilter(mask3C, blurredCount, CV_32FC3, Size(blursize, blursize),
+//		Point(-1, -1), false, BORDER_CONSTANT);
+//
+//	LOGI("boxFilter #2");
+//	blurred = blurred / (blurredCount / 255);
+//
+//	LOGI("blurred");
+//
+//	// High-pass image
+//	Mat highpass;
+//	petri.convertTo(highpass, CV_32FC3);
+//	highpass = highpass / blurred * 200;
+//
+//	LOGI("highpassed");
+//
+//	// Convert back to 8-bit
+//	Mat highpass8;
+//	highpass.convertTo(highpass8, CV_8UC3);
+//
+//	LOGI("8-bitted");
+//
+//	// Mask outside of circle to background
+//	highpass8.setTo(Scalar(200, 200, 200), 255 - mask);
+//
+//	LOGI("reset outside mask");
+//
+//	// Remove yellow lines
+//	removeyellow(highpass8);
+//
+//	// Remove noise
+//	blur(highpass8, highpass8, Size(3, 3));
+//
+//	// Split into channels
+//	vector<Mat> rgbPlanes;
+//	split(highpass8, rgbPlanes);
+//
+//	// Find colonies
+//	Mat colthresh;
+//	threshold(rgbPlanes[1], colthresh, 150, 200, CV_THRESH_BINARY_INV);
+//
+//	//	// Remove single pixels
+//	//	kernel = getStructuringElement(MORPH_ELLIPSE, Size(3, 3));
+//	//	erode(colthresh, colthresh, kernel);
+//
+//	int mingap = petri.rows / 100;
+//
+//	// Encompass entire colonies
+//	kernel = getStructuringElement(MORPH_ELLIPSE, Size(mingap, mingap));
+//	dilate(colthresh, colthresh, kernel);
+//
+//	vector<vector<Point> > contours;
+//	findContours(colthresh, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);
+//
+//	LOGI("Colony contours: %d", contours.size());
+//
+//	int colonies = 0;
+//	for (int i = 0; i < contours.size(); i++) {
+//		Rect rect = boundingRect(contours[i]);
+//
+//		int neighsize = petri.rows / 50;
+//
+//		//		// Ignore if too large
+//		//		if (rect.height > neighsize*2 || rect.width > neighsize*2)
+//		//			continue;
+//
+//		// Determine colony blueness (ratio of absorbed red to red+green absorbed)
+//		Mat colMat = highpass8(rect);
+//		Scalar s = sum(colMat);
+//		long redness = 200 * rect.width * rect.height - s[1];
+//		long blueness = 200 * rect.width * rect.height - s[2];
+//		//		LOGI("%2d: redness=%d", i, redness);
+//		//		LOGI("%2d: blueness=%d", i, blueness);
+//		float ratio = (float) blueness / (blueness + redness);
+//		LOGI("At %d,%d : %f", rect.x, rect.y, ratio);
+//
+//		Scalar color;
+//		if (ratio < 0.23)
+//			color = Scalar(0, 0, 255, 255);
+//		else if (ratio < 0.27)
+//			color = Scalar(0, 255, 0, 255);
+//		else
+//			color = Scalar(255, 0, 0, 255);
+//		Point center = Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+//
+//		// Draw rectangle
+//		rectangle(highpass8,
+//			Rect(rect.x - neighsize, rect.y - neighsize,
+//			rect.width + neighsize * 2,
+//			rect.height + neighsize * 2), color, 2);
+//
+//		colonies++;
+//		//		// Draw rectangle
+//		//		rectangle(
+//		//				highpass8,
+//		//				Rect(rect.x, rect.y,
+//		//						rect.width,
+//		//						rect.height), Scalar(0, 0, 255, 255), 3);
+//	}
+//
+//	return highpass8;
+//}

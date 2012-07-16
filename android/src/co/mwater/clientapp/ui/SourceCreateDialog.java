@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 import co.mwater.clientapp.R;
@@ -72,6 +73,8 @@ public class SourceCreateDialog extends DialogFragment {
 		
 		Intent intent = new Intent(this.getActivity(), SourceDetailActivity.class);
 		intent.putExtra("uri", uri);
+		intent.putExtra("setLocation", ((CheckBox)this.getView().findViewById(R.id.currentLocation)).isChecked());
+
 		startActivity(intent);
 
 		this.dismiss();

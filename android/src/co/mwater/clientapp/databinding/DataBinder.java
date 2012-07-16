@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Handler;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -34,6 +35,10 @@ public class DataBinder {
 
 	public void addSpinner(Spinner control, String column) {
 		elements.add(new SpinnerDataBinderElement(column, control));
+	}
+
+	public void addCheckBox(CheckBox control, String column) {
+		elements.add(new CheckBoxDataBinderElement(column, control));
 	}
 
 	public void bind(Uri uri) {
