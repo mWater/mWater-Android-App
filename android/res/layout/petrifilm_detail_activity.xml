@@ -46,11 +46,13 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="?android:textColorSecondary"
                     android:textStyle="italic" />
-
+
                 <TextView
                     android:id="@+id/ecoli_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
             </TableRow>
@@ -68,11 +70,13 @@
                     android:text="Total Coliform:"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="?android:textColorSecondary" />
-
+
                 <TextView
                     android:id="@+id/tc_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
             </TableRow>
@@ -90,11 +94,13 @@
                     android:text="Other:"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="?android:textColorSecondary" />
-
+
                 <TextView
                     android:id="@+id/other_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
             </TableRow>

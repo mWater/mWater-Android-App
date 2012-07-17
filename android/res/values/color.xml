@@ -2,7 +2,10 @@
 <resources>
     <color name="emphasis">#31b6e7</color>
     <color name="bg_gray">#cecbce</color>
-    <color name="test_bad">#ce6666</color>
-    <color name="test_ok">#cece66</color>
-    <color name="test_good">#66ce66</color>
+    <color name="risk_red">#ce6666</color>
+    <color name="risk_orange">#ce9a66</color>
+    <color name="risk_yellow">#cece66</color>
+    <color name="risk_green">#66ce66</color>
+    <color name="risk_blue">#6666ce</color>
+    <color name="risk_unspecified">#ffffff</color>
 </resources>

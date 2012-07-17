@@ -1,25 +1,14 @@
 package co.mwater.clientapp.petrifilmanalysis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import junit.framework.TestResult;
-
 import co.mwater.clientapp.db.MWaterContentProvider;
-import co.mwater.clientapp.db.TestResults;
-import co.mwater.clientapp.db.TestResults.Petrifilm;
+import co.mwater.clientapp.db.testresults.PetrifilmResults;
 import co.mwater.clientapp.db.TestsTable;
-import co.mwater.clientapp.ui.MainActivity;
-
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
 
 public class PetriFilmProcessingIntentService extends IntentService {
@@ -64,7 +53,7 @@ public class PetriFilmProcessingIntentService extends IntentService {
 
 			// TODO race condition?
 			String resultsStr = values.getAsString(TestsTable.COLUMN_RESULTS);
-			TestResults.Petrifilm testResults = TestResults.Petrifilm.fromJson(resultsStr);
+			PetrifilmResults testResults = new PetrifilmResults(resultsStr);
 
 			// Record results
 			ContentValues update = new ContentValues();
@@ -72,7 +61,7 @@ public class PetriFilmProcessingIntentService extends IntentService {
 			testResults.autoEcoli = results.ecoli;
 			testResults.autoTC = results.tc;
 			testResults.autoOther = results.other;
-			update.put(TestsTable.COLUMN_RESULTS, TestResults.Petrifilm.toJson(testResults));
+			update.put(TestsTable.COLUMN_RESULTS, testResults.toJson());
 
 			getContentResolver().update(testUri, update, null, null);
 		} catch (IOException e) {

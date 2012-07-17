@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor;
 public class SourceCodes {
 	private static final String LAST_CODE = "LastCode";
 
+	// TODO real codes
 	public static String getNewCode(Context context) {
 		SharedPreferences prefs = context.getSharedPreferences("SourceCodes", Context.MODE_PRIVATE);
 		long code = prefs.getLong(LAST_CODE, 0) + 1;

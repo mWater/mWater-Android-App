@@ -6,37 +6,38 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
-import co.mwater.clientapp.db.TestResults;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.PetrifilmResults;
+import co.mwater.clientapp.db.testresults.Results;
+import co.mwater.clientapp.db.testresults.Risk;
 import co.mwater.clientapp.petrifilmanalysis.PetriFilmProcessingIntentService;
 import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
 import co.mwater.clientapp.ui.DetailActivity;
+import co.mwater.clientapp.ui.TestActivities;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 import com.actionbarsherlock.view.Window;
 
-import co.mwater.clientapp.R;
-
-import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
 public class PetrifilmTestDetailsActivity extends DetailActivity implements OnClickListener {
 	private static final String TAG = PetrifilmTestDetailsActivity.class.getSimpleName();
 	static int PETRI_IMAGE_REQUEST = 1;
-	
+
 	boolean autoAnalysing = false; // TODO this could be done better
 
 	@Override
@@ -47,22 +48,6 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 
 		setContentView(R.layout.petrifilm_detail_activity);
 	}
-	
-	/*
-E.Coli
-
-red=>10/1ml
-
-orange=1-10/1ml
-
-yellow=10-100/
-
-green=0-10/100ml
-
-blue=0/100ml
-
-(non-Javadoc)
-	 */
 
 	@Override
 	protected void displayData() {
@@ -70,19 +55,20 @@ blue=0/100ml
 
 		// Get results
 		String results = rowValues.getAsString(TestsTable.COLUMN_RESULTS);
-		// TODO handle null to put blank
-		if (results != null)
-		{
-			TestResults.Petrifilm pfr = TestResults.Petrifilm.fromJson(results);
-			setControlInteger(R.id.ecoli_count, pfr.manualEcoli != null ? pfr.manualEcoli : pfr.autoEcoli);
-			setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC : pfr.autoTC);
-			setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
+		PetrifilmResults pfr = new PetrifilmResults(results);
+		setControlInteger(R.id.ecoli_count, pfr.manualEcoli != null ? pfr.manualEcoli : pfr.autoEcoli);
+		setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC : pfr.autoTC);
+		setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
 
-			autoAnalysing &= pfr.autoEcoli == null;
-		}
-		setSupportProgressBarIndeterminateVisibility(autoAnalysing);
+		autoAnalysing &= pfr.autoEcoli == null;
 		
-		((Button)findViewById(R.id.record_results)).setText(results != null ? "Edit Results" : "Record Results");
+		Risk risk = pfr.getRisk();
+		int riskColor = TestActivities.getRiskColor(risk);
+		((TextView) this.findViewById(R.id.ecoli_count)).setBackgroundColor(this.getResources().getColor(riskColor));
+
+		setSupportProgressBarIndeterminateVisibility(autoAnalysing);
+
+		((Button) findViewById(R.id.record_results)).setText(results != null ? "Edit Results" : "Record Results");
 
 		Long started_on = rowValues.getAsLong(TestsTable.COLUMN_STARTED_ON);
 		if (started_on != null) {
@@ -166,7 +152,7 @@ blue=0/100ml
 			recordResultRead();
 			autoAnalysing = true;
 			setSupportProgressBarIndeterminateVisibility(true);
-			
+
 			// TODO record photo uid
 
 			// Send image to be processed and saved
@@ -189,7 +175,7 @@ blue=0/100ml
 		if (rowValues.getAsString(TestsTable.COLUMN_RESULTS) == null) {
 			// Record initial results
 			ContentValues update = new ContentValues();
-			update.put(TestsTable.COLUMN_RESULTS, TestResults.Petrifilm.toJson(new TestResults.Petrifilm()));
+			update.put(TestsTable.COLUMN_RESULTS, new PetrifilmResults().toJson());
 			update.put(TestsTable.COLUMN_READ_ON, System.currentTimeMillis() / 1000);
 
 			getContentResolver().update(uri, update, null, null);

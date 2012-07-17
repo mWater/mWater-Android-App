@@ -15,14 +15,14 @@
         <Button
             android:id="@+id/sources"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_source"
+            android:drawableTop="@drawable/ic_source_large"
             android:onClick="onSourcesClick"
             android:text="Sources" />
 
         <Button
             android:id="@+id/Button03"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_map"
+            android:drawableTop="@drawable/ic_map_large"
             android:text="Map" />
 
     </TableRow>
@@ -36,14 +36,14 @@
         <Button
             android:id="@+id/samples"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_sample"
+            android:drawableTop="@drawable/ic_sample_large"
             android:onClick="onSamplesClick"
             android:text="Samples" />
 
         <Button
             android:id="@+id/tests"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_test"
+            android:drawableTop="@drawable/ic_test_large"
             android:onClick="onTestsClick"
             android:text="Tests" />
 
@@ -58,14 +58,14 @@
         <Button
             android:id="@+id/sync"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_sync"
+            android:drawableTop="@drawable/ic_sync_large"
             android:onClick="onSyncClick"
             android:text="Synchronize" />
 
         <Button
             android:id="@+id/Button02"
             style="@style/mainButton"
-            android:drawableTop="@drawable/ic_settings"
+            android:drawableTop="@drawable/ic_settings_large"
             android:text="Settings" />
 
     </TableRow>

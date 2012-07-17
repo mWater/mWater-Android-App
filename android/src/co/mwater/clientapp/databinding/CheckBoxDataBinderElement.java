@@ -1,12 +1,9 @@
 package co.mwater.clientapp.databinding;
 
 import android.content.ContentValues;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.TextView;
 
 public class CheckBoxDataBinderElement implements DataBinderElement, OnCheckedChangeListener {
 	String column;

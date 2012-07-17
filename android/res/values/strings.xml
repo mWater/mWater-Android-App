@@ -38,5 +38,13 @@
         <item>100mL E. coli</item>
         <item>UNC Compartmentalized Bag</item>
     </string-array>
+
+    <!-- Tags to use for test types -->
+    <string-array name="test_tags">
+        <item>E.Coli</item>
+        <item>E.Coli</item>
+        <item>E.Coli</item>
+        <item>E.Coli</item>
+    </string-array>
     
 </resources>

@@ -13,7 +13,7 @@
         android:layout_gravity="center_vertical"
         android:paddingRight="10dp"
         android:text="01/12/2012" />
-
+
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
@@ -21,17 +21,17 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="1dp"
         android:layout_marginRight="1dp"
-        android:background="@color/test_bad"
+        android:background="@color/risk_orange"
         android:padding="2dp"
         android:text="E.Coli"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-
+
     <TextView
         android:id="@+id/TextView01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:background="@color/test_good"
+        android:background="@color/risk_green"
         android:padding="2dp"
         android:text="Ph"
         android:textAppearance="?android:attr/textAppearanceSmall" />

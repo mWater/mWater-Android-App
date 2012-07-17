@@ -1,10 +1,15 @@
 package co.mwater.clientapp.ui;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.Results;
+import co.mwater.clientapp.db.testresults.Risk;
 import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailsActivity;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -75,10 +80,16 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	}
 
 	void editTest(long id) {
-		// TODO different test types
-		Intent intent = new Intent(this, PetrifilmTestDetailsActivity.class);
-		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.TESTS_URI, id + ""));
-		startActivity(intent);
+		// Get test
+		Uri testUri = Uri.withAppendedPath(MWaterContentProvider.TESTS_URI, id + "");
+		ContentValues testValues = MWaterContentProvider.getSingleRow(this, testUri);
+		@SuppressWarnings("rawtypes")
+		Class detailClass = TestActivities.getDetailActivity(testValues.getAsInteger(TestsTable.COLUMN_TEST_TYPE));
+		if (detailClass != null) {
+			Intent intent = new Intent(this, detailClass);
+			intent.putExtra("uri", testUri);
+			startActivity(intent);
+		}
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -119,12 +130,39 @@ class TestListAdapter extends CursorAdapter {
 				source = MWaterContentProvider.getSingleRow(context, MWaterContentProvider.SOURCES_URI, sourceUid);
 		}
 
-		setControlText(view, R.id.source_name, source != null ? source.getAsString(SourcesTable.COLUMN_NAME) : null);
+		setControlText(view, R.id.source_name, source != null ? source.getAsString(SourcesTable.COLUMN_NAME) : "Unspecified Source");
 		setControlText(view, R.id.code, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_CODE)));
-		setControlText(view, R.id.sample, sample != null ? sample.getAsString(SamplesTable.COLUMN_CODE) : null);
-		
+
+		String[] testTags = context.getResources().getStringArray(R.array.test_tags);
 		String[] testTypes = context.getResources().getStringArray(R.array.test_types);
-		setControlText(view, R.id.test_type, testTypes[cursor.getInt(cursor.getColumnIndex(TestsTable.COLUMN_TEST_TYPE))]);
+
+		int testType = cursor.getInt(cursor.getColumnIndex(TestsTable.COLUMN_TEST_TYPE));
+		if (testType >= testTags.length) {
+			// TODO prettify
+			setControlText(view, R.id.tag, "???");
+			setControlText(view, R.id.test_type, "???");
+			((TextView) view.findViewById(R.id.tag)).setBackgroundColor(context.getResources().getColor(R.color.risk_unspecified));
+		}
+		else {
+			setControlText(view, R.id.tag, testTags[testType]);
+			setControlText(view, R.id.test_type, testTypes[testType]);
+
+			Risk risk = Results.getResults(testType, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
+			int riskColor = TestActivities.getRiskColor(risk);
+			((TextView) view.findViewById(R.id.tag)).setBackgroundColor(context.getResources().getColor(riskColor));
+		}
+
+		int readOnCol = cursor.getColumnIndex(TestsTable.COLUMN_READ_ON);
+		if (cursor.isNull(readOnCol)) {
+			setControlText(view, R.id.started_on, "Pending");
+		}
+		else {
+			long readOn = cursor.getLong(readOnCol);
+			setControlText(view, R.id.started_on, DateFormat.getDateInstance().format(new Date(readOn * 1000)));
+		}
+
+		// setControlText(view, R.id.sample, sample != null ?
+		// sample.getAsString(SamplesTable.COLUMN_CODE) : null);
 	}
 
 	@Override

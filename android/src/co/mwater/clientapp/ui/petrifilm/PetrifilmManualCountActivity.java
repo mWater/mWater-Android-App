@@ -1,15 +1,15 @@
 package co.mwater.clientapp.ui.petrifilm;
 
-import co.mwater.clientapp.db.TestResults;
+import android.content.ContentValues;
+import android.os.Bundle;
+import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.PetrifilmResults;
 import co.mwater.clientapp.ui.DetailActivity;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
-import co.mwater.clientapp.R;
-
-import android.content.ContentValues;
-import android.os.Bundle;
 
 public class PetrifilmManualCountActivity extends DetailActivity {
 	private static final String TAG = PetrifilmManualCountActivity.class.getSimpleName();
@@ -26,7 +26,7 @@ public class PetrifilmManualCountActivity extends DetailActivity {
 
 		// Get results
 		String results = rowValues.getAsString(TestsTable.COLUMN_RESULTS);
-		TestResults.Petrifilm pfr = TestResults.Petrifilm.fromJson(results);
+		PetrifilmResults pfr = new PetrifilmResults(results);
 
 		setControlInteger(R.id.ecoli_count, pfr.manualEcoli != null ? pfr.manualEcoli : pfr.autoEcoli);
 		setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC: pfr.autoTC);
@@ -41,7 +41,7 @@ public class PetrifilmManualCountActivity extends DetailActivity {
 
 		// Get results
 		String results = rowValues.getAsString(TestsTable.COLUMN_RESULTS);
-		TestResults.Petrifilm pfr = TestResults.Petrifilm.fromJson(results);
+		PetrifilmResults pfr = new PetrifilmResults(results);
 
 		// Save values
 		pfr.manualEcoli = getControlInteger(R.id.ecoli_count);
@@ -49,7 +49,7 @@ public class PetrifilmManualCountActivity extends DetailActivity {
 		pfr.manualOther = getControlInteger(R.id.other_count);
 		
 		ContentValues values = new ContentValues();
-		values.put(TestsTable.COLUMN_RESULTS, TestResults.Petrifilm.toJson(pfr));
+		values.put(TestsTable.COLUMN_RESULTS, pfr.toJson());
 		getContentResolver().update(uri, values, null, null);
 	}
 	
