@@ -13,15 +13,15 @@
         android:orientation="vertical" >
 
     </LinearLayout>
-
+
     <TextView
         android:id="@+id/seeAll"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
-        android:gravity="center_vertical"
+        android:clickable="true"
+        android:gravity="center_vertical|right"
         android:minHeight="48dp"
-        android:onClick="onSeeAllClick"
         android:text="See All >"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

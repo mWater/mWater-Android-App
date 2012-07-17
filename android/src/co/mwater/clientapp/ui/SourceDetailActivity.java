@@ -40,11 +40,13 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		setLocationFlag = getIntent().getBooleanExtra("setLocation", false);
 		
 		// Set up fragment
-		Fragment samplesSummary = getSupportFragmentManager().findFragmentById(R.id.samplesSummary);
+		SampleListSummaryFragment sampleFragment = new SampleListSummaryFragment();
 		Bundle args = new Bundle();
 		args.putString("sourceUid", rowValues.getAsString(SourcesTable.COLUMN_UID));
-		samplesSummary.setArguments(args);
-		
+		sampleFragment.setArguments(args);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.sample_list, sampleFragment).commit();
+        
 		// Set up location service
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Criteria criteria = new Criteria();

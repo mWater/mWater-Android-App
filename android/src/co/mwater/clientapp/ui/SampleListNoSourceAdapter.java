@@ -34,16 +34,18 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 	
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		setControlText(view, R.id.code, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_CODE)));
+		setControlText(view, R.id.code, cursor.getString(cursor.getColumnIndex(SamplesTable.COLUMN_CODE)));
 
 		int sampledOnCol = cursor.getColumnIndex(SamplesTable.COLUMN_SAMPLED_ON);
 		long sampledOn = cursor.getLong(sampledOnCol);
 		setControlText(view, R.id.sampled_on, DateFormat.getDateInstance().format(new Date(sampledOn * 1000)));
 
+		String sampleUid = cursor.getString(cursor.getColumnIndex(SamplesTable.COLUMN_UID));
+		
 		// Get tests
 		// TODO sort order
-		Cursor tests = context.getContentResolver().query(MWaterContentProvider.SAMPLES_URI, null, 
-				SamplesTable.COLUMN_SOURCE + "=?", new String[] { sourceUid }, null);
+		Cursor tests = context.getContentResolver().query(MWaterContentProvider.TESTS_URI, null, 
+				TestsTable.COLUMN_SAMPLE + "=?", new String[] { sampleUid }, null);
 		
 		// Clear tags
 		LinearLayout tagsLayout = (LinearLayout)view.findViewById(R.id.tags);
@@ -64,7 +66,7 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 				else {
 					tagText = testTags[testType];
 
-					Risk risk = Results.getResults(testType, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
+					Risk risk = Results.getResults(testType, tests.getString(tests.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
 					int riskColor = TestActivities.getRiskColor(risk);
 					tagColor = context.getResources().getColor(riskColor);
 				}
@@ -75,5 +77,6 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 				tagTextView.setBackgroundColor(tagColor);
 			} while (tests.moveToNext());
 		}
+		tests.close();
 	}
 }
