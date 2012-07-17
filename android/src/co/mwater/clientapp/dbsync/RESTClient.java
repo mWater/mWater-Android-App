@@ -55,7 +55,8 @@ public class RESTClient {
 			int code;
 			try {
 				code = connection.getResponseCode();
-				throw new RESTClientException(code, ioex);
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
 			} catch (IOException e) {
 				throw new RESTClientException(e);
 			}
@@ -103,7 +104,8 @@ public class RESTClient {
 			int code;
 			try {
 				code = connection.getResponseCode();
-				throw new RESTClientException(code, ioex);
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
 			} catch (IOException e) {
 				throw new RESTClientException(e);
 			}

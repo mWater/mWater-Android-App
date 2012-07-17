@@ -10,8 +10,8 @@ public class RESTClientException extends Exception {
 		responseCode = -1;
 	}
 
-	public RESTClientException(int responseCode, IOException innerException) {
-		super(innerException);
+	public RESTClientException(int responseCode, String message, IOException innerException) {
+		super(message, innerException);
 		this.responseCode = responseCode;
 	}
 

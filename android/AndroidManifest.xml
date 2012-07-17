@@ -35,8 +35,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait"
             android:label="Login"></activity>
-        
         <activity
             android:label="Sources"
             android:name=".ui.SourceListActivity">
