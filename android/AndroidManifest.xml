@@ -46,10 +46,15 @@
             android:label="Source"
             android:windowSoftInputMode="stateHidden"></activity>
 
+        
         <activity
             android:label="Samples"
             android:name=".ui.SampleListActivity">
         </activity>
+        
+        <activity android:name=".ui.SampleDetailActivity"
+            android:label="Sample"
+            android:windowSoftInputMode="stateHidden"></activity>
         
         <activity
             android:label="Tests"
@@ -67,7 +72,7 @@
                   android:configChanges="keyboardHidden|orientation">
         </activity>
         
-        <activity android:name=".ui.petrifilm.PetrifilmTestDetailsActivity">
+        <activity android:name=".ui.petrifilm.PetrifilmTestDetailActivity">
         </activity>
     
     <activity android:name=".ui.petrifilm.PetrifilmManualCountActivity">

@@ -44,4 +44,12 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMediumInverse</item>
     </style>
     
+    <style name="riskTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+    
 </resources>

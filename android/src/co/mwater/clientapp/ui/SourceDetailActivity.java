@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -38,6 +39,13 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 
 		setLocationFlag = getIntent().getBooleanExtra("setLocation", false);
 		
+		// Set up fragment
+		Fragment samplesSummary = getSupportFragmentManager().findFragmentById(R.id.samplesSummary);
+		Bundle args = new Bundle();
+		args.putString("sourceUid", rowValues.getAsString(SourcesTable.COLUMN_UID));
+		samplesSummary.setArguments(args);
+		
+		// Set up location service
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);

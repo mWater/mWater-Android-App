@@ -13,7 +13,7 @@ import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.TestsTable;
-import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailsActivity;
+import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailActivity;
 
 /**
  * Holds logic and UI to create a new test
@@ -51,7 +51,7 @@ public class TestCreator implements OnClickListener {
 			values.put(TestsTable.COLUMN_STARTED_ON, System.currentTimeMillis() / 1000);
 			Uri testUri = context.getContentResolver().insert(MWaterContentProvider.TESTS_URI, values);
 
-			Intent intent = new Intent(context, PetrifilmTestDetailsActivity.class);
+			Intent intent = new Intent(context, PetrifilmTestDetailActivity.class);
 			intent.putExtra("uri", testUri);
 			context.startActivity(intent);
 			break;

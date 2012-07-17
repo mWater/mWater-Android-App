@@ -131,13 +131,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp" >
-
+
             <ProgressBar
                 android:id="@+id/locationProgress"
+                style="?android:attr/progressBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="0"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/locationText"

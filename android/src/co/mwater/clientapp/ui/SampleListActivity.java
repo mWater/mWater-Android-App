@@ -1,21 +1,9 @@
 package co.mwater.clientapp.ui;
 
-import co.mwater.clientapp.db.MWaterContentProvider;
-import co.mwater.clientapp.db.SourceCodes;
-import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailsActivity;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
-import co.mwater.clientapp.R;
-
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -25,6 +13,13 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import co.mwater.clientapp.R;
+import co.mwater.clientapp.db.MWaterContentProvider;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
 public class SampleListActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 	public static final String TAG = SampleListActivity.class.getSimpleName();
@@ -49,34 +44,32 @@ public class SampleListActivity extends SherlockFragmentActivity implements Load
 		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 	}
 
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		getSupportMenuInflater().inflate(R.menu.sources_menu, menu);
-//
-//		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-//			public boolean onMenuItemClick(MenuItem item) {
-//				createNewSource();
-//				return true;
-//			}
-//		});
-//		return super.onCreateOptionsMenu(menu);
-//	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.sample_list_menu, menu);
+
+		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				createNewSample();
+				return true;
+			}
+		});
+		return super.onCreateOptionsMenu(menu);
+	}
 
 	void onItemClick(long id) {
 		editSample(id);
 	}
 
 	void editSample(long id) {
-//		Intent intent = new Intent(this, SampleDetailsActivity.class);
-//		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SAMPLES_URI, id + ""));
-//		startActivity(intent);
+		Intent intent = new Intent(this, SampleDetailActivity.class);
+		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SAMPLES_URI, id + ""));
+		startActivity(intent);
 	}
 
-//	void createNewSource() {
-//		FragmentManager fm = getSupportFragmentManager();
-//		SourceCreateDialog createDialog = new SourceCreateDialog();
-//		createDialog.show(fm, "dialog_create");
-//	}
+	void createNewSample() {
+		// TODO
+	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 		return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, null, null, null);

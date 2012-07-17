@@ -2,14 +2,14 @@ package co.mwater.clientapp.ui;
 
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.testresults.Risk;
-import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailsActivity;
+import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailActivity;
 
 public class TestActivities {
 	@SuppressWarnings("rawtypes")
 	public static Class getDetailActivity(int testType) {
 		switch (testType) {
 		case 0:
-			return PetrifilmTestDetailsActivity.class;
+			return PetrifilmTestDetailActivity.class;
 		default:
 			return null;
 		}

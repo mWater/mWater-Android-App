@@ -34,8 +34,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 import com.actionbarsherlock.view.Window;
 
-public class PetrifilmTestDetailsActivity extends DetailActivity implements OnClickListener {
-	private static final String TAG = PetrifilmTestDetailsActivity.class.getSimpleName();
+public class PetrifilmTestDetailActivity extends DetailActivity implements OnClickListener {
+	private static final String TAG = PetrifilmTestDetailActivity.class.getSimpleName();
 	static int PETRI_IMAGE_REQUEST = 1;
 
 	boolean autoAnalysing = false; // TODO this could be done better
@@ -61,7 +61,7 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 		setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
 
 		autoAnalysing &= pfr.autoEcoli == null;
-		
+
 		Risk risk = pfr.getRisk();
 		int riskColor = TestActivities.getRiskColor(risk);
 		((TextView) this.findViewById(R.id.ecoli_count)).setBackgroundColor(this.getResources().getColor(riskColor));
@@ -102,7 +102,15 @@ public class PetrifilmTestDetailsActivity extends DetailActivity implements OnCl
 		super.onPause();
 
 		// Save notes
-		// TODO
+		String curNotes = getControlText(R.id.notes);
+		if (curNotes.length() == 0)
+			curNotes = null;
+
+		if (curNotes != rowValues.getAsString(TestsTable.COLUMN_NOTES)) {
+			ContentValues values = new ContentValues();
+			values.put(TestsTable.COLUMN_NOTES, curNotes);
+			getContentResolver().update(uri, values, null, null);
+		}
 	}
 
 	@Override
