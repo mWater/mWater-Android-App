@@ -1,40 +1,56 @@
 package co.mwater.clientapp.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
+import android.database.ContentObserver;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.os.Handler;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import co.mwater.clientapp.R;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public abstract class SeeMoreListFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-	private static final int LOADER_ID = 0x01;
+public abstract class SeeMoreListFragment extends SherlockFragment {
 	private CursorAdapter adapter;
 	private Observer observer;
+	Handler handler;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		handler = new Handler();
+		observer = new Observer(handler);
 		adapter = createAdapter();
-		this.getLoaderManager().initLoader(LOADER_ID, null, this);
+
+		requery();
+	}
+
+	private void requery() {
+		Cursor cursor = performQuery();
+		cursor.registerContentObserver(observer);
+		adapter.changeCursor(cursor);
+	}
+
+	@Override
+	public void onDestroy() {
+		Cursor cursor = adapter.getCursor();
+		if (cursor!=null) {
+			// TODO needed?
+			cursor.unregisterContentObserver(observer);
+			adapter.changeCursor(null);
+		}
+		super.onDestroy();
 	}
 
 	protected abstract CursorAdapter createAdapter();
 
-	protected abstract Loader<Cursor> performQuery();
+	protected abstract Cursor performQuery();
 
 	protected abstract void seeAllClicked();
 
@@ -48,32 +64,20 @@ public abstract class SeeMoreListFragment extends SherlockFragment implements Lo
 			}
 		});
 
-		if (observer != null) {
-			adapter.unregisterDataSetObserver(observer);
-			observer = null;
-		}
-		
-		observer = new Observer();
-		adapter.registerDataSetObserver(observer);
-		
 		// Fill list
 		fillList(view);
-
 		return view;
 	}
 
 	private void fillList(View view) {
+		if (view == null)
+			return;
+		
 		LinearLayout listLayout = (LinearLayout)view.findViewById(R.id.list);
-
-		List<View> oldViews = new ArrayList<View>(listLayout.getChildCount());
-
-		for (int i = 0; i < listLayout.getChildCount(); i++)
-			oldViews.add(listLayout.getChildAt(i));
-
-		Iterator<View> iter = oldViews.iterator();
+		if (listLayout == null)
+			return;
 
 		listLayout.removeAllViews();
-
 		addDivider(listLayout);
 		
 		Cursor cursor = adapter.getCursor();
@@ -82,50 +86,38 @@ public abstract class SeeMoreListFragment extends SherlockFragment implements Lo
 		
 		for (int i = 0; i < adapter.getCount(); i++)
 		{
-			View convertView = iter.hasNext() ? iter.next() : null;
-			listLayout.addView(adapter.getView(i, convertView, listLayout));
+			View item = adapter.getView(i, null, listLayout);
+			item.setBackgroundResource(R.drawable.borderless_button_background); // TODO hack
+			item.setClickable(true);
+			listLayout.addView(item);
 			addDivider(listLayout);
 		}
 	}
 	
-	private void clearList() {
-		LinearLayout listLayout = (LinearLayout)getView().findViewById(R.id.list);
-		listLayout.removeAllViews();
-		addDivider(listLayout);
-	}
+//	private void clearList() {
+//		LinearLayout listLayout = (LinearLayout)getView().findViewById(R.id.list);
+//		listLayout.removeAllViews();
+//		addDivider(listLayout);
+//	}
 
 	private void addDivider(LinearLayout listLayout) {
-		View divider = new View(getActivity(), null, R.style.divider);
+		ImageView divider = new ImageView(getActivity());
+		divider.setScaleType(ImageView.ScaleType.FIT_XY);
+		divider.setImageResource(R.drawable.divider);
 		listLayout.addView(divider);
 	}
 
-	private class Observer extends DataSetObserver
+	private class Observer extends ContentObserver
 	{
+		public Observer(Handler handler) {
+			super(handler);
+		}
+
 		@Override
-		public void onChanged()
-		{
+		public void onChange(boolean selfChange) {
+			super.onChange(selfChange);
+			requery();
 			fillList(getView());
-			super.onChanged();
-		}
-
-		@Override
-		public void onInvalidated()
-		{
-			clearList();
-			super.onInvalidated();
 		}
 	}
-
-	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-		return performQuery();
-	}
-
-	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-		adapter.swapCursor(cursor);
-	}
-
-	public void onLoaderReset(Loader<Cursor> cursorLoader) {
-		adapter.swapCursor(null);
-	}
-
 }

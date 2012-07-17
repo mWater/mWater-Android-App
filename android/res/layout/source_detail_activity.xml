@@ -111,13 +111,12 @@
                 android:text="Add Note" />
 
         </LinearLayout>
-
+
         <View
             android:id="@+id/View03"
             style="@style/divider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/TextView06"
@@ -131,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="48dp" >
-
+
             <ProgressBar
                 android:id="@+id/locationProgress"
                 style="?android:attr/progressBarStyleSmall"
@@ -139,15 +138,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0"
+                android:padding="4dp"
                 android:visibility="visible" />
-
+
             <TextView
                 android:id="@+id/locationText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center_vertical|center_horizontal"
+                android:gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -191,12 +191,13 @@
                 android:text="Map" />
 
         </LinearLayout>
-
+
         <View
             android:id="@+id/View02"
             style="@style/divider"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/TextView02"

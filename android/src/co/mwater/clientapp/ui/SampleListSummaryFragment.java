@@ -16,9 +16,9 @@ public class SampleListSummaryFragment extends SeeMoreListFragment {
 	}
 
 	@Override
-	protected Loader<Cursor> performQuery() {
+	protected Cursor performQuery() {
 		// TODO sort
-		return new CursorLoader(getActivity(), MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE+"=?", new String[] { getArguments().getString("sourceUid") }, null);
+		return getActivity().getContentResolver().query(MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE+"=?", new String[] { getArguments().getString("sourceUid") }, null);
 	}
 
 	@Override

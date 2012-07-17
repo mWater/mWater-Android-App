@@ -2,27 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp" >
-
+    android:orientation="vertical" >
+
     <LinearLayout
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:scaleType="fitXY"
+            android:src="@drawable/divider" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
 
     </LinearLayout>
-
+
     <TextView
         android:id="@+id/seeAll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="right|center_vertical"
+        android:layout_weight="0"
+        android:background="@drawable/borderless_button_background"
         android:clickable="true"
         android:gravity="center_vertical|right"
         android:minHeight="48dp"
+        android:paddingRight="8dp"
         android:text="See All >"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

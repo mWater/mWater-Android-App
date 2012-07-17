@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public abstract class CustomAdapter extends CursorAdapter {
 	public CustomAdapter(Context context, Cursor c) {
-		super(context, c, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		super(context, c, 0);
 	}
 
 	/**

@@ -3,6 +3,7 @@ package co.mwater.clientapp.ui;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -94,8 +95,16 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	public void onAddSampleClick(View v) {
-		// TODO
-		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
+		// Create sample linked to source
+		ContentValues values = new ContentValues();
+		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
+		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
+		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
+		
+		// View sample
+		Intent intent = new Intent(this, SampleDetailActivity.class);
+		intent.putExtra("uri", sampleUri);
+		startActivity(intent);
 	}
 
 	public void onAddTestClick(View v) {

@@ -101,15 +101,17 @@ public class PetrifilmTestDetailActivity extends DetailActivity implements OnCli
 	public void onPause() {
 		super.onPause();
 
-		// Save notes
-		String curNotes = getControlText(R.id.notes);
-		if (curNotes.length() == 0)
-			curNotes = null;
+		if (rowValues != null) {
+			// Save notes
+			String curNotes = getControlText(R.id.notes);
+			if (curNotes.length() == 0)
+				curNotes = null;
 
-		if (curNotes != rowValues.getAsString(TestsTable.COLUMN_NOTES)) {
-			ContentValues values = new ContentValues();
-			values.put(TestsTable.COLUMN_NOTES, curNotes);
-			getContentResolver().update(uri, values, null, null);
+			if (curNotes != rowValues.getAsString(TestsTable.COLUMN_NOTES)) {
+				ContentValues values = new ContentValues();
+				values.put(TestsTable.COLUMN_NOTES, curNotes);
+				getContentResolver().update(uri, values, null, null);
+			}
 		}
 	}
 

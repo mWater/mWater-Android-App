@@ -38,7 +38,7 @@ public class SampleDetailActivity extends DetailActivity {
 		}
 
 		setControlText(R.id.desc, rowValues.getAsString(SamplesTable.COLUMN_DESC));
-		
+
 		// Get source
 		String sourceUid = rowValues.getAsString(SamplesTable.COLUMN_SOURCE);
 		ContentValues source = null;
@@ -56,15 +56,17 @@ public class SampleDetailActivity extends DetailActivity {
 	public void onPause() {
 		super.onPause();
 
-		// Save description
-		String curDesc = getControlText(R.id.desc);
-		if (curDesc.length() == 0)
-			curDesc = null;
+		if (rowValues != null) {
+			// Save description
+			String curDesc = getControlText(R.id.desc);
+			if (curDesc.length() == 0)
+				curDesc = null;
 
-		if (curDesc != rowValues.getAsString(SamplesTable.COLUMN_DESC)) {
-			ContentValues values = new ContentValues();
-			values.put(SamplesTable.COLUMN_DESC, curDesc);
-			getContentResolver().update(uri, values, null, null);
+			if (curDesc != rowValues.getAsString(SamplesTable.COLUMN_DESC)) {
+				ContentValues values = new ContentValues();
+				values.put(SamplesTable.COLUMN_DESC, curDesc);
+				getContentResolver().update(uri, values, null, null);
+			}
 		}
 	}
 
