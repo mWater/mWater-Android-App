@@ -10,24 +10,15 @@ import android.support.v4.widget.CursorAdapter;
 import android.widget.Toast;
 
 public class SampleListSummaryFragment extends SeeMoreListFragment {
-	String sourceUid;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		sourceUid = getArguments().getString("sourceUid");
-	}
-
 	@Override
 	protected CursorAdapter createAdapter() {
-		return new SampleListNoSourceAdapter(getActivity(), null, sourceUid);
+		return new SampleListNoSourceAdapter(getActivity(), null, getArguments().getString("sourceUid"));
 	}
 
 	@Override
 	protected Loader<Cursor> performQuery() {
 		// TODO sort
-		return new CursorLoader(getActivity(), MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE+"=?", new String[] { sourceUid }, null);
+		return new CursorLoader(getActivity(), MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE+"=?", new String[] { getArguments().getString("sourceUid") }, null);
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import co.mwater.clientapp.R;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public abstract class SeeMoreListFragment extends SherlockFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-	private static final int LOADER_ID = 0x02;
+	private static final int LOADER_ID = 0x01;
 	private CursorAdapter adapter;
 	private Observer observer;
 
@@ -74,6 +74,8 @@ public abstract class SeeMoreListFragment extends SherlockFragment implements Lo
 
 		listLayout.removeAllViews();
 
+		addDivider(listLayout);
+		
 		Cursor cursor = adapter.getCursor();
 		if (cursor == null)
 			return;
@@ -82,12 +84,19 @@ public abstract class SeeMoreListFragment extends SherlockFragment implements Lo
 		{
 			View convertView = iter.hasNext() ? iter.next() : null;
 			listLayout.addView(adapter.getView(i, convertView, listLayout));
+			addDivider(listLayout);
 		}
 	}
 	
 	private void clearList() {
 		LinearLayout listLayout = (LinearLayout)getView().findViewById(R.id.list);
 		listLayout.removeAllViews();
+		addDivider(listLayout);
+	}
+
+	private void addDivider(LinearLayout listLayout) {
+		View divider = new View(getActivity(), null, R.style.divider);
+		listLayout.addView(divider);
 	}
 
 	private class Observer extends DataSetObserver
