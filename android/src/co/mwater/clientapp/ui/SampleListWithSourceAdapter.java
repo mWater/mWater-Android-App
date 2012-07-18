@@ -3,6 +3,7 @@ package co.mwater.clientapp.ui;
 import java.text.DateFormat;
 import java.util.Date;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -13,19 +14,20 @@ import android.widget.TextView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
+import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
 import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
 
-class SampleListNoSourceAdapter extends CustomAdapter {
-	public SampleListNoSourceAdapter(Context context, Cursor c) {
+class SampleListWithSourceAdapter extends CustomAdapter {
+	public SampleListWithSourceAdapter(Context context, Cursor c) {
 		super(context, c);
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		LayoutInflater inflater = LayoutInflater.from(context);
-		final View view = inflater.inflate(R.layout.sample_row_no_source, parent, false);
+		final View view = inflater.inflate(R.layout.sample_row_with_source, parent, false);
 		return view;
 	}
 	
@@ -38,7 +40,17 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 		setControlText(view, R.id.sampled_on, DateFormat.getDateInstance().format(new Date(sampledOn * 1000)));
 
 		String sampleUid = cursor.getString(cursor.getColumnIndex(SamplesTable.COLUMN_UID));
-		
+
+		ContentValues source = null;
+		// Get source uid
+		String sourceUid = cursor.getString(cursor.getColumnIndex(SamplesTable.COLUMN_SOURCE));
+
+		// Get source
+		if (sourceUid != null)
+			source = MWaterContentProvider.getSingleRow(context, MWaterContentProvider.SOURCES_URI, sourceUid);
+
+		setControlText(view, R.id.source_name, source != null ? source.getAsString(SourcesTable.COLUMN_NAME) : "Unspecified Source");
+
 		// Get tests
 		// TODO sort order
 		Cursor tests = context.getContentResolver().query(MWaterContentProvider.TESTS_URI, null, 

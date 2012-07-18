@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		handler = new Handler();
 		observer = new Observer(handler);
 		adapter = createAdapter();
@@ -40,7 +41,7 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	@Override
 	public void onDestroy() {
 		Cursor cursor = adapter.getCursor();
-		if (cursor!=null) {
+		if (cursor != null) {
 			// TODO needed?
 			cursor.unregisterContentObserver(observer);
 			adapter.changeCursor(null);
@@ -58,7 +59,7 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.see_more_list, container, false);
 
-		((TextView)view.findViewById(R.id.seeAll)).setOnClickListener(new OnClickListener() {
+		((TextView) view.findViewById(R.id.seeAll)).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				seeAllClicked();
 			}
@@ -72,33 +73,47 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	private void fillList(View view) {
 		if (view == null)
 			return;
-		
-		LinearLayout listLayout = (LinearLayout)view.findViewById(R.id.list);
+
+		LinearLayout listLayout = (LinearLayout) view.findViewById(R.id.list);
 		if (listLayout == null)
 			return;
 
 		listLayout.removeAllViews();
 		addDivider(listLayout);
-		
+
 		Cursor cursor = adapter.getCursor();
 		if (cursor == null)
 			return;
-		
+
 		for (int i = 0; i < adapter.getCount(); i++)
 		{
-			View item = adapter.getView(i, null, listLayout);
-			item.setBackgroundResource(R.drawable.borderless_button_background); // TODO hack
+			View itemContents = adapter.getView(i, null, listLayout);
+
+			FrameLayout item = new FrameLayout(getActivity());
+			item.addView(itemContents);
 			item.setClickable(true);
+			item.setBackgroundResource(R.drawable.borderless_button_background);
+			cursor.moveToPosition(i);
+			final long id = cursor.getLong(cursor.getColumnIndex("_id"));
+			item.setOnClickListener(new OnClickListener() {
+				public void onClick(View v) {
+					onItemClick(id);
+				}
+			});
+
 			listLayout.addView(item);
 			addDivider(listLayout);
 		}
 	}
-	
-//	private void clearList() {
-//		LinearLayout listLayout = (LinearLayout)getView().findViewById(R.id.list);
-//		listLayout.removeAllViews();
-//		addDivider(listLayout);
-//	}
+
+	abstract protected void onItemClick(long id);
+
+	// private void clearList() {
+	// LinearLayout listLayout =
+	// (LinearLayout)getView().findViewById(R.id.list);
+	// listLayout.removeAllViews();
+	// addDivider(listLayout);
+	// }
 
 	private void addDivider(LinearLayout listLayout) {
 		ImageView divider = new ImageView(getActivity());

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
@@ -39,15 +40,15 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		setContentView(R.layout.source_detail_activity);
 
 		setLocationFlag = getIntent().getBooleanExtra("setLocation", false);
-		
+
 		// Set up fragment
 		SampleListSummaryFragment sampleFragment = new SampleListSummaryFragment();
 		Bundle args = new Bundle();
 		args.putString("sourceUid", rowValues.getAsString(SourcesTable.COLUMN_UID));
 		sampleFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.sample_list, sampleFragment).commit();
-        
+		getSupportFragmentManager().beginTransaction()
+				.add(R.id.sample_list, sampleFragment).commit();
+
 		// Set up location service
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
@@ -100,7 +101,7 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
 		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
 		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
-		
+
 		// View sample
 		Intent intent = new Intent(this, SampleDetailActivity.class);
 		intent.putExtra("uri", sampleUri);
@@ -128,10 +129,14 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	public void onLocationMapClick(View v) {
-		// TODO
-		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
+		String mapUri = String.format("geo:%1$f,%2$f?q=%1$f,%2$f(%3$s))",
+				rowValues.getAsDouble(SourcesTable.COLUMN_LAT),
+				rowValues.getAsDouble(SourcesTable.COLUMN_LONG),
+				Uri.encode(rowValues.getAsString(SourcesTable.COLUMN_CODE)));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapUri));
+		startActivity(intent);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.source_detail_menu, menu);
@@ -193,6 +198,8 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 			setControlText(R.id.accuracy, "");
 			return;
 		}
+
+		((Button) findViewById(R.id.locationMap)).setEnabled(hasLocation());
 
 		if (hasLocation())
 		{

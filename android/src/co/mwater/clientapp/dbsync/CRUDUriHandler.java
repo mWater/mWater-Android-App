@@ -6,8 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class CRUDUriHandler extends UriHandler {
+	private static final String TAG = CRUDUriHandler.class.getCanonicalName();
+
 	SyncContentProvider syncContentProvider;
 	SyncDatabaseHelper helper;
 	SyncTable syncTable;
@@ -38,6 +41,8 @@ public class CRUDUriHandler extends UriHandler {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 
+		Log.d(TAG, String.format("query: %s", queryBuilder.toString()));
+		
 		// Make sure that potential listeners are getting notified
 		cursor.setNotificationUri(syncContentProvider.getContext().getContentResolver(), uri);
 

@@ -180,13 +180,14 @@
                 android:layout_width="0.25dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0" />
-
+
             <Button
                 android:id="@+id/locationMap"
                 style="@style/borderlessButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:drawableLeft="@drawable/ic_map"
                 android:onClick="onLocationMapClick"
                 android:text="Map" />
 
