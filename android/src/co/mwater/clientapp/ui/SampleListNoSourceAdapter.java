@@ -72,6 +72,7 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 				TextView tagTextView = new TextView(context, null, R.style.riskTag);
 				tagTextView.setText(tagText);
 				tagTextView.setBackgroundColor(tagColor);
+				tagsLayout.addView(tagTextView);
 			} while (tests.moveToNext());
 		}
 		tests.close();

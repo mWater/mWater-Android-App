@@ -1,7 +1,6 @@
 package co.mwater.clientapp.ui;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -55,7 +54,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onStart() {
-		super.onStop();
+		super.onStart();
 
 		started = true;
 		displayData();

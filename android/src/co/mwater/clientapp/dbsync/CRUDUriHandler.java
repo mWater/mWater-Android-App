@@ -41,8 +41,8 @@ public class CRUDUriHandler extends UriHandler {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 
-		Log.d(TAG, String.format("query: %s", queryBuilder.toString()));
-		
+		Log.d(TAG, String.format("query(%d): %s %s %s", cursor.getCount(), uri.toString(), selection, (selectionArgs != null && selectionArgs.length > 0) ? selectionArgs[0] : ""));
+
 		// Make sure that potential listeners are getting notified
 		cursor.setNotificationUri(syncContentProvider.getContext().getContentResolver(), uri);
 
