@@ -18,6 +18,7 @@ import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
 import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
+import co.mwater.clientapp.db.testresults.TestType;
 
 class SampleListWithSourceAdapter extends CustomAdapter {
 	public SampleListWithSourceAdapter(Context context, Cursor c) {
@@ -67,13 +68,14 @@ class SampleListWithSourceAdapter extends CustomAdapter {
 			do {
 				String tagText;
 				int tagColor;
-				int testType = tests.getInt(tests.getColumnIndex(TestsTable.COLUMN_TEST_TYPE));
-				if (testType >= testTags.length) {
+				TestType testType = TestType.fromInt(tests.getInt(tests.getColumnIndex(TestsTable.COLUMN_TEST_TYPE)));
+
+				if (testType == null) {
 					tagText="???";
 					tagColor = context.getResources().getColor(R.color.risk_unspecified);
 				}
 				else {
-					tagText = testTags[testType];
+					tagText = testTags[testType.getValue()];
 
 					Risk risk = Results.getResults(testType, tests.getString(tests.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
 					int riskColor = TestActivities.getRiskColor(risk);

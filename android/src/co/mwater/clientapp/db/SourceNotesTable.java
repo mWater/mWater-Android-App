@@ -1,6 +1,7 @@
 package co.mwater.clientapp.db;
 
 import co.mwater.clientapp.dbsync.SyncTable;
+import co.mwater.clientapp.dbsync.SyncTable.ForeignKey;
 
 public class SourceNotesTable extends SyncTable {
 	public static final String TABLE_NAME = "source_notes";
@@ -11,7 +12,8 @@ public class SourceNotesTable extends SyncTable {
 
 
 	public SourceNotesTable() {
-		super(new String[] { COLUMN_SOURCE, COLUMN_CREATED_ON, COLUMN_OPERATIONAL, COLUMN_NOTE, COLUMN_CREATED_BY });
+		super(new String[] { COLUMN_SOURCE, COLUMN_CREATED_ON, COLUMN_OPERATIONAL, COLUMN_NOTE, COLUMN_CREATED_BY },
+				new ForeignKey[] { new ForeignKey(COLUMN_SOURCE, SourcesTable.TABLE_NAME, SourcesTable.COLUMN_UID)});
 	}
 
 	@Override
@@ -32,8 +34,7 @@ public class SourceNotesTable extends SyncTable {
 				+ COLUMN_CREATED_ON + " integer, "
 				+ COLUMN_OPERATIONAL + " integer, "
 				+ COLUMN_NOTE + " text, "
-				+ COLUMN_CREATED_BY + " text, "
-				+ "FOREIGN KEY (" + COLUMN_SOURCE + ") REFERENCES " + SourcesTable.TABLE_NAME + "(" + SourcesTable.COLUMN_UID + ") ON DELETE CASCADE "
+				+ COLUMN_CREATED_BY + " text "
 				+ ");";
 	}
 }

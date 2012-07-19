@@ -1,17 +1,19 @@
 package co.mwater.clientapp.dbsync;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
-
-import co.mwater.clientapp.dbsync.ChangeSet.Table;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import co.mwater.clientapp.dbsync.ChangeSet.Table;
+import co.mwater.clientapp.dbsync.SyncTable.ForeignKey;
 
 public class SyncClientImpl implements SyncClient {
+	private static final String TAG = SyncClientImpl.class.getCanonicalName();
+
 	SQLiteDatabase db;
 	SyncTable[] syncTables;
 
@@ -170,6 +172,23 @@ public class SyncClientImpl implements SyncClient {
 				// Remove columns to ignore
 				for (String colName : colsIgnore)
 					values.remove(colName);
+
+				// Check presence of foreign keys
+				boolean missingFK = false;
+				for (ForeignKey fk : syncTable.getForeignKeys()) {
+					String fkValue = values.getAsString(fk.column);
+					if (fkValue != null) {
+						Cursor fkCursor = db.query(fk.destTable, null, fk.destColumn + "=?",
+								new String[] { fkValue }, null, null, null);
+						if (fkCursor.getCount()==0)
+							missingFK = true;
+						fkCursor.close();
+					}
+				}
+				if (missingFK) {
+					Log.e(TAG, "Missing foreign key for "+ syncTable.getTableName()+ ":" + values.getAsString(SyncTable.COLUMN_UID));
+					continue;
+				}
 
 				// Attempt update
 				// TODO updates uid to same value

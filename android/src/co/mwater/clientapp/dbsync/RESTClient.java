@@ -13,31 +13,35 @@ import java.net.URLEncoder;
 
 public class RESTClient {
 	String baseUrl;
-	StringBuilder query;
 	String charset = "UTF-8";
+	String userAgent;
 
-	public RESTClient(String baseUrl) {
+	public RESTClient(String baseUrl, String userAgent) {
 		this.baseUrl = baseUrl;
-		query = new StringBuilder();
+		this.userAgent = userAgent;
 	}
 
-	public void addParam(String name, String value) {
-		if (query.length() > 0)
-			query.append("&");
-		query.append(name);
-		query.append("=");
-		try {
-			query.append(URLEncoder.encode(value, charset));
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException(e);
+	String createQuery(String... args) {
+		StringBuilder query = new StringBuilder();
+		for (int i = 0; i < args.length; i += 2) {
+			if (query.length() > 0)
+				query.append("&");
+			query.append(args[i]);
+			query.append("=");
+			try {
+				query.append(URLEncoder.encode(args[i + 1], charset));
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalArgumentException(e);
+			}
 		}
+		return query.toString();
 	}
 
-	public String get() throws RESTClientException {
+	public String get(String command, String... args) throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
-			url = new URL(baseUrl + "?" + query.toString());
+			url = new URL(baseUrl + command + "?" + createQuery(args));
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -50,6 +54,8 @@ public class RESTClient {
 		}
 
 		try {
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
 			return readStreamString(connection.getInputStream());
 		} catch (IOException ioex) {
 			int code;
@@ -65,11 +71,11 @@ public class RESTClient {
 		}
 	}
 
-	public String post() throws RESTClientException {
+	public String post(String command, String... args) throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
-			url = new URL(baseUrl);
+			url = new URL(baseUrl + command);
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -82,7 +88,10 @@ public class RESTClient {
 		}
 
 		try {
-			connection.setDoOutput(true); // Triggers POST.
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
+			connection.setDoOutput(true); // Triggers POST
+			String query = createQuery(args);
 			connection.setFixedLengthStreamingMode(query.length());
 			connection.setRequestProperty("Accept-Charset", charset);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
@@ -115,6 +124,9 @@ public class RESTClient {
 	}
 
 	String readStreamString(InputStream inputStream) throws IOException {
+		if (inputStream == null)
+			return "";
+
 		final char[] buffer = new char[8 * 1024];
 		StringBuilder out = new StringBuilder();
 		Reader in;

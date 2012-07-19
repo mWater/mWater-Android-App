@@ -1,16 +1,13 @@
 package co.mwater.clientapp.dbsync;
 
-import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
-import co.mwater.clientapp.ui.SourceDetailActivity;
-
 public class SyncServerImpl implements SyncServer {
 	public static final String TAG = SyncServerImpl.class.getCanonicalName();
-	String serverUrl;
+	RESTClient restClient;
 	String clientUid;
 
 	ChangeSetJsonSerializer jsonSerializer = new ChangeSetJsonSerializer();
@@ -18,22 +15,22 @@ public class SyncServerImpl implements SyncServer {
 	/**
 	 * Creates the server connection
 	 * 
-	 * @param serverUrl
-	 *            url of api, ending in /
+	 * @param restClient
+	 *            rest client to use
 	 * @param clientUid
 	 */
-	public SyncServerImpl(String serverUrl, String clientUid) {
-		this.serverUrl = serverUrl;
+	public SyncServerImpl(RESTClient restClient, String clientUid) {
+		this.restClient = restClient;
 		this.clientUid = clientUid;
 	}
 
 	public ChangeSet downloadChangeSet(DataSlice dataSlice, long since) throws SyncServerException {
-		RESTClient restClient = new RESTClient(serverUrl + "download");
-		restClient.addParam("clientuid", clientUid);
-		restClient.addParam("since", since + "");
-		restClient.addParam("slice", dataSlice.getSliceId());
 		try {
-			String cs = restClient.get();
+			String cs = restClient.get("download",
+					"clientuid", clientUid,
+					"since", since + "",
+					"slice", dataSlice.getSliceId());
+			
 			Log.d(TAG, "Got: " + cs);
 			JSONObject csjson = new JSONObject(cs);
 			return jsonSerializer.deserialize(csjson);
@@ -49,12 +46,7 @@ public class SyncServerImpl implements SyncServer {
 		// Create json
 		try {
 			JSONObject csjson = jsonSerializer.serialize(changeSet);
-
-			RESTClient restClient = new RESTClient(serverUrl + "upload");
-			restClient.addParam("clientuid", clientUid);
-			restClient.addParam("changeset", csjson.toString());
-
-			restClient.post();
+			restClient.post("upload", "clientuid", clientUid, "changeset", csjson.toString());
 		} catch (JSONException e) {
 			throw new IllegalArgumentException(e);
 		} catch (RESTClientException e) {

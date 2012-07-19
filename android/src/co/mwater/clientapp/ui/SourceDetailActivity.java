@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
@@ -99,7 +100,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		// Create sample linked to source
 		ContentValues values = new ContentValues();
 		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
-		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
+		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewSampleCode(this));
+		values.put(SamplesTable.COLUMN_SAMPLED_ON, System.currentTimeMillis() / 1000);
+		values.put(SamplesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
 		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
 
 		// View sample
@@ -112,7 +115,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		// Create sample linked to source
 		ContentValues values = new ContentValues();
 		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
-		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewCode(this));
+		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewSampleCode(this));
+		values.put(SamplesTable.COLUMN_SAMPLED_ON, System.currentTimeMillis() / 1000);
+		values.put(SamplesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
 		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
 
 		new TestCreator(this, sampleUri).create();
@@ -192,14 +197,14 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	private void displayLocation() {
+		((Button) findViewById(R.id.locationMap)).setEnabled(hasLocation());
+
 		if (setLocationFlag) {
 			setControlText(R.id.locationText, "Setting location");
 			((ProgressBar) findViewById(R.id.locationProgress)).setVisibility(View.VISIBLE);
 			setControlText(R.id.accuracy, "");
 			return;
 		}
-
-		((Button) findViewById(R.id.locationMap)).setEnabled(hasLocation());
 
 		if (hasLocation())
 		{

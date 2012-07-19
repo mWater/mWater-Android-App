@@ -2,12 +2,15 @@ package co.mwater.clientapp.db.testresults;
 
 import java.security.InvalidParameterException;
 
-
 public abstract class Results {
-	public static Results getResults(int testType, String results) throws InvalidParameterException {
+	public static Results getResults(TestType testType, String results) throws InvalidParameterException {
 		switch (testType) {
-		case 0:
+		case PETRIFILM:
 			return new PetrifilmResults(results);
+		case TEN_ML_COLILERT:
+			return new TenMLColilertResults(results);
+		case HUNDRED_ML_ECOLI:
+			return new HundredMLEColiResults(results);
 		default:
 			throw new InvalidParameterException("Test type unknown");
 		}

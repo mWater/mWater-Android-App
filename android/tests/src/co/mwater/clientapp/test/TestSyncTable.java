@@ -8,7 +8,8 @@ public class TestSyncTable extends SyncTable {
 	public static final String COLUMN_B = "b";
 
 	public TestSyncTable() {
-		super(new String[] { COLUMN_A, COLUMN_B });
+		super(new String[] { COLUMN_A, COLUMN_B },
+				new ForeignKey[] { });
 	}
 	
 	@Override

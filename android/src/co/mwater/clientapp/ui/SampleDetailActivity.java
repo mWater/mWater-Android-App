@@ -78,7 +78,11 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 
 		Long sampled_on = rowValues.getAsLong(SamplesTable.COLUMN_SAMPLED_ON);
 		if (sampled_on != null) {
-			setControlText(R.id.started_on, "Started: " + DateFormat.getDateInstance().format(new Date(sampled_on * 1000)));
+			setControlText(R.id.sampled_on, DateFormat.getDateInstance().format(new Date(sampled_on * 1000)));
+		}
+		else {
+			// TODO not needed
+			setControlText(R.id.sampled_on, "");
 		}
 
 		setControlText(R.id.desc, rowValues.getAsString(SamplesTable.COLUMN_DESC));
@@ -89,10 +93,14 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 		if (sourceUid != null)
 			source = MWaterContentProvider.getSingleRow(this, MWaterContentProvider.SOURCES_URI, sourceUid);
 
-		// TODO other options
 		if (source != null) {
 			setControlText(R.id.source_name, source.getAsString(SourcesTable.COLUMN_NAME));
 			setControlText(R.id.source_code, source.getAsString(SourcesTable.COLUMN_CODE));
+		}
+		else {
+			setControlText(R.id.source_name, "Unspecified source");
+			setControlText(R.id.source_code, "");
+
 		}
 	}
 

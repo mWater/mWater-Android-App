@@ -3,12 +3,16 @@ package co.mwater.clientapp.test;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.dbsync.ChangeSet;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.DataSlice;
 import co.mwater.clientapp.dbsync.RESTClient;
+import co.mwater.clientapp.dbsync.SyncClientImpl;
 import co.mwater.clientapp.dbsync.SyncServerException;
 import co.mwater.clientapp.dbsync.SyncServerImpl;
+import co.mwater.clientapp.dbsync.SyncTable;
+import co.mwater.clientapp.dbsync.Synchronizer;
 
 public class SyncServerImplTests extends AndroidTestCase {
 	TestSyncDatabase testSyncDatabase = new TestSyncDatabase();
@@ -16,20 +20,19 @@ public class SyncServerImplTests extends AndroidTestCase {
 	SyncServerImpl serverImpl;
 	DataSlice dataSlice = new CompleteDataSlice();
 
+	static String serverAddr = MWaterServer.serverUrl;
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		db = testSyncDatabase.setUp(getContext());
 
-		RESTClient restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/resettests");
-		restClient.get();
+		RESTClient restClient = new RESTClient(serverAddr, null);
+		restClient.get("resettests");
 
-		restClient=new RESTClient("http://192.168.0.2:8000/mwater/sync/login");
-		restClient.addParam("username", "test");
-		restClient.addParam("password", "test");
-		String clientId = restClient.get();
+		String clientId = restClient.get("login", "username", "test", "password", "test");
 
-		serverImpl = new SyncServerImpl("http://192.168.0.2:8000/mwater/sync/", clientId);
+		serverImpl = new SyncServerImpl(restClient, clientId);
 }
 
 	@Override

@@ -4,6 +4,7 @@ import java.net.HttpURLConnection;
 
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.RESTClient;
 import co.mwater.clientapp.dbsync.RESTClientException;
 import android.content.Intent;
@@ -39,12 +40,17 @@ public class SignupFragment extends Fragment {
 		String username = ((TextView) getView().findViewById(R.id.username)).getText().toString();
 		String password = ((TextView) getView().findViewById(R.id.password)).getText().toString();
 
-		RESTClient restClient = new RESTClient(MWaterServer.serverUrl + "signup");
-		restClient.addParam("email", email);
-		restClient.addParam("username", username);
-		restClient.addParam("password", password);
+		RESTClient restClient = MWaterServer.createClient(getActivity());
 		try {
-			MWaterServer.login(this.getActivity(), username, restClient.get());
+			String clientId = restClient.get("signup",
+					"email", email,
+					"username", username,
+					"password", password);
+
+			MWaterServer.login(this.getActivity(), username, clientId);
+
+			// Obtain more sources if needed
+			SourceCodes.requestNewCodesIfNeeded(getActivity());
 
 			Intent intent = new Intent(getActivity(), MainActivity.class);
 			startActivity(intent);

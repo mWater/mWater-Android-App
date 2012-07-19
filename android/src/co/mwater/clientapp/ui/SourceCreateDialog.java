@@ -1,6 +1,8 @@
 package co.mwater.clientapp.ui;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +20,10 @@ import android.widget.TextView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.databinding.DataBinder;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourceCodes;
+import co.mwater.clientapp.db.SourceCodes.NoMoreCodesException;
 import co.mwater.clientapp.db.SourcesTable;
 
 public class SourceCreateDialog extends DialogFragment {
@@ -67,7 +72,15 @@ public class SourceCreateDialog extends DialogFragment {
 	private void onCreateClick() {
 		// Create row
 		ContentValues cv = new ContentValues();
-		cv.put("code", SourceCodes.getNewCode(this.getActivity()));
+		try {
+			cv.put("code", SourceCodes.obtainCode(this.getActivity()));
+		} catch (NoMoreCodesException e) {
+			// Obtain more sources if needed
+			if (!SourceCodes.requestNewCodesIfNeeded(getActivity()))
+				showErrorDialog("No source codes remaining. Please Synchronize to obtain more.");
+			return;
+		}
+		cv.put(SourcesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(getActivity()));
 		dataBinder.saveAllTo(cv);
 		uri = getActivity().getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
 		
@@ -78,5 +91,16 @@ public class SourceCreateDialog extends DialogFragment {
 		startActivity(intent);
 
 		this.dismiss();
+	}
+	
+	private void showErrorDialog(String message) {
+	      AlertDialog errorDialog = new AlertDialog.Builder(getActivity()).setMessage(message)
+	                      .setCancelable(false)
+	                      .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+	                          public void onClick(DialogInterface dialog, int id) {
+	                              dialog.dismiss();
+	                      }
+	                  }).create();
+	      errorDialog.show();
 	}
 }

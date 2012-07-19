@@ -34,19 +34,16 @@ public class SynchronizerTests extends AndroidTestCase {
 		db1 = testSyncDatabase1.setUp(getContext());
 		db2 = testSyncDatabase2.setUp(getContext());
 
-		RESTClient restClient = new RESTClient(serverAddr + "resettests");
-		restClient.get();
+		RESTClient restClient = new RESTClient(serverAddr, null);
+		restClient.get("resettests");
 
-		restClient = new RESTClient(serverAddr + "login");
-		restClient.addParam("username", "test");
-		restClient.addParam("password", "test");
-		String clientId1 = restClient.get();
-		String clientId2 = restClient.get();
+		String clientId1 = restClient.get("login", "username", "test", "password", "test");
+		String clientId2 = restClient.get("login", "username", "test", "password", "test");
 
 		clientImpl1 = new SyncClientImpl(db1, new SyncTable[] { new TestSyncTable() });
 		clientImpl2 = new SyncClientImpl(db2, new SyncTable[] { new TestSyncTable() });
-		serverImpl1 = new SyncServerImpl(serverAddr, clientId1);
-		serverImpl2 = new SyncServerImpl(serverAddr, clientId2);
+		serverImpl1 = new SyncServerImpl(restClient, clientId1);
+		serverImpl2 = new SyncServerImpl(restClient, clientId2);
 
 		sync1 = new Synchronizer(clientImpl1, serverImpl1);
 		sync2 = new Synchronizer(clientImpl2, serverImpl2);

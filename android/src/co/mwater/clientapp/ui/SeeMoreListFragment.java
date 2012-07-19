@@ -22,6 +22,8 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	private Observer observer;
 	Handler handler;
 
+	int maxItems = 3;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -85,7 +87,10 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 		if (cursor == null)
 			return;
 
-		for (int i = 0; i < adapter.getCount(); i++)
+		// Set visibility of See All
+		view.findViewById(R.id.seeAll).setVisibility(cursor.getCount() > maxItems ? View.VISIBLE : View.GONE);
+
+		for (int i = 0; i < adapter.getCount() && i < maxItems; i++)
 		{
 			View itemContents = adapter.getView(i, null, listLayout);
 

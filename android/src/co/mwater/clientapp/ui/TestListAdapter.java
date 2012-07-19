@@ -18,6 +18,7 @@ import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
 import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
+import co.mwater.clientapp.db.testresults.TestType;
 
 class TestListAdapter extends CustomAdapter {
 	public TestListAdapter(Context context, Cursor c) {
@@ -57,16 +58,16 @@ class TestListAdapter extends CustomAdapter {
 		String[] testTags = context.getResources().getStringArray(R.array.test_tags);
 		String[] testTypes = context.getResources().getStringArray(R.array.test_types);
 
-		int testType = cursor.getInt(cursor.getColumnIndex(TestsTable.COLUMN_TEST_TYPE));
-		if (testType >= testTags.length) {
+		TestType testType = TestType.fromInt(cursor.getInt(cursor.getColumnIndex(TestsTable.COLUMN_TEST_TYPE)));
+		if (testType == null) {
 			// TODO prettify
 			setControlText(view, R.id.tag, "???");
 			setControlText(view, R.id.test_type, "???");
 			((TextView) view.findViewById(R.id.tag)).setBackgroundColor(context.getResources().getColor(R.color.risk_unspecified));
 		}
 		else {
-			setControlText(view, R.id.tag, testTags[testType]);
-			setControlText(view, R.id.test_type, testTypes[testType]);
+			setControlText(view, R.id.tag, testTags[testType.getValue()]);
+			setControlText(view, R.id.test_type, testTypes[testType.getValue()]);
 
 			Risk risk = Results.getResults(testType, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
 			int riskColor = TestActivities.getRiskColor(risk);

@@ -10,26 +10,6 @@
         android:orientation="vertical"
         android:padding="8dp" >
 
-        <EditText
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Name (optional)"
-            android:minHeight="48dp" >
-
-            <requestFocus />
-        </EditText>
-
-        <EditText
-            android:id="@+id/desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Description (optional)"
-            android:inputType="textMultiLine"
-            android:minHeight="48dp" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
@@ -44,7 +24,7 @@
                 android:minHeight="48dp"
                 android:text="Type:"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
             <Spinner
                 android:id="@+id/source_type"
                 android:layout_width="match_parent"
@@ -52,8 +32,28 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:minWidth="280dp" />
-
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name (optional)"
+            android:inputType="textCapSentences"
+            android:minHeight="48dp" >
+
+            <requestFocus />
+        </EditText>
+
+        <EditText
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Description (optional)"
+            android:inputType="textMultiLine"
+            android:minHeight="48dp" />
 
         <CheckBox
             android:id="@+id/currentLocation"
@@ -62,6 +62,7 @@
             android:layout_weight="0"
             android:minHeight="48dp"
             android:text="Set to current location" />
+
     </LinearLayout>
 
     <LinearLayout

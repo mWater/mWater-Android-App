@@ -29,13 +29,15 @@ public abstract class SyncTable {
 	public static final String COLUMN_ROW_VERSION = "row_version";
 	public static final String COLUMN_CREATED_BY = "created_by";		// Optional field with enforced behavior when synced. Must be included in syncColumns
 
-	private String[] syncColumns; // Columns, excluding any declared above
+	private String[] syncColumns; // Columns, excluding any declared above except created_by
+	private ForeignKey[] foreignKeys;
 	
 	public abstract String getTableName();
 	public abstract String getCreateSql();
 	
-	public SyncTable(String[] syncColumns) {
+	public SyncTable(String[] syncColumns, ForeignKey[] foreignKeys) {
 		this.syncColumns = syncColumns;
+		this.foreignKeys = foreignKeys;
 	}
 	
 	public String[] getSyncColumns() {
@@ -49,6 +51,10 @@ public abstract class SyncTable {
 		database.execSQL(getInsertTriggerSql());
 		database.execSQL(getUpdateTriggerSql());
 		database.execSQL(getDeleteTriggerSql());
+		
+		// Create cascade delete trigger
+		for (ForeignKey fk : foreignKeys)
+			database.execSQL(getForeignKeyTriggerSql(fk));
 	}
 
 	String getInsertTriggerSql() {
@@ -107,6 +113,22 @@ public abstract class SyncTable {
 		
 		return sql.toString();
 	}
+	
+	String getForeignKeyTriggerSql(ForeignKey fk) {
+		// Create a trigger which silently deletes child rows
+		StringBuilder sql = new StringBuilder();
+		sql.append("CREATE TRIGGER IF NOT EXISTS ");
+		sql.append("fktrigger").append(getTableName()).append(fk.column);
+		sql.append(" AFTER DELETE ON ").append(fk.destTable);
+		sql.append(" BEGIN UPDATE ").append(getTableName());
+		sql.append(" SET ").append(SyncTable.COLUMN_ROW_VERSION).append("=-1");
+		sql.append(" WHERE ").append(fk.column).append("=old.").append(fk.destColumn);
+		sql.append("; DELETE FROM ").append(getTableName());
+		sql.append(" WHERE ").append(fk.column).append("=old.").append(fk.destColumn);
+		sql.append("; END");
+		
+		return sql.toString();
+}
 
 	public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
 		Log.w(getTableName(), "Upgrading database from version "
@@ -117,5 +139,31 @@ public abstract class SyncTable {
 		database.execSQL("DROP TRIGGER IF EXISTS updatetrigger" + getTableName());
 		database.execSQL("DROP TRIGGER IF EXISTS deletetrigger" + getTableName());
 		onCreate(database);
+	}
+
+	/**
+	 * Foreign keys. Must be strings
+	 * @author Clayton
+	 *
+	 */
+	public static class ForeignKey {
+		/**
+		 * Creates a foreign key
+		 * @param column column in child table
+		 * @param destTable parent table
+		 * @param destColumn parent column
+		 */
+		public ForeignKey(String column, String destTable, String destColumn) {
+			this.column = column;
+			this.destTable = destTable;
+			this.destColumn = destColumn;
+		}
+		public final String column;
+		public final String destTable;
+		public final String destColumn;
+	}
+
+	public ForeignKey[] getForeignKeys() {
+		return foreignKeys;
 	}
 }

@@ -10,7 +10,8 @@ public class SamplesTable extends SyncTable {
 	public static final String COLUMN_SAMPLED_ON = "sampled_on";
 
 	public SamplesTable() {
-		super(new String[] { COLUMN_SOURCE, COLUMN_CODE, COLUMN_DESC, COLUMN_SAMPLED_ON, COLUMN_CREATED_BY });
+		super(new String[] { COLUMN_SOURCE, COLUMN_CODE, COLUMN_DESC, COLUMN_SAMPLED_ON, COLUMN_CREATED_BY },
+				new ForeignKey[] { new ForeignKey(COLUMN_SOURCE, SourcesTable.TABLE_NAME, SourcesTable.COLUMN_UID)});
 	}
 
 	@Override
@@ -31,8 +32,7 @@ public class SamplesTable extends SyncTable {
 				+ COLUMN_CODE + " text not null, "
 				+ COLUMN_DESC + " text, "
 				+ COLUMN_SAMPLED_ON + " integer, "
-				+ COLUMN_CREATED_BY + " text, "
-				+ "FOREIGN KEY (" + COLUMN_SOURCE + ") REFERENCES " + SourcesTable.TABLE_NAME + "(" + SourcesTable.COLUMN_UID + ") ON DELETE CASCADE "
+				+ COLUMN_CREATED_BY + " text "
 				+ ");";
 	}
 }

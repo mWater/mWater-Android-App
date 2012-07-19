@@ -14,7 +14,8 @@ public class SourcesTable extends SyncTable {
 	public static final String COLUMN_PHOTO = "photo";
 
 	public SourcesTable() {
-		super(new String[] { COLUMN_CODE, COLUMN_SOURCE_TYPE, COLUMN_NAME, COLUMN_DESC, COLUMN_LAT, COLUMN_LONG, COLUMN_RISK, COLUMN_PHOTO, COLUMN_CREATED_BY });
+		super(new String[] { COLUMN_CODE, COLUMN_SOURCE_TYPE, COLUMN_NAME, COLUMN_DESC, COLUMN_LAT, COLUMN_LONG, COLUMN_RISK, COLUMN_PHOTO, COLUMN_CREATED_BY },
+			new ForeignKey[] { });
 	}
 
 	@Override
