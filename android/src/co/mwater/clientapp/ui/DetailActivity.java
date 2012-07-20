@@ -51,6 +51,11 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		if (savedInstanceState != null) {
+			takePhotoColumn = savedInstanceState.getString("takePhotoColumn");
+			takePhotoUid = savedInstanceState.getString("takePhotoUid");
+		}
+
 		// Create handler
 		handler = new Handler();
 
@@ -208,23 +213,28 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		startActivity(intent);
 	}
 
-	// Map if intents to image uids
-	private HashMap<Integer, String> imageIntentUids = new HashMap<Integer, String>();
-	private HashMap<Integer, String> imageIntentColumns = new HashMap<Integer, String>();
+	final int TAKE_PHOTO_REQUEST_CODE = 101;
+
+	String takePhotoUid;
+	String takePhotoColumn;
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("takePhotoColumn", takePhotoColumn);
+		outState.putString("takePhotoUid", takePhotoUid);
+	}
 
 	protected void takePhoto(String columnPhoto) {
 		try {
 			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-			String photoUid = ImageStorage.createUid();
-			File photo = new File(ImageStorage.getTempImagePath(this, photoUid));
+			takePhotoUid = ImageStorage.createUid();
+			takePhotoColumn = columnPhoto;
+			File photo = new File(ImageStorage.getTempImagePath(this, takePhotoUid));
 			Uri uri = Uri.fromFile(photo);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
-			// TODO ick
-			int randomResult = new Random().nextInt(65535);
-			imageIntentUids.put(randomResult, photoUid);
-			imageIntentColumns.put(randomResult, columnPhoto);
-			startActivityForResult(intent, randomResult);
+			startActivityForResult(intent, TAKE_PHOTO_REQUEST_CODE);
 		} catch (IOException e) {
 			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 		}
@@ -233,22 +243,18 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
-		if (imageIntentUids.containsKey(requestCode)) {
-			String photoUid = imageIntentUids.get(requestCode);
-
-			if (resultCode == RESULT_OK) {
-				try {
-					ImageStorage.moveTempImageFileToPending(this, photoUid);
-				} catch (IOException e) {
-					Log.e(TAG, e.getLocalizedMessage());
-					return;
-				}
-
-				// Set photo
-				ContentValues update = new ContentValues();
-				update.put(imageIntentColumns.get(requestCode), photoUid);
-				getContentResolver().update(uri, update, null, null);
+		if (requestCode == TAKE_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+			try {
+				ImageStorage.moveTempImageFileToPending(this, takePhotoUid);
+			} catch (IOException e) {
+				Log.e(TAG, e.getLocalizedMessage());
+				return;
 			}
+
+			// Set photo
+			ContentValues update = new ContentValues();
+			update.put(takePhotoColumn, takePhotoUid);
+			getContentResolver().update(uri, update, null, null);
 		}
 		super.onActivityResult(requestCode, resultCode, intent);
 	}
