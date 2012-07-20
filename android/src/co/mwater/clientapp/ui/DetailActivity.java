@@ -219,9 +219,9 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 			File photo = new File(ImageStorage.getTempImagePath(this, photoUid));
 			Uri uri = Uri.fromFile(photo);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-			
+
 			// TODO ick
-			int randomResult = new Random().nextInt();
+			int randomResult = new Random().nextInt(65535);
 			imageIntentUids.put(randomResult, photoUid);
 			imageIntentColumns.put(randomResult, columnPhoto);
 			startActivityForResult(intent, randomResult);
@@ -233,24 +233,24 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
 	{
-	    if(imageIntentUids.containsKey(requestCode)) {
-	    	String photoUid =  imageIntentUids.get(requestCode);
-	    
-	    	if (resultCode==RESULT_OK) {
-	    		try {
+		if (imageIntentUids.containsKey(requestCode)) {
+			String photoUid = imageIntentUids.get(requestCode);
+
+			if (resultCode == RESULT_OK) {
+				try {
 					ImageStorage.moveTempImageFileToPending(this, photoUid);
 				} catch (IOException e) {
 					Log.e(TAG, e.getLocalizedMessage());
 					return;
 				}
-	    		
+
 				// Set photo
 				ContentValues update = new ContentValues();
 				update.put(imageIntentColumns.get(requestCode), photoUid);
 				getContentResolver().update(uri, update, null, null);
-	    	}
-	    }
-	    super.onActivityResult(requestCode, resultCode, intent);
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, intent);
 	}
 
 	// TODO massive work needed to cache, thumbnail, etc.

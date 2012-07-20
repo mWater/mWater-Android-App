@@ -58,6 +58,10 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 	void onItemClick(long id) {
 		editTest(id);
 	}
+	
+	public void onAddTestClick(View v) {
+		new TestCreator(this, uri).create();
+	}
 
 	void editTest(long id) {
 		TestActivities.editTest(this, id);
