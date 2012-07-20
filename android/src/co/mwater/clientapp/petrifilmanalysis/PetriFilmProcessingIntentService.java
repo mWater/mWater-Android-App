@@ -14,7 +14,6 @@ import android.util.Log;
 public class PetriFilmProcessingIntentService extends IntentService {
 	private static final String TAG = PetriFilmProcessingIntentService.class.getCanonicalName();
 
-	public static final String STATUS = "Processing image.";
 	Uri testUri;
 	String inImagePath;
 	String outImagePath;
@@ -38,11 +37,14 @@ public class PetriFilmProcessingIntentService extends IntentService {
 			PetrifilmAnalysisResults results = processor.process(inImagePath);
 
 			// Save processed image
-			FileOutputStream fos;
-			fos = new FileOutputStream(outImagePath);
-			fos.write(results.jpeg);
-			fos.close();
-
+			if (outImagePath != null)
+			{
+				FileOutputStream fos;
+				fos = new FileOutputStream(outImagePath);
+				fos.write(results.jpeg);
+				fos.close();
+			}
+			
 			// Record results
 			ContentValues values = MWaterContentProvider.getSingleRow(this, testUri);
 			if (values == null)

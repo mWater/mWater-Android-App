@@ -10,15 +10,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="8dp" >
-
+
         <ImageButton
             android:id="@+id/photo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:adjustViewBounds="true"
-            android:maxHeight="120dp"
-            android:maxWidth="120dp"
+            android:maxHeight="100dp"
+            android:maxWidth="100dp"
+            android:onClick="onPhotoClick"
             android:scaleType="centerInside"
             android:src="@drawable/bact" />
 
@@ -35,6 +36,7 @@
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_span="2"
                     android:text="CFU/1mL"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textStyle="bold" />
@@ -116,6 +118,7 @@
 
             </TableRow>
         </TableLayout>
+
     </LinearLayout>
 
     <TextView

@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
@@ -31,7 +32,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
 public class SourceDetailActivity extends DetailActivity implements LocationListener {
-	public static final String TAG = SourceDetailActivity.class.getSimpleName();
+	private static final String TAG = SourceDetailActivity.class.getSimpleName();
 	LocationManager locationManager;
 	List<String> locationProviders;
 	boolean setLocationFlag;
@@ -100,6 +101,21 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		setControlText(R.id.source_type, "Type: " + sourceTypeText);
 
 		displayLocation();
+		
+		// Display photo
+		displayImageButton(R.id.photo, SourcesTable.COLUMN_PHOTO, R.drawable.camera);
+	}
+
+	public void onPhotoClick(View v) {
+		String photoUid =rowValues.getAsString(SourcesTable.COLUMN_PHOTO); 
+		if (photoUid == null) {
+			// Take photo
+			takePhoto(SourcesTable.COLUMN_PHOTO);
+		}
+		else {
+			// Display photo
+			displayImage(SourcesTable.COLUMN_PHOTO);
+		}
 	}
 
 	public void onBasicsClick(View v) {

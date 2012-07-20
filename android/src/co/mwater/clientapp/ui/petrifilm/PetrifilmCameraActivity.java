@@ -1,13 +1,8 @@
 package co.mwater.clientapp.ui.petrifilm;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
-
-import co.mwater.clientapp.R;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,6 +17,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import co.mwater.clientapp.R;
 
 public class PetrifilmCameraActivity extends Activity implements
 PictureCallback {
@@ -118,11 +114,11 @@ PictureCallback {
         ViewGroup mainView = (ViewGroup) findViewById(R.id.RelativeLayout1);
         mainView.removeView(previewView);
 
-        String filename = getIntent().getStringExtra("filename");
+        String filepath = getIntent().getStringExtra("filepath");
+        String uid = getIntent().getStringExtra("uid");
 
         FileOutputStream fos = null;
         try {
-            String filepath = PetrifilmImages.getOriginalImageFolder(getApplicationContext()) + File.separator + filename;
             fos = new FileOutputStream(filepath);
             fos.write(data);
             fos.close();
@@ -135,6 +131,7 @@ PictureCallback {
             fileError = true;
             //return;
         }
+        // TODO clean this up
         // AR - Trying to close the handle (if the error is on the fos.write
         // you will have an dangling handle to a file)
         if (fileError == true && fos != null) {
@@ -146,13 +143,14 @@ PictureCallback {
         }
         
         if (!fileError) {
-            Log.d(TAG, "Wrote file " + filename);
+            Log.d(TAG, "Wrote file " + filepath);
 
             Intent result = new Intent();
-            result.putExtra("filename", filename);
+            result.putExtra("filepath", filepath);
+            result.putExtra("uid", uid);
             setResult(RESULT_OK, result);
         } else {
-            Log.d(TAG, "Error writing the file " + filename);
+            Log.d(TAG, "Error writing the file " + filepath);
             // TODO AR handle this in a better way
         }
         finish();

@@ -1,14 +1,26 @@
 package co.mwater.clientapp.ui;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Random;
+
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import co.mwater.clientapp.db.ImageStorage;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -21,6 +33,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * 
  */
 public abstract class DetailActivity extends SherlockFragmentActivity {
+	private static final String TAG = DetailActivity.class.getSimpleName();
+
 	protected long id;
 	protected String idString;
 	protected Uri uri;
@@ -163,7 +177,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	 */
 	protected void setControlBoolean(int id, Boolean value) {
 		CheckBox checkBox = (CheckBox) findViewById(id);
-		checkBox.setChecked(value!=null && value);
+		checkBox.setChecked(value != null && value);
 	}
 
 	/**
@@ -175,6 +189,99 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	protected boolean getControlBoolean(int id) {
 		CheckBox checkBox = (CheckBox) findViewById(id);
 		return checkBox.isChecked();
+	}
+
+	protected void displayImage(String imageColumn) {
+		String photoUid = rowValues.getAsString(imageColumn);
+		if (photoUid == null)
+			return;
+
+		// TODO massive work needed for cached, etc.
+
+		Intent intent = new Intent();
+		intent.setAction(android.content.Intent.ACTION_VIEW);
+		try {
+			intent.setDataAndType(Uri.fromFile(new File(ImageStorage.getPendingImagePath(this, photoUid))), "image/jpeg");
+		} catch (IOException e) {
+			return;
+		}
+		startActivity(intent);
+	}
+
+	// Map if intents to image uids
+	private HashMap<Integer, String> imageIntentUids = new HashMap<Integer, String>();
+	private HashMap<Integer, String> imageIntentColumns = new HashMap<Integer, String>();
+
+	protected void takePhoto(String columnPhoto) {
+		try {
+			Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+			String photoUid = ImageStorage.createUid();
+			File photo = new File(ImageStorage.getTempImagePath(this, photoUid));
+			Uri uri = Uri.fromFile(photo);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+			
+			// TODO ick
+			int randomResult = new Random().nextInt();
+			imageIntentUids.put(randomResult, photoUid);
+			imageIntentColumns.put(randomResult, columnPhoto);
+			startActivityForResult(intent, randomResult);
+		} catch (IOException e) {
+			Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+	    if(imageIntentUids.containsKey(requestCode)) {
+	    	String photoUid =  imageIntentUids.get(requestCode);
+	    
+	    	if (resultCode==RESULT_OK) {
+	    		try {
+					ImageStorage.moveTempImageFileToPending(this, photoUid);
+				} catch (IOException e) {
+					Log.e(TAG, e.getLocalizedMessage());
+					return;
+				}
+	    		
+				// Set photo
+				ContentValues update = new ContentValues();
+				update.put(imageIntentColumns.get(requestCode), photoUid);
+				getContentResolver().update(uri, update, null, null);
+	    	}
+	    }
+	    super.onActivityResult(requestCode, resultCode, intent);
+	}
+
+	// TODO massive work needed to cache, thumbnail, etc.
+	protected void displayImageButton(int imageButtonId, String imageColumn, int defaultImage) {
+		ImageButton imageButton = (ImageButton) findViewById(imageButtonId);
+
+		String imageUid = rowValues.getAsString(imageColumn);
+		if (imageUid == null) {
+			// Use default
+			imageButton.setImageResource(defaultImage);
+			return;
+		}
+
+		// Try to find image locally
+		File file;
+		try {
+			file = new File(ImageStorage.getPendingThumbnailImagePath(this, imageUid));
+		} catch (IOException e) {
+			// TODO Display error image
+			return;
+		}
+
+		if (file.exists())
+		{
+			imageButton.setImageURI(Uri.fromFile(file));
+			return;
+		}
+
+		// TODO try server
+
+		imageButton.setImageResource(defaultImage);
 	}
 
 	void handleContentChange() {

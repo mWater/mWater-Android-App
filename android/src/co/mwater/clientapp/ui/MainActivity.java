@@ -1,18 +1,13 @@
 package co.mwater.clientapp.ui;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
-import co.mwater.clientapp.dbsync.RESTClient;
-import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import co.mwater.clientapp.R;
-
-import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 
 public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.getCanonicalName();
@@ -20,9 +15,6 @@ public class MainActivity extends SherlockActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// Setup application
-		PetrifilmImages.setup(this);
 
 		// Go to login screen if not logged in
 		if (MWaterServer.getClientUid(this) == null) {

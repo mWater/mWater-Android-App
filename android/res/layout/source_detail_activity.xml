@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp" >
-
+
             <ImageButton
                 android:id="@+id/photo"
                 android:layout_width="wrap_content"
@@ -21,8 +21,9 @@
                 android:adjustViewBounds="true"
                 android:maxHeight="120dp"
                 android:maxWidth="120dp"
+                android:onClick="onPhotoClick"
                 android:scaleType="centerInside"
-                android:src="@drawable/well" />
+                android:src="@drawable/camera" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

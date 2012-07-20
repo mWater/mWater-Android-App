@@ -15,21 +15,21 @@ public abstract class Results {
 			throw new InvalidParameterException("Test type unknown");
 		}
 	}
-	
+
 	public abstract Risk getRisk(int dilution);
-	
+
 	public abstract String toJson();
-	
+
 	public abstract void fromJson(String json);
-	
+
 	protected Risk getEColi100mLRisk(int count) {
-		if (count==0)
+		if (count == 0)
 			return Risk.BLUE;
-		if (count<10)
+		if (count < 10)
 			return Risk.GREEN;
-		if (count<100)
+		if (count < 100)
 			return Risk.YELLOW;
-		if (count<1000)
+		if (count < 1000)
 			return Risk.ORANGE;
 		return Risk.RED;
 	}
