@@ -7,7 +7,7 @@ import co.mwater.clientapp.dbsync.SyncTable;
 
 public class MWaterDatabase extends SyncDatabaseHelper {
 	private static final String DATABASE_NAME = "mwater.db";
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 12;
 	
 	private static MWaterDatabase mWaterDatabase;
 	

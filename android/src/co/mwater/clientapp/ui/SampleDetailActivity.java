@@ -60,16 +60,7 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 	}
 
 	void editTest(long id) {
-		// Get test
-		Uri testUri = Uri.withAppendedPath(MWaterContentProvider.TESTS_URI, id + "");
-		ContentValues testValues = MWaterContentProvider.getSingleRow(this, testUri);
-		@SuppressWarnings("rawtypes")
-		Class detailClass = TestActivities.getDetailActivity(testValues.getAsInteger(TestsTable.COLUMN_TEST_TYPE));
-		if (detailClass != null) {
-			Intent intent = new Intent(this, detailClass);
-			intent.putExtra("uri", testUri);
-			startActivity(intent);
-		}
+		TestActivities.editTest(this, id);
 	}
 
 	@Override

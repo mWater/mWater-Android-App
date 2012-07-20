@@ -21,7 +21,7 @@ public class SourceCodes {
 	public static String obtainCode(Context context) throws NoMoreCodesException {
 		// Get available codes string
 		SharedPreferences prefs = context.getSharedPreferences(PREF_NAMES, Context.MODE_PRIVATE);
-		List<String> availableCodes = stringToList(prefs.getString(AVAILABLE_CODES, ""));
+		List<String> availableCodes = PreferenceUtils.stringToList(prefs.getString(AVAILABLE_CODES, ""));
 
 		// Take first one
 		if (availableCodes.size() == 0)
@@ -30,7 +30,7 @@ public class SourceCodes {
 		String code = availableCodes.remove(0);
 
 		Editor editor = prefs.edit();
-		editor.putString(AVAILABLE_CODES, listToString(availableCodes));
+		editor.putString(AVAILABLE_CODES, PreferenceUtils.listToString(availableCodes));
 		editor.commit();
 
 		return code;
@@ -39,7 +39,7 @@ public class SourceCodes {
 	public static boolean newCodesNeeded(Context context) {
 		// Get available codes string
 		SharedPreferences prefs = context.getSharedPreferences(PREF_NAMES, Context.MODE_PRIVATE);
-		List<String> availableCodes = stringToList(prefs.getString(AVAILABLE_CODES, ""));
+		List<String> availableCodes = PreferenceUtils.stringToList(prefs.getString(AVAILABLE_CODES, ""));
 		return availableCodes.size() < minCodes;
 
 	}
@@ -57,21 +57,21 @@ public class SourceCodes {
 		
 		try {
 			String codesjson = restClient.get("requestcodes", 
-					"clientuid", MWaterServer.getClientId(context));
+					"clientuid", MWaterServer.getClientUid(context));
 			
 			JSONArray arr = new JSONArray(codesjson);
 
 			// Get available codes string
 			SharedPreferences prefs = context.getSharedPreferences(PREF_NAMES, Context.MODE_PRIVATE);
-			List<String> availableCodes = stringToList(prefs.getString(AVAILABLE_CODES, ""));
+			List<String> availableCodes = PreferenceUtils.stringToList(prefs.getString(AVAILABLE_CODES, ""));
 
 			// Add new codes
-			for (int i=0;i<arr.length();i++)
+			for (int i = 0; i < arr.length(); i++)
 				availableCodes.add(arr.getString(i));
 
 			// Save codes
 			Editor editor = prefs.edit();
-			editor.putString(AVAILABLE_CODES, listToString(availableCodes));
+			editor.putString(AVAILABLE_CODES, PreferenceUtils.listToString(availableCodes));
 			editor.commit();
 			
 			return true;
@@ -80,24 +80,6 @@ public class SourceCodes {
 		} catch (JSONException e) {
 			return false;
 		}
-	}
-
-	static String listToString(List<String> codes) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < codes.size(); i++)
-		{
-			if (i > 0)
-				sb.append(",");
-			sb.append(codes.get(i));
-		}
-		return sb.toString();
-	}
-
-	static List<String> stringToList(String codes) {
-		if (codes.length() == 0)
-			return new ArrayList<String>();
-		
-		return new ArrayList<String>(Arrays.asList(codes.split(",")));
 	}
 
 	public static class NoMoreCodesException extends Exception {

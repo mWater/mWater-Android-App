@@ -1,6 +1,11 @@
 package co.mwater.clientapp.ui;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterServer;
@@ -33,7 +38,7 @@ public class SignupFragment extends Fragment {
 
 	void signup() {
 		// TODO
-		
+
 		// Login to server
 		// TODO put in task
 		String email = ((TextView) getView().findViewById(R.id.email)).getText().toString();
@@ -42,12 +47,17 @@ public class SignupFragment extends Fragment {
 
 		RESTClient restClient = MWaterServer.createClient(getActivity());
 		try {
-			String clientId = restClient.get("signup",
+			JSONObject json = new JSONObject(restClient.get("signup",
 					"email", email,
 					"username", username,
-					"password", password);
+					"password", password));
 
-			MWaterServer.login(this.getActivity(), username, clientId);
+			String clientUid = json.getString("clientuid");
+			List<String> roles = new ArrayList<String>();
+			for (int i = 0; i < json.getJSONArray("roles").length(); i++)
+				roles.add(json.getJSONArray("roles").getString(i));
+
+			MWaterServer.login(this.getActivity(), username, clientUid, roles);
 
 			// Obtain more sources if needed
 			SourceCodes.requestNewCodesIfNeeded(getActivity());
@@ -60,6 +70,8 @@ public class SignupFragment extends Fragment {
 				Toast.makeText(getActivity(), "Username already taken or invalid email", Toast.LENGTH_LONG).show();
 			else
 				Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+		} catch (JSONException e) {
+			Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 

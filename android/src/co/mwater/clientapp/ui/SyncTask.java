@@ -74,7 +74,7 @@ public class SyncTask extends AsyncTask<DataSlice, Void, SyncServerException> {
 		SQLiteDatabase db = mWaterDatabase.getWritableDatabase();
 
 		SyncClientImpl client = new SyncClientImpl(db, mWaterDatabase.getSyncTables());
-		SyncServerImpl server = new SyncServerImpl(MWaterServer.createClient(context), MWaterServer.getClientId(context));
+		SyncServerImpl server = new SyncServerImpl(MWaterServer.createClient(context), MWaterServer.getClientUid(context));
 		Synchronizer synchronizer = new Synchronizer(client, server);
 
 		try {

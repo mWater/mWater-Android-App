@@ -69,7 +69,8 @@ class TestListAdapter extends CustomAdapter {
 			setControlText(view, R.id.tag, testTags[testType.getValue()]);
 			setControlText(view, R.id.test_type, testTypes[testType.getValue()]);
 
-			Risk risk = Results.getResults(testType, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
+			int dilution = cursor.getInt(cursor.getColumnIndex(TestsTable.COLUMN_DILUTION));
+			Risk risk = Results.getResults(testType, cursor.getString(cursor.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk(dilution);
 			int riskColor = TestActivities.getRiskColor(risk);
 			((TextView) view.findViewById(R.id.tag)).setBackgroundColor(context.getResources().getColor(riskColor));
 		}

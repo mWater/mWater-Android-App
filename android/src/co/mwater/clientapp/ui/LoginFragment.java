@@ -1,8 +1,12 @@
 package co.mwater.clientapp.ui;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.entity.mime.MinimalField;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterServer;
@@ -41,11 +45,16 @@ public class LoginFragment extends Fragment {
 
 		RESTClient restClient = MWaterServer.createClient(this.getActivity());
 		try {
-			String clientId = restClient.get("login", 
+			JSONObject json = new JSONObject(restClient.get("login",
 					"username", username,
-					"password", password);
+					"password", password));
 
-			MWaterServer.login(this.getActivity(), username, clientId);
+			String clientUid = json.getString("clientuid");
+			List<String> roles = new ArrayList<String>();
+			for (int i = 0; i < json.getJSONArray("roles").length(); i++)
+				roles.add(json.getJSONArray("roles").getString(i));
+			
+			MWaterServer.login(this.getActivity(), username, clientUid, roles);
 
 			// Obtain more sources if needed
 			SourceCodes.requestNewCodesIfNeeded(getActivity());
@@ -58,7 +67,8 @@ public class LoginFragment extends Fragment {
 				Toast.makeText(getActivity(), "Incorrect username/password", Toast.LENGTH_LONG).show();
 			else
 				Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+		} catch (JSONException e) {
+			Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-
 }

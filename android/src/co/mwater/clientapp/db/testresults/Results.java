@@ -16,9 +16,21 @@ public abstract class Results {
 		}
 	}
 	
-	public abstract Risk getRisk();
+	public abstract Risk getRisk(int dilution);
 	
 	public abstract String toJson();
 	
 	public abstract void fromJson(String json);
+	
+	protected Risk getEColi100mLRisk(int count) {
+		if (count==0)
+			return Risk.BLUE;
+		if (count<10)
+			return Risk.GREEN;
+		if (count<100)
+			return Risk.YELLOW;
+		if (count<1000)
+			return Risk.ORANGE;
+		return Risk.RED;
+	}
 }

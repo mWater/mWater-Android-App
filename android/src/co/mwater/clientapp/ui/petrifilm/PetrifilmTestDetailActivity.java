@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 
+import com.actionbarsherlock.view.Window;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -26,15 +28,11 @@ import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
 import co.mwater.clientapp.petrifilmanalysis.PetriFilmProcessingIntentService;
 import co.mwater.clientapp.petrifilmanalysis.PetrifilmImages;
-import co.mwater.clientapp.ui.DetailActivity;
 import co.mwater.clientapp.ui.TestActivities;
+import co.mwater.clientapp.ui.TestDetailActivity;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
-import com.actionbarsherlock.view.Window;
 
-public class PetrifilmTestDetailActivity extends DetailActivity implements OnClickListener {
+public class PetrifilmTestDetailActivity extends TestDetailActivity implements OnClickListener {
 	private static final String TAG = PetrifilmTestDetailActivity.class.getSimpleName();
 	static int PETRI_IMAGE_REQUEST = 1;
 
@@ -45,88 +43,8 @@ public class PetrifilmTestDetailActivity extends DetailActivity implements OnCli
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setSupportProgressBarIndeterminateVisibility(false);
-
+	
 		setContentView(R.layout.petrifilm_detail_activity);
-	}
-
-	@Override
-	protected void displayData() {
-		getSupportActionBar().setTitle("Test " + rowValues.getAsString(TestsTable.COLUMN_CODE));
-
-		// Get results
-		String results = rowValues.getAsString(TestsTable.COLUMN_RESULTS);
-		PetrifilmResults pfr = new PetrifilmResults(results);
-		setControlInteger(R.id.ecoli_count, pfr.manualEcoli != null ? pfr.manualEcoli : pfr.autoEcoli);
-		setControlInteger(R.id.tc_count, pfr.manualTC != null ? pfr.manualTC : pfr.autoTC);
-		setControlInteger(R.id.other_count, pfr.manualOther != null ? pfr.manualOther : pfr.autoOther);
-
-		autoAnalysing &= pfr.autoEcoli == null;
-
-		Risk risk = pfr.getRisk();
-		int riskColor = TestActivities.getRiskColor(risk);
-		((TextView) this.findViewById(R.id.ecoli_count)).setBackgroundColor(this.getResources().getColor(riskColor));
-
-		setSupportProgressBarIndeterminateVisibility(autoAnalysing);
-
-		((Button) findViewById(R.id.record_results)).setText(results != null ? "Edit Results" : "Record Results");
-
-		Long started_on = rowValues.getAsLong(TestsTable.COLUMN_STARTED_ON);
-		if (started_on != null) {
-			setControlText(R.id.started_on, "Started: " + DateFormat.getDateTimeInstance().format(new Date(started_on * 1000)));
-		}
-		Long read_on = rowValues.getAsLong(TestsTable.COLUMN_READ_ON);
-		if (read_on != null) {
-			setControlText(R.id.read_on, "Read: " + DateFormat.getDateTimeInstance().format(new Date(read_on * 1000)));
-		}
-
-		// Get sample
-		String sampleUid = rowValues.getAsString(TestsTable.COLUMN_SAMPLE);
-		ContentValues sample = null;
-		ContentValues source = null;
-		if (sampleUid != null)
-		{
-			sample = MWaterContentProvider.getSingleRow(this, MWaterContentProvider.SAMPLES_URI, sampleUid);
-			String sourceUid = sample.getAsString(SamplesTable.COLUMN_SOURCE);
-			if (sourceUid != null)
-				source = MWaterContentProvider.getSingleRow(this, MWaterContentProvider.SOURCES_URI, sourceUid);
-		}
-		// TODO other options
-		if (source != null && sample != null) {
-			setControlText(R.id.source,
-					String.format("%s sample %s", source.getAsString(SourcesTable.COLUMN_NAME), sample.getAsString(SamplesTable.COLUMN_CODE)));
-		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		if (rowValues != null) {
-			// Save notes
-			String curNotes = getControlText(R.id.notes);
-			if (curNotes.length() == 0)
-				curNotes = null;
-
-			if (curNotes != rowValues.getAsString(TestsTable.COLUMN_NOTES)) {
-				ContentValues values = new ContentValues();
-				values.put(TestsTable.COLUMN_NOTES, curNotes);
-				getContentResolver().update(uri, values, null, null);
-			}
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.test_detail_menu, menu);
-
-		menu.findItem(R.id.menu_delete).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			public boolean onMenuItemClick(MenuItem item) {
-				deleteTest();
-				return true;
-			}
-		});
-
-		return super.onCreateOptionsMenu(menu);
 	}
 
 	public void onRecordResultsClick(View v) {
@@ -135,6 +53,25 @@ public class PetrifilmTestDetailActivity extends DetailActivity implements OnCli
 		builder.setItems(R.array.petrifilm_record_popup, this).show();
 	}
 
+	@Override
+	protected void displayData() {
+		super.displayData();
+
+		// Get results
+		PetrifilmResults results = new PetrifilmResults(rowValues.getAsString(TestsTable.COLUMN_RESULTS));
+		setControlInteger(R.id.ecoli_count, results.manualEcoli != null ? results.manualEcoli : results.autoEcoli);
+		setControlInteger(R.id.tc_count, results.manualTC != null ? results.manualTC : results.autoTC);
+		setControlInteger(R.id.other_count, results.manualOther != null ? results.manualOther : results.autoOther);
+
+		autoAnalysing &= results.autoEcoli == null;
+
+		Risk risk = results.getRisk(rowValues.getAsInteger(TestsTable.COLUMN_DILUTION));
+		int riskColor = TestActivities.getRiskColor(risk);
+		((TextView) this.findViewById(R.id.ecoli_count)).setBackgroundColor(this.getResources().getColor(riskColor));
+
+		setSupportProgressBarIndeterminateVisibility(autoAnalysing);
+	}
+	
 	public void onClick(DialogInterface dialog, int which) {
 		if (which == 0) {
 			// Automatic count
@@ -179,28 +116,5 @@ public class PetrifilmTestDetailActivity extends DetailActivity implements OnCli
 			Log.d(TAG, "Calling process image");
 			startService(intent);
 		}
-	}
-
-	void recordResultRead() {
-		if (rowValues.getAsString(TestsTable.COLUMN_RESULTS) == null) {
-			// Record initial results
-			ContentValues update = new ContentValues();
-			update.put(TestsTable.COLUMN_RESULTS, new PetrifilmResults().toJson());
-			update.put(TestsTable.COLUMN_READ_ON, System.currentTimeMillis() / 1000);
-
-			getContentResolver().update(uri, update, null, null);
-		}
-	}
-
-	void deleteTest() {
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				getContentResolver().delete(uri, null, null);
-				finish();
-			}
-		};
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Permanently delete test?").setPositiveButton("Yes", dialogClickListener).setNegativeButton("No", null).show();
 	}
 }

@@ -14,6 +14,7 @@ import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.TestType;
 import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailActivity;
 
 /**
@@ -38,27 +39,36 @@ public class TestCreator implements OnClickListener {
 	}
 
 	public void onClick(DialogInterface dialog, int which) {
+		TestType testType;
 		switch (which) {
-		case 0: // Petrifilm
-			String sampleUid = null;
-			if (sampleUri!=null)
-				sampleUid = MWaterContentProvider.getSingleRow(context, sampleUri).getAsString(SamplesTable.COLUMN_UID);
-			
-			ContentValues values = new ContentValues();
-			values.put(TestsTable.COLUMN_SAMPLE, sampleUid);
-			values.put(TestsTable.COLUMN_CODE, OtherCodes.getNewSampleCode(context));
-			values.put(TestsTable.COLUMN_TEST_TYPE, 0);
-			values.put(TestsTable.COLUMN_TEST_VERSION, 1);
-			values.put(TestsTable.COLUMN_STARTED_ON, System.currentTimeMillis() / 1000);
-			values.put(TestsTable.COLUMN_CREATED_BY, MWaterServer.getUsername(context));
-			Uri testUri = context.getContentResolver().insert(MWaterContentProvider.TESTS_URI, values);
-
-			Intent intent = new Intent(context, PetrifilmTestDetailActivity.class);
-			intent.putExtra("uri", testUri);
-			context.startActivity(intent);
+		case 0:
+			testType = TestType.PETRIFILM;
+			break;
+		case 1:
+			testType = TestType.TEN_ML_COLILERT;
+			break;
+		case 2:
+			testType = TestType.HUNDRED_ML_ECOLI;
 			break;
 		default:
 			Toast.makeText(context, "To do", Toast.LENGTH_SHORT).show();
+			return;
 		}
+		String sampleUid = null;
+		if (sampleUri != null)
+			sampleUid = MWaterContentProvider.getSingleRow(context, sampleUri).getAsString(SamplesTable.COLUMN_UID);
+
+		ContentValues values = new ContentValues();
+		values.put(TestsTable.COLUMN_SAMPLE, sampleUid);
+		values.put(TestsTable.COLUMN_CODE, OtherCodes.getNewTestCode(context));
+		values.put(TestsTable.COLUMN_TEST_TYPE, testType.getValue());
+		values.put(TestsTable.COLUMN_TEST_VERSION, 1);
+		values.put(TestsTable.COLUMN_STARTED_ON, System.currentTimeMillis() / 1000);
+		values.put(TestsTable.COLUMN_CREATED_BY, MWaterServer.getUsername(context));
+		Uri testUri = context.getContentResolver().insert(MWaterContentProvider.TESTS_URI, values);
+
+		Intent intent = new Intent(context, TestActivities.getDetailActivity(testType));
+		intent.putExtra("uri", testUri);
+		context.startActivity(intent);
 	}
 }

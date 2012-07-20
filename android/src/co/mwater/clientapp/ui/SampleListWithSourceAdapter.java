@@ -20,7 +20,7 @@ import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
 import co.mwater.clientapp.db.testresults.TestType;
 
-class SampleListWithSourceAdapter extends CustomAdapter {
+class SampleListWithSourceAdapter extends SampleListAdapter {
 	public SampleListWithSourceAdapter(Context context, Cursor c) {
 		super(context, c);
 	}
@@ -58,36 +58,12 @@ class SampleListWithSourceAdapter extends CustomAdapter {
 				TestsTable.COLUMN_SAMPLE + "=?", new String[] { sampleUid }, null);
 		
 		// Clear tags
-		LinearLayout tagsLayout = (LinearLayout)view.findViewById(R.id.tags);
+		LinearLayout tagsLayout = (LinearLayout) view.findViewById(R.id.tags);
 		tagsLayout.removeAllViews();
-		
-		String[] testTags = context.getResources().getStringArray(R.array.test_tags);
 
-		// For each test, add a tag
-		if (tests.moveToFirst()) {
-			do {
-				String tagText;
-				int tagColor;
-				TestType testType = TestType.fromInt(tests.getInt(tests.getColumnIndex(TestsTable.COLUMN_TEST_TYPE)));
+		for (View tagView : getTagViews(context, tests))
+			tagsLayout.addView(tagView);
 
-				if (testType == null) {
-					tagText="???";
-					tagColor = context.getResources().getColor(R.color.risk_unspecified);
-				}
-				else {
-					tagText = testTags[testType.getValue()];
-
-					Risk risk = Results.getResults(testType, tests.getString(tests.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
-					int riskColor = TestActivities.getRiskColor(risk);
-					tagColor = context.getResources().getColor(riskColor);
-				}
-				
-				// Create tag
-				TextView tagTextView = new TextView(context, null, R.style.riskTag);
-				tagTextView.setText(tagText);
-				tagTextView.setBackgroundColor(tagColor);
-			} while (tests.moveToNext());
-		}
 		tests.close();
 	}
 }

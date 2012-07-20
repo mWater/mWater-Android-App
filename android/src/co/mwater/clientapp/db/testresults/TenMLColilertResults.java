@@ -21,13 +21,13 @@ public class TenMLColilertResults extends Results {
 	 * @return
 	 */
 	@Override
-	public Risk getRisk() {
+	public Risk getRisk(int dilution) {
 		if (ecoli == null)
 			return Risk.UNSPECIFIED;
 
 		if (ecoli)
 			return Risk.RED;
-		return Risk.GREEN;
+		return getEColi100mLRisk(dilution * 10 - 1);
 	}
 
 	@Override

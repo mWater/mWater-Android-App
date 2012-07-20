@@ -23,7 +23,7 @@ public class PetrifilmResults extends Results {
 	 * @return
 	 */
 	@Override
-	public Risk getRisk() {
+	public Risk getRisk(int dilution) {
 		if (manualEcoli == null && autoEcoli == null)
 			return Risk.UNSPECIFIED;
 
@@ -34,10 +34,9 @@ public class PetrifilmResults extends Results {
 			ecoli = autoEcoli;
 
 		if (ecoli == 0)
-			return Risk.YELLOW;
-		else if (ecoli < 10)
-			return Risk.ORANGE;
-		return Risk.RED;
+			return getEColi100mLRisk(dilution * 100 - 1);
+		
+		return getEColi100mLRisk(ecoli * dilution * 100);
 	}
 
 	@Override

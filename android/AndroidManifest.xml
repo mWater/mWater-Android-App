@@ -5,82 +5,92 @@
     package="co.mwater.clientapp"
     android:versionCode="2"
     android:versionName="0.1" >
-    
+
     <uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="14" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    
+
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="true" />
+
     <application
         android:icon="@drawable/mwater"
-        android:label="@string/app_name" android:theme="@style/Theme.Sherlock.Light.DarkActionBar">
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
         <activity
-            android:label="@string/app_name"
-            android:name=".ui.MainActivity">
-            <intent-filter >
+            android:name=".ui.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.LoginActivity"
-            android:screenOrientation="portrait"
-            android:label="Login"></activity>
         <activity
-            android:label="Sources"
-            android:name=".ui.SourceListActivity">
+            android:name=".ui.LoginActivity"
+            android:label="Login"
+            android:screenOrientation="portrait" >
         </activity>
-
-        <activity android:name=".ui.SourceDetailActivity"
+        <activity
+            android:name=".ui.SourceListActivity"
+            android:label="Sources" >
+        </activity>
+        <activity
+            android:name=".ui.SourceDetailActivity"
             android:label="Source"
-            android:windowSoftInputMode="stateHidden"></activity>
-
-        
-        <activity
-            android:label="Samples"
-            android:name=".ui.SampleListActivity">
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-        
-        <activity android:name=".ui.SampleDetailActivity"
+        <activity
+            android:name=".ui.SampleListActivity"
+            android:label="Samples" >
+        </activity>
+        <activity
+            android:name=".ui.SampleDetailActivity"
             android:label="Sample"
-            android:windowSoftInputMode="stateHidden"></activity>
-        
-        <activity
-            android:label="Tests"
-            android:name=".ui.TestListActivity">
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-        
         <activity
+            android:name=".ui.TestListActivity"
+            android:label="Tests" >
+        </activity>
+        <activity android:name=".ui.TenMLColilertDetailActivity" >
+        </activity>
+        <activity android:name=".ui.TenMLColilertRecordActivity" >
+        </activity>
+        <activity android:name=".ui.HundredMLEColiDetailActivity" >
+        </activity>
+        <activity android:name=".ui.HundredMLEColiRecordActivity" >
+        </activity>
+        <activity android:name=".ui.petrifilm.PetrifilmTestDetailActivity" >
+        </activity>
+        <activity android:name=".ui.petrifilm.PetrifilmManualCountActivity" >
+        </activity>
+        <activity
+            android:name=".ui.petrifilm.PetrifilmCameraActivity"
+            android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
-            android:name=".ui.petrifilm.PetrifilmTestListActivity" >
+            android:screenOrientation="landscape" >
         </activity>
-        
-        <activity android:name=".ui.petrifilm.PetrifilmCameraActivity"
-                  android:label="@string/app_name"
-                  android:screenOrientation="landscape"
-                  android:configChanges="keyboardHidden|orientation">
-        </activity>
-        
-        <activity android:name=".ui.petrifilm.PetrifilmTestDetailActivity">
-        </activity>
-    
-    <activity android:name=".ui.petrifilm.PetrifilmManualCountActivity">
-        </activity>
-        
-        <service android:name=".petrifilmanalysis.PetriFilmProcessingIntentService"></service>
-        
-        <provider android:name="co.mwater.clientapp.db.MWaterContentProvider"
-             android:authorities="co.mwater.clientapp" android:exported="false" />
-   </application>
+
+        <service android:name=".petrifilmanalysis.PetriFilmProcessingIntentService" >
+        </service>
+
+        <provider
+            android:name="co.mwater.clientapp.db.MWaterContentProvider"
+            android:authorities="co.mwater.clientapp"
+            android:exported="false" />
+    </application>
+
 </manifest>

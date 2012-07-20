@@ -9,16 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.TestsTable;
-import co.mwater.clientapp.db.testresults.Results;
-import co.mwater.clientapp.db.testresults.Risk;
-import co.mwater.clientapp.db.testresults.TestType;
 
-class SampleListNoSourceAdapter extends CustomAdapter {
+class SampleListNoSourceAdapter extends SampleListAdapter {
 	public SampleListNoSourceAdapter(Context context, Cursor c) {
 		super(context, c);
 	}
@@ -49,34 +45,9 @@ class SampleListNoSourceAdapter extends CustomAdapter {
 		LinearLayout tagsLayout = (LinearLayout) view.findViewById(R.id.tags);
 		tagsLayout.removeAllViews();
 
-		String[] testTags = context.getResources().getStringArray(R.array.test_tags);
+		for (View tagView : getTagViews(context, tests))
+			tagsLayout.addView(tagView);
 
-		// For each test, add a tag
-		if (tests.moveToFirst()) {
-			do {
-				String tagText;
-				int tagColor;
-				TestType testType = TestType.fromInt(tests.getInt(tests.getColumnIndex(TestsTable.COLUMN_TEST_TYPE)));
-
-				if (testType == null) {
-					tagText = "???";
-					tagColor = context.getResources().getColor(R.color.risk_unspecified);
-				}
-				else {
-					tagText = testTags[testType.getValue()];
-
-					Risk risk = Results.getResults(testType, tests.getString(tests.getColumnIndex(TestsTable.COLUMN_RESULTS))).getRisk();
-					int riskColor = TestActivities.getRiskColor(risk);
-					tagColor = context.getResources().getColor(riskColor);
-				}
-
-				// Create tag
-				TextView tagTextView = new TextView(context, null, R.style.riskTag);
-				tagTextView.setText(tagText);
-				tagTextView.setBackgroundColor(tagColor);
-				tagsLayout.addView(tagTextView);
-			} while (tests.moveToNext());
-		}
 		tests.close();
 	}
 }

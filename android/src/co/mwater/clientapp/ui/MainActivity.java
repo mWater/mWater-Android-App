@@ -25,7 +25,7 @@ public class MainActivity extends SherlockActivity {
 		PetrifilmImages.setup(this);
 
 		// Go to login screen if not logged in
-		if (MWaterServer.getClientId(this) == null) {
+		if (MWaterServer.getClientUid(this) == null) {
 			Intent intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 			finish();

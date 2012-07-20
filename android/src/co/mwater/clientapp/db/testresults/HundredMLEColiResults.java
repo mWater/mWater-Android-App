@@ -21,13 +21,13 @@ public class HundredMLEColiResults extends Results {
 	 * @return
 	 */
 	@Override
-	public Risk getRisk() {
+	public Risk getRisk(int dilution) {
 		if (ecoli == null)
 			return Risk.UNSPECIFIED;
 
 		if (ecoli)
 			return Risk.RED;
-		return Risk.BLUE;
+		return getEColi100mLRisk(dilution - 1);
 	}
 
 	@Override

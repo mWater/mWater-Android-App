@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -152,6 +153,28 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		if (text.equals(""))
 			return null;
 		return Integer.parseInt(text);
+	}
+
+	/**
+	 * Convenience method to set the checkbox
+	 * 
+	 * @param id
+	 * @param text
+	 */
+	protected void setControlBoolean(int id, Boolean value) {
+		CheckBox checkBox = (CheckBox) findViewById(id);
+		checkBox.setChecked(value!=null && value);
+	}
+
+	/**
+	 * Convenience method to get the text of a text view
+	 * 
+	 * @param id
+	 * @param text
+	 */
+	protected boolean getControlBoolean(int id) {
+		CheckBox checkBox = (CheckBox) findViewById(id);
+		return checkBox.isChecked();
 	}
 
 	void handleContentChange() {

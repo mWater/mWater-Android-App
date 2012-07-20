@@ -1,6 +1,5 @@
 package co.mwater.clientapp.ui;
 
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +15,7 @@ import android.widget.ListView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.TestType;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -63,16 +63,7 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	}
 
 	void editTest(long id) {
-		// Get test
-		Uri testUri = Uri.withAppendedPath(MWaterContentProvider.TESTS_URI, id + "");
-		ContentValues testValues = MWaterContentProvider.getSingleRow(this, testUri);
-		@SuppressWarnings("rawtypes")
-		Class detailClass = TestActivities.getDetailActivity(testValues.getAsInteger(TestsTable.COLUMN_TEST_TYPE));
-		if (detailClass != null) {
-			Intent intent = new Intent(this, detailClass);
-			intent.putExtra("uri", testUri);
-			startActivity(intent);
-		}
+		TestActivities.editTest(this, id);
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
