@@ -101,13 +101,13 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 		setControlText(R.id.source_type, "Type: " + sourceTypeText);
 
 		displayLocation();
-		
+
 		// Display photo
 		displayImageButton(R.id.photo, SourcesTable.COLUMN_PHOTO, R.drawable.camera);
 	}
 
 	public void onPhotoClick(View v) {
-		String photoUid =rowValues.getAsString(SourcesTable.COLUMN_PHOTO); 
+		String photoUid = rowValues.getAsString(SourcesTable.COLUMN_PHOTO);
 		if (photoUid == null) {
 			// Take photo
 			takePhoto(SourcesTable.COLUMN_PHOTO);
@@ -283,7 +283,7 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	boolean hasLocation() {
-		return (rowValues.get(SourcesTable.COLUMN_LAT)) != null && (rowValues.get(SourcesTable.COLUMN_LONG) != null);
+		return rowValues != null && (rowValues.get(SourcesTable.COLUMN_LAT)) != null && (rowValues.get(SourcesTable.COLUMN_LONG) != null);
 	}
 
 	public void onProviderDisabled(String provider) {

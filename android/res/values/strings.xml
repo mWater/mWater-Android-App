@@ -4,11 +4,6 @@
     <!-- Common strings -->
     <string name="app_name">mWater</string>
 
-    <!-- main portal -->
-    <string name="create_water_source">Create a new water source</string>
-    <string name="create_water_sample">Create a new water sample</string>
-    <string name="sync_server">Synchronize with server</string>
-
     <string-array name="source_types">
         <item>Piped into dwelling</item>
         <item>Piped into yard/plot</item>
@@ -25,6 +20,7 @@
         <item>Surface Water</item>
         <item>Bottled Water</item>
         <item>Public tank or basin</item>
+        <item>Supply network sampling point</item>
     </string-array>
 
     <string-array name="petrifilm_record_popup">

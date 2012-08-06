@@ -10,15 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
-import co.mwater.clientapp.db.testresults.Results;
-import co.mwater.clientapp.db.testresults.Risk;
-import co.mwater.clientapp.db.testresults.TestType;
 
 class SampleListWithSourceAdapter extends SampleListAdapter {
 	public SampleListWithSourceAdapter(Context context, Cursor c) {

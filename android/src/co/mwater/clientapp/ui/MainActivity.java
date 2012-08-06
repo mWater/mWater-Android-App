@@ -1,13 +1,20 @@
 package co.mwater.clientapp.ui;
 
+import java.io.IOException;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 import co.mwater.clientapp.R;
+import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
 public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.getCanonicalName();
@@ -23,8 +30,27 @@ public class MainActivity extends SherlockActivity {
 			finish();
 			return;
 		}
-		
+
 		setContentView(R.layout.main_activity);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.main_activity_menu, menu);
+
+		// Add listeners
+		menu.findItem(R.id.menu_recreate_thumbnails).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				try {
+					ImageStorage.recreateThumbnails(MainActivity.this);
+				} catch (IOException ex) {
+					Toast.makeText(MainActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+				}
+				return true;
+			}
+		});
+
+		return super.onCreateOptionsMenu(menu);
 	}
 
 	public void onSourcesClick(View v) {

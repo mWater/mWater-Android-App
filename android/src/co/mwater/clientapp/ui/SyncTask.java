@@ -37,14 +37,18 @@ public class SyncTask extends AsyncTask<DataSlice, Void, SyncServerException> {
 
 	@Override
 	protected void onPostExecute(SyncServerException result) {
-		dialog.dismiss();
-		dialog = null;
-
+		try {
+			dialog.dismiss();
+			dialog = null;
+		} catch (Exception e) {
+			// nothing
+		}
+		
 		if (result == null)
 			Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
 		else {
 			if (result.getCause() instanceof RESTClientException) {
-				RESTClientException rex = (RESTClientException)result.getCause();
+				RESTClientException rex = (RESTClientException) result.getCause();
 				if (rex.responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
 					Toast.makeText(context, "Login required", Toast.LENGTH_LONG).show();
 					Intent intent = new Intent(context, LoginActivity.class);
@@ -57,14 +61,14 @@ public class SyncTask extends AsyncTask<DataSlice, Void, SyncServerException> {
 	}
 
 	private void showErrorDialog(String message) {
-	      AlertDialog errorDialog = new AlertDialog.Builder(context).setMessage(message)
-	                      .setCancelable(false)
-	                      .setNeutralButton("Close", new DialogInterface.OnClickListener() {
-	                          public void onClick(DialogInterface d, int id) {
-	                              d.dismiss();
-	                      }
-	                  }).create();
-	      errorDialog.show();
+		AlertDialog errorDialog = new AlertDialog.Builder(context).setMessage(message)
+				.setCancelable(false)
+				.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface d, int id) {
+						d.dismiss();
+					}
+				}).create();
+		errorDialog.show();
 	}
 
 	@Override
@@ -79,10 +83,10 @@ public class SyncTask extends AsyncTask<DataSlice, Void, SyncServerException> {
 
 		try {
 			synchronizer.synchronize(slices[0]);
-			
+
 			// Obtain more sources if needed
 			SourceCodes.requestNewCodesIfNeeded(context);
-			
+
 			return null;
 		} catch (SyncServerException e) {
 			return e;

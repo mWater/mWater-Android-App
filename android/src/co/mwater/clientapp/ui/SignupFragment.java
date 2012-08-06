@@ -7,6 +7,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.actionbarsherlock.app.SherlockFragment;
+
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.SourceCodes;
@@ -23,7 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SignupFragment extends Fragment {
+public class SignupFragment extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.signup_fragment, container, false);

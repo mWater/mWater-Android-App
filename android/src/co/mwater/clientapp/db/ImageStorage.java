@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -70,8 +72,27 @@ public class ImageStorage {
 
 		if (!tempFile.renameTo(pendingFile))
 			throw new IOException("Unable to move " + tempFile.getAbsolutePath() + " to " + pendingFile.getAbsolutePath());
-		
+
 		createThumbnail(context, pendingFile.getAbsolutePath(), getPendingThumbnailImagePath(context, uid));
+	}
+
+	public static List<String> getPendingUids(Context context) throws IOException {
+		// For each pending file
+		File dir = new File(buildExternalPath(context, IMAGES_FOLDER + File.separator + PENDING_FOLDER
+				+ File.separator + ORIGINAL_FOLDER));
+		ArrayList<String> uids = new ArrayList<String>();
+		for (String filename : dir.list()) {
+			uids.add(filename.split("\\.")[0]);
+		}
+		return uids;
+	}
+
+	public static void recreateThumbnails(Context context) throws IOException {
+		for (String uid : getPendingUids(context))
+		{
+			Log.d(TAG, "Recreating " + uid);
+			createThumbnail(context, getPendingImagePath(context, uid), getPendingThumbnailImagePath(context, uid));
+		}
 	}
 
 	/**
@@ -131,7 +152,7 @@ public class ImageStorage {
 	private static Bitmap createThumbnail(Context context, String imagePath) throws IOException {
 		Uri uri = Uri.fromFile(new File(imagePath));
 		InputStream in = null;
-		final int IMAGE_MAX_SIZE = 1200000; // 1.2MP
+		final int IMAGE_MAX_SIZE = 200 * 200;
 		in = context.getContentResolver().openInputStream(uri);
 
 		// Decode image size
