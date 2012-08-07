@@ -1,5 +1,7 @@
 package co.mwater.clientapp.dbsync;
 
-public interface DataSlice {
+import android.os.Parcelable;
+
+public interface DataSlice extends Parcelable {
 	String getSliceId();
 }

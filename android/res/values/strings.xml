@@ -29,8 +29,8 @@
     </string-array>
 
     <string-array name="synchronize_popup">
-        <item>Synchronize database</item>
-        <item>Upload images (takes more bandwidth)</item>
+        <item>Sync data only</item>
+        <item>Also upload images (uses more bandwidth)</item>
     </string-array>
     
     <string-array name="test_types">

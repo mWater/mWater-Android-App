@@ -8,12 +8,16 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
+import co.mwater.clientapp.dbsync.SyncIntentService;
+import co.mwater.clientapp.petrifilmanalysis.PetriFilmProcessingIntentService;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -88,22 +92,13 @@ public class MainActivity extends SherlockActivity {
 		builder.setTitle("Synchronize");
 		builder.setItems(R.array.synchronize_popup, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				if (which == 0) {
-					SyncTask syncTask = new SyncTask(MainActivity.this);
-					syncTask.execute(new CompleteDataSlice());
-				}
-				if (which == 1) {
-					try {
-						ImageUploadTask uploadTask = new ImageUploadTask(
-								MWaterServer.createClient(MainActivity.this),
-								MainActivity.this,
-								ImageStorage.getPendingUids(MainActivity.this)
-								);
-						uploadTask.execute();
-					} catch (IOException ex) {
-						Toast.makeText(MainActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-					}
-				}
+				// Start sync
+				Intent intent = new Intent(MainActivity.this, SyncIntentService.class);
+				intent.putExtra("includeImages", which==1);
+				intent.putExtra("dataSlice", new CompleteDataSlice());
+
+				Log.d(TAG, "Calling sync service");
+				startService(intent);
 			}
 		}).show();
 	}

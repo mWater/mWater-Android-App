@@ -88,6 +88,8 @@
             android:screenOrientation="landscape" >
         </activity>
 
+        <service android:name=".dbsync.SyncIntentService" >
+        </service>
         <service android:name=".petrifilmanalysis.PetriFilmProcessingIntentService" >
         </service>
 
