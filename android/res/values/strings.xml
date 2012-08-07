@@ -28,6 +28,11 @@
         <item>Manual count</item>
     </string-array>
 
+    <string-array name="synchronize_popup">
+        <item>Synchronize database</item>
+        <item>Upload images (takes more bandwidth)</item>
+    </string-array>
+    
     <string-array name="test_types">
         <item>Petrifilm E. coli</item>
         <item>10mL Colilert</item>

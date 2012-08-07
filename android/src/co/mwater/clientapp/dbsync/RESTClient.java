@@ -1,5 +1,7 @@
 package co.mwater.clientapp.dbsync;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -121,6 +123,136 @@ public class RESTClient {
 		} finally {
 			connection.disconnect();
 		}
+	}
+
+	public String postBlob(String command, byte[] blob, PostStatus status, String... args) throws RESTClientException {
+		// Construct url
+		URL url;
+		try {
+			url = new URL(baseUrl + command + "?" + createQuery(args));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
+		try {
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
+			connection.setDoOutput(true); // Triggers POST
+			connection.setFixedLengthStreamingMode(blob.length);
+			connection.setRequestProperty("Accept-Charset", charset);
+			connection.setRequestProperty("Content-Type", "application/octet-stream");
+			int chunkSize = 1024;
+			OutputStream output = null;
+			try {
+				output = connection.getOutputStream();
+				for (int pos = 0; pos < blob.length; pos += chunkSize)
+					output.write(blob, pos, (blob.length - pos > chunkSize) ? chunkSize : (blob.length - pos));
+			} finally {
+				if (output != null)
+					try {
+						output.close();
+					} catch (IOException logOrIgnore) {
+						// Ignore since on close only
+					}
+			}
+
+			return readStreamString(connection.getInputStream());
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
+			connection.disconnect();
+		}
+	}
+
+	public String postFile(String command, File file, PostStatus status, String... args) throws RESTClientException {
+		// Construct url
+		URL url;
+		try {
+			url = new URL(baseUrl + command + "?" + createQuery(args));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
+		try {
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
+			connection.setDoOutput(true); // Triggers POST
+			int len = (int) file.length();
+			connection.setFixedLengthStreamingMode(len);
+			connection.setRequestProperty("Accept-Charset", charset);
+			connection.setRequestProperty("Content-Type", "application/octet-stream");
+
+			int chunkSize = 1024 * 20;
+			byte[] buffer = new byte[chunkSize];
+
+			OutputStream output = null;
+			try {
+				output = connection.getOutputStream();
+
+				FileInputStream fis = new FileInputStream(file);
+				try {
+					// Read in the bytes
+					int numRead = 0;
+					int total = 0;
+					while ((numRead = fis.read(buffer)) > 0) {
+						if (status.isCancelled())
+							throw new RESTClientCancelledException();
+						output.write(buffer, 0, numRead);
+						total += numRead;
+						status.progress(total, len);
+					}
+				} finally {
+					fis.close();
+				}
+			} finally {
+				if (output != null)
+					try {
+						output.close();
+					} catch (IOException logOrIgnore) {
+						// Ignore since on close only
+					}
+			}
+
+			return readStreamString(connection.getInputStream());
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
+			connection.disconnect();
+		}
+	}
+
+	public interface PostStatus {
+		boolean isCancelled();
+
+		void progress(long completed, long total);
 	}
 
 	String readStreamString(InputStream inputStream) throws IOException {

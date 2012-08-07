@@ -56,5 +56,19 @@
         android:layout_height="wrap_content"
         android:onClick="onLoginClick"
         android:text="Sign Up" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-or-"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onLoginClick"
+        android:text="Login as Existing User..." />
 
 </LinearLayout>

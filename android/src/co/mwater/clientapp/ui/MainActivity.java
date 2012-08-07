@@ -1,7 +1,11 @@
 package co.mwater.clientapp.ui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,7 +29,7 @@ public class MainActivity extends SherlockActivity {
 
 		// Go to login screen if not logged in
 		if (MWaterServer.getClientUid(this) == null) {
-			Intent intent = new Intent(this, LoginActivity.class);
+			Intent intent = new Intent(this, SignupActivity.class);
 			startActivity(intent);
 			finish();
 			return;
@@ -50,6 +54,17 @@ public class MainActivity extends SherlockActivity {
 			}
 		});
 
+		// Add listeners
+		menu.findItem(R.id.menu_logout).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				MWaterServer.login(MainActivity.this, null, null, new ArrayList<String>());
+				Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+				startActivity(intent);
+				finish();
+				return true;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -69,7 +84,27 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	public void onSyncClick(View v) {
-		SyncTask syncTask = new SyncTask(this);
-		syncTask.execute(new CompleteDataSlice());
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Synchronize");
+		builder.setItems(R.array.synchronize_popup, new OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if (which == 0) {
+					SyncTask syncTask = new SyncTask(MainActivity.this);
+					syncTask.execute(new CompleteDataSlice());
+				}
+				if (which == 1) {
+					try {
+						ImageUploadTask uploadTask = new ImageUploadTask(
+								MWaterServer.createClient(MainActivity.this),
+								MainActivity.this,
+								ImageStorage.getPendingUids(MainActivity.this)
+								);
+						uploadTask.execute();
+					} catch (IOException ex) {
+						Toast.makeText(MainActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+					}
+				}
+			}
+		}).show();
 	}
 }

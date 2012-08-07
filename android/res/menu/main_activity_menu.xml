@@ -5,4 +5,5 @@
         android:showAsAction="withText"
         android:title="Recreate Thumbnails">
     </item>
+    <item android:id="@+id/menu_logout" android:title="Logout" android:showAsAction="withText"></item>
 </menu>

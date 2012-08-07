@@ -21,10 +21,9 @@ import co.mwater.clientapp.dbsync.RESTClient;
 public class MWaterServer {
 	private static final String PREF_NAME = "Login";
 
-	static final public String serverUrl = "https://data.mwater.co/mwater/sync/";
+	//###static final public String serverUrl = "https://data.mwater.co/mwater/sync/";
 
-	// static final public String serverUrl =
-	// "http://192.168.0.2:8000/mwater/sync/";
+	static final public String serverUrl = "http://192.168.0.2:8000/mwater/sync/";
 
 	static public void login(Context context, String username, String clientUid, List<String> roles) {
 		SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

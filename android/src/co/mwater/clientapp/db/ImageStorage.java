@@ -62,6 +62,22 @@ public class ImageStorage {
 		return pendingFile.getAbsolutePath();
 	}
 
+	public static String getCachedImagePath(Context context, String uid) throws IOException {
+		File cachedFile = new File(
+				buildExternalPath(context, IMAGES_FOLDER + File.separator + CACHED_FOLDER
+						+ File.separator + ORIGINAL_FOLDER + File.separator + uid + IMAGE_EXTENSION));
+		cachedFile.getParentFile().mkdirs();
+		return cachedFile.getAbsolutePath();
+	}
+
+	public static String getCachedThumbnailImagePath(Context context, String uid) throws IOException {
+		File cachedFile = new File(
+				buildExternalPath(context, IMAGES_FOLDER + File.separator + CACHED_FOLDER
+						+ File.separator + THUMBNAIL_FOLDER + File.separator + uid + IMAGE_EXTENSION));
+		cachedFile.getParentFile().mkdirs();
+		return cachedFile.getAbsolutePath();
+	}
+	
 	public static void moveTempImageFileToPending(Context context, String uid) throws IOException {
 		File tempFile = new File(getTempImagePath(context, uid));
 		File pendingFile = new File(getPendingImagePath(context, uid));
@@ -76,15 +92,38 @@ public class ImageStorage {
 		createThumbnail(context, pendingFile.getAbsolutePath(), getPendingThumbnailImagePath(context, uid));
 	}
 
-	public static List<String> getPendingUids(Context context) throws IOException {
+	public static void movePendingImageFileToCached(Context context, String uid) throws IOException {
+		File pendingFile = new File(getPendingImagePath(context, uid));
+		File cachedFile = new File(getCachedImagePath(context, uid));
+		File pendingThumbnailFile = new File(getPendingThumbnailImagePath(context, uid));
+		File cachedThumbnailFile = new File(getCachedThumbnailImagePath(context, uid));
+
+		// Delete if already exists
+		if (cachedFile.exists())
+			cachedFile.delete();
+		if (cachedThumbnailFile.exists())
+			cachedThumbnailFile.delete();
+
+		if (!pendingFile.renameTo(cachedFile))
+			throw new IOException("Unable to move " + pendingFile.getAbsolutePath() + " to " + cachedFile.getAbsolutePath());
+		if (!pendingThumbnailFile.renameTo(cachedThumbnailFile))
+			throw new IOException("Unable to move " + pendingThumbnailFile.getAbsolutePath() + " to " + cachedThumbnailFile.getAbsolutePath());
+	}
+
+	public static String[] getPendingUids(Context context) throws IOException {
 		// For each pending file
 		File dir = new File(buildExternalPath(context, IMAGES_FOLDER + File.separator + PENDING_FOLDER
 				+ File.separator + ORIGINAL_FOLDER));
 		ArrayList<String> uids = new ArrayList<String>();
+		String[] files = dir.list();
+		if (files == null)
+			return new String[0];
 		for (String filename : dir.list()) {
 			uids.add(filename.split("\\.")[0]);
 		}
-		return uids;
+		String[] arr = new String[uids.size()];
+		uids.toArray(arr);
+		return arr;
 	}
 
 	public static void recreateThumbnails(Context context) throws IOException {

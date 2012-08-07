@@ -33,6 +33,14 @@
                 android:layout_weight="1"
                 android:minWidth="280dp" />
         </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/currentLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:minHeight="48dp"
+            android:text="Set to current location" />
 
         <EditText
             android:id="@+id/name"
@@ -45,23 +53,15 @@
 
             <requestFocus />
         </EditText>
-
+
         <EditText
             android:id="@+id/desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Description (optional)"
-            android:inputType="textMultiLine"
+            android:inputType="textCapSentences"
             android:minHeight="48dp" />
-
-        <CheckBox
-            android:id="@+id/currentLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:minHeight="48dp"
-            android:text="Set to current location" />
 
     </LinearLayout>
 

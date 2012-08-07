@@ -20,22 +20,31 @@ import co.mwater.clientapp.dbsync.RESTClientException;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
-public class LoginActivity extends SherlockActivity {
+public class SignupActivity extends SherlockActivity {
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login_activity);
+		setContentView(R.layout.signup_activity);
 	}
 
 	public void onLoginClick(View v) {
+		Intent intent = new Intent(this, LoginActivity.class);
+		startActivity(intent);
+	}
+
+	public void onSignupClick(View v) {
+		// TODO
+
 		// Login to server
 		// TODO put in task
+		String email = ((TextView) findViewById(R.id.email)).getText().toString();
 		String username = ((TextView) findViewById(R.id.username)).getText().toString();
 		String password = ((TextView) findViewById(R.id.password)).getText().toString();
 
 		RESTClient restClient = MWaterServer.createClient(this);
 		try {
-			JSONObject json = new JSONObject(restClient.get("login",
+			JSONObject json = new JSONObject(restClient.get("signup",
+					"email", email,
 					"username", username,
 					"password", password));
 
@@ -54,11 +63,12 @@ public class LoginActivity extends SherlockActivity {
 			this.finish();
 		} catch (RESTClientException e) {
 			if (e.responseCode == HttpURLConnection.HTTP_FORBIDDEN)
-				Toast.makeText(this, "Incorrect username/password", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Username already taken or invalid email", Toast.LENGTH_LONG).show();
 			else
 				Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		} catch (JSONException e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
+
 }
