@@ -76,11 +76,11 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 			setControlText(R.id.sampled_on, DateFormat.getDateInstance().format(new Date(sampled_on * 1000)));
 		}
 		else {
-			// TODO not needed
 			setControlText(R.id.sampled_on, "");
 		}
 
 		setControlText(R.id.desc, rowValues.getAsString(SamplesTable.COLUMN_DESC));
+		setControlTextEditable(R.id.desc, isCreatedByMe());
 
 		// Get source
 		String sourceUid = rowValues.getAsString(SamplesTable.COLUMN_SOURCE);
@@ -127,6 +127,7 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 				return true;
 			}
 		});
+		menu.findItem(R.id.menu_delete).setEnabled(isCreatedByMe());
 
 		return super.onCreateOptionsMenu(menu);
 	}

@@ -64,7 +64,8 @@ public abstract class TestDetailActivity extends DetailActivity {
 				return true;
 			}
 		});
-	
+		menu.findItem(R.id.menu_delete).setEnabled(isCreatedByMe());
+
 		return super.onCreateOptionsMenu(menu);
 	}
 

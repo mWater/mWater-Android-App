@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import co.mwater.clientapp.db.ImageStorage;
+import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.dbsync.SyncTable;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
@@ -150,6 +152,17 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	}
 
 	/**
+	 * Convenience method to set the editability of a text view
+	 * 
+	 * @param id
+	 * @param text
+	 */
+	protected void setControlTextEditable(int id, boolean editable) {
+		TextView textView = (TextView) findViewById(id);
+		textView.setEnabled(editable);
+	}
+	
+	/**
 	 * Convenience method to set the text of a text view
 	 * 
 	 * @param id
@@ -196,6 +209,14 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		return checkBox.isChecked();
 	}
 
+	/**
+	 * Determine if the record was created by me 
+	 * @return
+	 */
+	protected boolean isCreatedByMe() {
+		return MWaterServer.getUsername(this).equals(rowValues.getAsString(SyncTable.COLUMN_CREATED_BY));
+	}
+	
 	protected void displayImage(String imageColumn) {
 		String photoUid = rowValues.getAsString(imageColumn);
 		if (photoUid == null)

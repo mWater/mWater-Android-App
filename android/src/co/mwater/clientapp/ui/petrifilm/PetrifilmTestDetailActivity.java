@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
@@ -69,6 +70,9 @@ public class PetrifilmTestDetailActivity extends TestDetailActivity implements O
 
 		// Display photo
 		displayImageButton(R.id.photo, TestsTable.COLUMN_PHOTO, R.drawable.bact);
+		
+		// Enable/disable
+		((Button)findViewById(R.id.record_results)).setEnabled(isCreatedByMe());
 	}
 
 	public void onClick(DialogInterface dialog, int which) {

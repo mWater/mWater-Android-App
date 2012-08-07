@@ -104,6 +104,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 
 		// Display photo
 		displayImageButton(R.id.photo, SourcesTable.COLUMN_PHOTO, R.drawable.camera);
+		
+		// Enable/disable
+		((Button)findViewById(R.id.locationSet)).setEnabled(isCreatedByMe());
 	}
 
 	public void onPhotoClick(View v) {
@@ -189,6 +192,7 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 				return true;
 			}
 		});
+		menu.findItem(R.id.menu_delete).setEnabled(isCreatedByMe());
 
 		return super.onCreateOptionsMenu(menu);
 	}

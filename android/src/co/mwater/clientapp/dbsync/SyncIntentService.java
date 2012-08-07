@@ -2,7 +2,6 @@ package co.mwater.clientapp.dbsync;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.PublicKey;
 
 import android.app.IntentService;
 import android.app.Notification;
