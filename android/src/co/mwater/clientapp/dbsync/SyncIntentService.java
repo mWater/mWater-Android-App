@@ -23,6 +23,7 @@ public class SyncIntentService extends IntentService {
 	private static final String TAG = SyncIntentService.class.getCanonicalName();
 
 	NotificationManager notificationManager;
+	int lastPercent;
 
 	public SyncIntentService() {
 		super("Synchronizer");
@@ -31,6 +32,7 @@ public class SyncIntentService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		lastPercent = -1;
 		DataSlice slice = intent.getParcelableExtra("dataSlice");
 		boolean includeImages = intent.getBooleanExtra("includeImages", false);
 
@@ -39,11 +41,18 @@ public class SyncIntentService extends IntentService {
 
 		try {
 			notifyProgress(0);
-			synchronizeDatabase(slice);
 			
+			// Make sure user sees the refresh
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+			}
+			
+			synchronizeDatabase(slice);
+
 			// Obtain more sources if needed
 			SourceCodes.requestNewCodesIfNeeded(getApplicationContext());
-			
+
 			if (includeImages)
 				uploadImages();
 
@@ -75,7 +84,7 @@ public class SyncIntentService extends IntentService {
 	void uploadImages() throws RESTClientException, IOException {
 		final String[] uids = ImageStorage.getPendingUids(getApplicationContext());
 		RESTClient restClient = MWaterServer.createClient(getApplicationContext());
-		
+
 		// For each uid
 		for (int i = 0; i < uids.length; i++) {
 			notifyProgress(i * 100 / uids.length);
@@ -101,6 +110,10 @@ public class SyncIntentService extends IntentService {
 	}
 
 	void notifyProgress(int percent) {
+		if (percent == lastPercent)
+			return;
+
+		lastPercent = percent;
 		Notification notification = new NotificationCompat2.Builder(getApplicationContext())
 				.setSmallIcon(R.drawable.ic_action_refresh)
 				.setWhen(System.currentTimeMillis())
@@ -109,6 +122,7 @@ public class SyncIntentService extends IntentService {
 				.setProgress(100, percent, false)
 				.setContentText(percent + "% complete").build();
 		notificationManager.notify(TAG, 0, notification);
+		Log.d(TAG, "Completed " + percent + "% sync");
 	}
 
 	void notifyFinished() {
