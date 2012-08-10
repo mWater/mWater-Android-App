@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import co.mwater.clientapp.LocationFinder;
+import co.mwater.clientapp.LocationFinder.LocationFinderListener;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.MWaterServer;
@@ -29,13 +31,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
-public class SourceDetailActivity extends DetailActivity implements LocationListener {
+public class SourceDetailActivity extends DetailActivity implements LocationFinderListener {
 	private static final String TAG = SourceDetailActivity.class.getSimpleName();
-	LocationManager locationManager;
-	List<String> locationProviders;
+	LocationFinder locationFinder;
 	boolean setLocationFlag;
-
-	Location lastLocation = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,33 +59,20 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 				.add(R.id.note_list, sourceNoteFragment).commit();
 
 		// Set up location service
-		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		locationProviders = new ArrayList<String>();
-		locationProviders.add(LocationManager.GPS_PROVIDER);
-		locationProviders.add(LocationManager.NETWORK_PROVIDER);
-
-		// Pick best old one first
-		for (String locationProvider : locationProviders)
-		{
-			Location loc = locationManager.getLastKnownLocation(locationProvider);
-			if (isBetterLocation(loc, lastLocation))
-				lastLocation = loc;
-		}
+		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		locationFinder = new LocationFinder(locationManager);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-		for (String locationProvider : locationProviders)
-			locationManager.requestLocationUpdates(locationProvider, 1000, 0, this);
+		locationFinder.addLocationListener(this);
 	}
 
 	@Override
 	protected void onStop() {
+		locationFinder.removeLocationListener(this);
 		super.onStop();
-
-		locationManager.removeUpdates(this);
 	}
 
 	@Override
@@ -226,9 +212,6 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	public void onLocationChanged(Location loc) {
 		Log.d(TAG, String.format("onLocationChanged: acc=%f", loc.getAccuracy()));
 
-		if (isBetterLocation(loc, lastLocation))
-			lastLocation = loc;
-
 		// If waiting to set location and sufficient accuracy and time
 		if (setLocationFlag)
 			attemptSetLocation();
@@ -237,9 +220,11 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	private void attemptSetLocation() {
+		Location lastLocation = locationFinder.getLastLocation();
 		long age = System.currentTimeMillis() - lastLocation.getTime();
 
-		if (lastLocation.getAccuracy() < 100 && age < TWO_MINUTES)
+		// If recent (<2 min) and close 
+		if (lastLocation.getAccuracy() < 100 && age < 1000 * 60 * 2)
 		{
 			ContentValues values = new ContentValues();
 			values.put(SourcesTable.COLUMN_LAT, lastLocation.getLatitude());
@@ -262,6 +247,8 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 
 		if (hasLocation())
 		{
+			Location lastLocation = locationFinder.getLastLocation();
+
 			if (lastLocation != null) {
 				double lat = rowValues.getAsDouble(SourcesTable.COLUMN_LAT);
 				double dlat = lat - lastLocation.getLatitude();
@@ -302,85 +289,5 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 
 	boolean hasLocation() {
 		return rowValues != null && (rowValues.get(SourcesTable.COLUMN_LAT)) != null && (rowValues.get(SourcesTable.COLUMN_LONG) != null);
-	}
-
-	public void onProviderDisabled(String provider) {
-		// TODO Auto-generated method stub
-		Log.d(TAG, "onProviderDisabled");
-	}
-
-	public void onProviderEnabled(String provider) {
-		// TODO Auto-generated method stub
-		Log.d(TAG, "onProviderEnabled");
-	}
-
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Auto-generated method stub
-		Log.d(TAG, "onStatusChanged = " + status);
-	}
-
-	private static final int TWO_MINUTES = 1000 * 60 * 2;
-
-	/**
-	 * Determines whether one Location reading is better than the current
-	 * Location fix
-	 * 
-	 * @param location
-	 *            The new Location that you want to evaluate
-	 * @param currentBestLocation
-	 *            The current Location fix, to which you want to compare the new
-	 *            one
-	 */
-	boolean isBetterLocation(Location location, Location currentBestLocation) {
-		if (currentBestLocation == null) {
-			// A new location is always better than no location
-			return true;
-		}
-
-		// Check whether the new location fix is newer or older
-		long timeDelta = location.getTime() - currentBestLocation.getTime();
-		boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-		boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-		boolean isNewer = timeDelta > 0;
-
-		// If it's been more than two minutes since the current location, use
-		// the new location
-		// because the user has likely moved
-		if (isSignificantlyNewer) {
-			return true;
-			// If the new location is more than two minutes older, it must be
-			// worse
-		} else if (isSignificantlyOlder) {
-			return false;
-		}
-
-		// Check whether the new location fix is more or less accurate
-		int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-		boolean isLessAccurate = accuracyDelta > 0;
-		boolean isMoreAccurate = accuracyDelta < 0;
-		boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-		// Check if the old and new location are from the same provider
-		boolean isFromSameProvider = isSameProvider(location.getProvider(),
-				currentBestLocation.getProvider());
-
-		// Determine location quality using a combination of timeliness and
-		// accuracy
-		if (isMoreAccurate) {
-			return true;
-		} else if (isNewer && !isLessAccurate) {
-			return true;
-		} else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-			return true;
-		}
-		return false;
-	}
-
-	/** Checks whether two providers are the same */
-	private boolean isSameProvider(String provider1, String provider2) {
-		if (provider1 == null) {
-			return provider2 == null;
-		}
-		return provider1.equals(provider2);
 	}
 }

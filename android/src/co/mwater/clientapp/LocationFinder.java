@@ -36,6 +36,10 @@ public class LocationFinder implements LocationListener {
 		}
 	}
 
+	public Location getLastLocation() {
+		return lastLocation;
+	}
+	
 	public void addLocationListener(LocationFinderListener l) {
 		if (listeners.size() == 0) {
 			for (String locationProvider : locationProviders)
