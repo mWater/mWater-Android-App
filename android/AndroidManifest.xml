@@ -57,6 +57,15 @@
             android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
+            android:name=".ui.SourceNoteListActivity"
+            android:label="Samples" >
+        </activity>
+        <activity
+            android:name=".ui.SourceNoteDetailActivity"
+            android:label="Sample"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
             android:name=".ui.SampleListActivity"
             android:label="Samples" >
         </activity>

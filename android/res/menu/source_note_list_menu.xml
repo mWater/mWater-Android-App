@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_new"
+        android:icon="@drawable/content_new"
+        android:showAsAction="always|withText"
+        android:title="New">
+    </item>
+
+</menu>

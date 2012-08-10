@@ -7,17 +7,14 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
@@ -25,6 +22,7 @@ import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
+import co.mwater.clientapp.db.SourceNotesTable;
 import co.mwater.clientapp.db.SourcesTable;
 
 import com.actionbarsherlock.view.Menu;
@@ -46,13 +44,20 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 
 		setLocationFlag = getIntent().getBooleanExtra("setLocation", false);
 
-		// Set up fragment
+		// Set up fragments
 		SampleListSummaryFragment sampleFragment = new SampleListSummaryFragment();
 		Bundle args = new Bundle();
 		args.putString("sourceUid", rowValues.getAsString(SourcesTable.COLUMN_UID));
 		sampleFragment.setArguments(args);
 		getSupportFragmentManager().beginTransaction()
 				.add(R.id.sample_list, sampleFragment).commit();
+
+		SourceNoteListSummaryFragment sourceNoteFragment = new SourceNoteListSummaryFragment();
+		args = new Bundle();
+		args.putString("sourceUid", rowValues.getAsString(SourcesTable.COLUMN_UID));
+		sourceNoteFragment.setArguments(args);
+		getSupportFragmentManager().beginTransaction()
+				.add(R.id.note_list, sourceNoteFragment).commit();
 
 		// Set up location service
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -154,8 +159,17 @@ public class SourceDetailActivity extends DetailActivity implements LocationList
 	}
 
 	public void onAddNoteClick(View v) {
-		// TODO
-		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
+		// Create sample linked to source
+		ContentValues values = new ContentValues();
+		values.put(SourceNotesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
+		values.put(SourceNotesTable.COLUMN_CREATED_ON, System.currentTimeMillis() / 1000);
+		values.put(SourceNotesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
+		Uri sourceNoteUri = getContentResolver().insert(MWaterContentProvider.SOURCE_NOTES_URI, values);
+
+		// View sample
+		Intent intent = new Intent(this, SourceNoteDetailActivity.class);
+		intent.putExtra("uri", sourceNoteUri);
+		startActivity(intent);
 	}
 
 	public void onLocationSetClick(View v) {

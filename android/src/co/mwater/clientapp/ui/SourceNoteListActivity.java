@@ -9,26 +9,22 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.MWaterServer;
-import co.mwater.clientapp.db.OtherCodes;
-import co.mwater.clientapp.db.SamplesTable;
-import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.SourceNotesTable;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
-public class SampleListActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-	public static final String TAG = SampleListActivity.class.getSimpleName();
+public class SourceNoteListActivity extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+	public static final String TAG = SourceNoteListActivity.class.getSimpleName();
 	private static final int LOADER_ID = 0x01;
 	private CursorAdapter adapter;
 	String sourceUid;
@@ -36,20 +32,17 @@ public class SampleListActivity extends SherlockFragmentActivity implements Load
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample_list);
+		setContentView(R.layout.source_note_list);
 
 		sourceUid = getIntent().getStringExtra("sourceUid");
-		if (sourceUid != null)
-			adapter = new SampleListNoSourceAdapter(this, null);
-		else
-			adapter = new SampleListWithSourceAdapter(this, null);
+		adapter = new SourceNoteListAdapter(this, null);
 
 		ListView listView = (ListView) findViewById(R.id.list);
 		listView.setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			// @Override
 			public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-				SampleListActivity.this.onItemClick(id);
+				SourceNoteListActivity.this.onItemClick(id);
 			}
 		});
 
@@ -58,11 +51,11 @@ public class SampleListActivity extends SherlockFragmentActivity implements Load
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.sample_list_menu, menu);
+		getSupportMenuInflater().inflate(R.menu.source_note_list_menu, menu);
 
 		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			public boolean onMenuItemClick(MenuItem item) {
-				createNewSample();
+				createNewSourceNote();
 				return true;
 			}
 		});
@@ -70,36 +63,31 @@ public class SampleListActivity extends SherlockFragmentActivity implements Load
 	}
 
 	void onItemClick(long id) {
-		editSample(id);
+		editSourceNote(id);
 	}
 
-	void editSample(long id) {
-		Intent intent = new Intent(this, SampleDetailActivity.class);
-		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SAMPLES_URI, id + ""));
+	void editSourceNote(long id) {
+		Intent intent = new Intent(this, SourceNoteDetailActivity.class);
+		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SOURCE_NOTES_URI, id + ""));
 		startActivity(intent);
 	}
 
-	void createNewSample() {
-		// Create sample linked to source
+	void createNewSourceNote() {
+		// Create source note linked to source
 		ContentValues values = new ContentValues();
-		values.put(SamplesTable.COLUMN_SOURCE, sourceUid);
-		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewSampleCode(this));
-		values.put(SamplesTable.COLUMN_SAMPLED_ON, System.currentTimeMillis() / 1000);
-		values.put(SamplesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
-		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
+		values.put(SourceNotesTable.COLUMN_SOURCE, sourceUid);
+		values.put(SourceNotesTable.COLUMN_CREATED_ON, System.currentTimeMillis() / 1000);
+		values.put(SourceNotesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
+		Uri sourceNoteUri = getContentResolver().insert(MWaterContentProvider.SOURCE_NOTES_URI, values);
 
-		// View sample
-		Intent intent = new Intent(this, SampleDetailActivity.class);
-		intent.putExtra("uri", sampleUri);
+		// View source note
+		Intent intent = new Intent(this, SourceNoteDetailActivity.class);
+		intent.putExtra("uri", sourceNoteUri);
 		startActivity(intent);
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-		if (sourceUid != null)
-			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE + "=?", new String[] { sourceUid }, null);
-		else
-			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, null, null, null);
-
+		return new CursorLoader(this, MWaterContentProvider.SOURCE_NOTES_URI, null, SourceNotesTable.COLUMN_SOURCE + "=?", new String[] { sourceUid }, null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {

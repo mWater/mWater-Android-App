@@ -224,31 +224,12 @@
             android:layout_weight="1"
             android:text="NOTES" />
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/note_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp" >
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:padding="8dp"
-                android:text="02/05/2012"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:textColorSecondary" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="Well cover is cracked in several places. Replacement has been ordered."
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textSize="12sp" />
+            android:layout_height="wrap_content" >
 
-        </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 

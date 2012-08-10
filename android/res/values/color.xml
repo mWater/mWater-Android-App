@@ -8,4 +8,6 @@
     <color name="risk_green">#66ce66</color>
     <color name="risk_blue">#6666ff</color>
     <color name="risk_unspecified">#ffffff</color>
+    <color name="operational">#00FF00</color>
+    <color name="broken">#FF0000</color>
 </resources>

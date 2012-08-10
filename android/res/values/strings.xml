@@ -40,6 +40,12 @@
         <item>UNC Compartmentalized Bag</item>
     </string-array>
 
+    <string-array name="operational_values">
+        <item>Not specified</item>
+        <item>Operational</item>
+        <item>Broken</item>
+    </string-array>
+    
     <!-- Tags to use for test types -->
     <string-array name="test_tags">
         <item>E.Coli</item>

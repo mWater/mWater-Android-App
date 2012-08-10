@@ -32,8 +32,6 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 	private static final String TAG = SampleDetailActivity.class.getSimpleName();
 	private static final int LOADER_ID = 0x01;
 
-	boolean autoAnalysing = false; // TODO this could be done better
-
 	private TestListAdapter adapter;
 
 	@Override
