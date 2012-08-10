@@ -18,6 +18,7 @@ import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.SyncIntentService;
 import co.mwater.clientapp.petrifilmanalysis.PetriFilmProcessingIntentService;
+import co.mwater.clientapp.ui.map.SourceMapActivity;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -74,6 +75,11 @@ public class MainActivity extends SherlockActivity {
 
 	public void onSourcesClick(View v) {
 		Intent intent = new Intent(this, SourceListActivity.class);
+		startActivity(intent);
+	}
+	
+	public void onMapClick(View v) {
+		Intent intent = new Intent(this, SourceMapActivity.class);
 		startActivity(intent);
 	}
 

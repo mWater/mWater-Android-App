@@ -48,6 +48,9 @@
             android:label="Signup">
         </activity>
         <activity
+            android:name=".ui.map.SourceMapActivity">
+        </activity>
+        <activity
             android:name=".ui.SourceListActivity"
             android:label="Sources" >
         </activity>

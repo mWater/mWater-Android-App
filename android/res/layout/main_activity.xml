@@ -18,11 +18,12 @@
             android:drawableTop="@drawable/ic_source_large"
             android:onClick="onSourcesClick"
             android:text="Sources" />
-
+
         <Button
             android:id="@+id/Button03"
             style="@style/mainButton"
             android:drawableTop="@drawable/ic_map_large"
+            android:onClick="onMapClick"
             android:text="Map" />
 
     </TableRow>

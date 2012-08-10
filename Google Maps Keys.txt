@@ -1,0 +1,29 @@
+debug
+
+Thank you for signing up for an Android Maps API key!
+Your key is:
+0ASvTqLNwKMHoI5MfnfFGA7QeD4HEzaC3oeyUQA
+This key is good for all apps signed with your certificate whose fingerprint is:
+E0:72:86:1A:2F:1D:00:B0:EC:C9:19:22:5B:0D:78:0E
+Here is an example xml layout to get you started on your way to mapping glory:
+              <com.google.android.maps.MapView
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:apiKey="0ASvTqLNwKMHoI5MfnfFGA7QeD4HEzaC3oeyUQA"
+                 />
+
+
+
+mWater
+
+Thank you for signing up for an Android Maps API key!
+Your key is:
+0ASvTqLNwKMGTpR-dqEdmunhSHL8-fxDZQRkw7w
+This key is good for all apps signed with your certificate whose fingerprint is:
+4F:15:4E:F8:C9:B1:A1:E3:0B:6D:1B:24:24:DD:DE:9C
+Here is an example xml layout to get you started on your way to mapping glory:
+              <com.google.android.maps.MapView
+                 android:layout_width="fill_parent"
+                 android:layout_height="fill_parent"
+                 android:apiKey="0ASvTqLNwKMGTpR-dqEdmunhSHL8-fxDZQRkw7w"
+                 />
