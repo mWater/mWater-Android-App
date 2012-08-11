@@ -1,6 +1,9 @@
 package co.mwater.clientapp.ui.map;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,7 +27,7 @@ public class SourceMapActivity extends MapActivity implements SourceTapped {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		MapView mapView = new MapView(this, "0ASvTqLNwKMHoI5MfnfFGA7QeD4HEzaC3oeyUQA");
+		MapView mapView = new MapView(this, getMapAPIKey());
 		mapView.setClickable(true);
 		mapView.setSatellite(true);
 
@@ -77,5 +80,37 @@ public class SourceMapActivity extends MapActivity implements SourceTapped {
 		Intent intent = new Intent(this, SourceDetailActivity.class);
 		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SOURCES_URI, id + ""));
 		startActivity(intent);
+	}
+	
+	/**
+	 * Gets map key
+	 */
+	private String getMapAPIKey() {
+		if (isDebuggable())
+			return "0ASvTqLNwKMHoI5MfnfFGA7QeD4HEzaC3oeyUQA";
+		else
+			return "0ASvTqLNwKMGTpR-dqEdmunhSHL8-fxDZQRkw7w";
+	}
+	
+	/**
+	 * Check if in debug mode for correct map key
+	 * @return
+	 */
+	private boolean isDebuggable()
+	{
+	    boolean debuggable = false;
+	 
+	    PackageManager pm = getPackageManager();
+	    try
+	    {
+	        ApplicationInfo appinfo = pm.getApplicationInfo(getPackageName(), 0);
+	        debuggable = (0 != (appinfo.flags &= ApplicationInfo.FLAG_DEBUGGABLE));
+	    }
+	    catch(NameNotFoundException e)
+	    {
+	        /*debuggable variable will remain false*/
+	    }
+	     
+	    return debuggable;
 	}
 }

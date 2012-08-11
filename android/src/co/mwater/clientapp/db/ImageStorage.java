@@ -107,7 +107,10 @@ public class ImageStorage {
 		if (!pendingFile.renameTo(cachedFile))
 			throw new IOException("Unable to move " + pendingFile.getAbsolutePath() + " to " + cachedFile.getAbsolutePath());
 		if (!pendingThumbnailFile.renameTo(cachedThumbnailFile))
-			throw new IOException("Unable to move " + pendingThumbnailFile.getAbsolutePath() + " to " + cachedThumbnailFile.getAbsolutePath());
+		{
+			// Simply regenerate thumbnail
+			createThumbnail(context, cachedFile.getAbsolutePath(), getCachedThumbnailImagePath(context, uid));
+		}
 	}
 
 	public static String[] getPendingUids(Context context) throws IOException {

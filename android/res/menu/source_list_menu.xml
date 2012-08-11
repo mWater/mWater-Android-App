@@ -13,5 +13,6 @@
         android:showAsAction="ifRoom|withText"
         android:title="Search">
     </item>
+    <item android:id="@+id/menu_refresh" android:title="Refresh" android:icon="@drawable/ic_action_refresh" android:showAsAction="ifRoom|withText"></item>
 
 </menu>
