@@ -48,6 +48,8 @@ public abstract class SampleListAdapter extends CustomAdapter {
 					if (risk != Risk.UNSPECIFIED && risk.ordinal() < oldRisk.ordinal())
 						tagRisks.put(tagText, risk);
 				}
+				else
+					tagRisks.put(tagText, risk);
 			} while (tests.moveToNext());
 		}
 	

@@ -22,6 +22,7 @@ import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourceNotesTable;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.ui.map.SourceMapActivity;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -161,11 +162,15 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 	}
 
 	public void onLocationMapClick(View v) {
-		String mapUri = String.format("geo:%1$f,%2$f?q=%1$f,%2$f(%3$s)",
-				rowValues.getAsDouble(SourcesTable.COLUMN_LAT),
-				rowValues.getAsDouble(SourcesTable.COLUMN_LONG),
-				Uri.encode(rowValues.getAsString(SourcesTable.COLUMN_CODE)));
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapUri));
+//		String mapUri = String.format("geo:%1$f,%2$f?q=%1$f,%2$f(%3$s)",
+//				rowValues.getAsDouble(SourcesTable.COLUMN_LAT),
+//				rowValues.getAsDouble(SourcesTable.COLUMN_LONG),
+//				Uri.encode(rowValues.getAsString(SourcesTable.COLUMN_CODE)));
+//		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapUri));
+//		startActivity(intent);
+		Intent intent = new Intent(this, SourceMapActivity.class);
+		intent.putExtra("latitude", rowValues.getAsDouble(SourcesTable.COLUMN_LAT));
+		intent.putExtra("longitude", rowValues.getAsDouble(SourcesTable.COLUMN_LONG));
 		startActivity(intent);
 	}
 
@@ -266,7 +271,10 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 				int compassDir = ((int) ((angle + 22.5) / 45)) % 8;
 				String[] compassStrs = new String[] { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
-				setControlText(R.id.locationText, String.format("%.0fm %s from here", dist, compassStrs[compassDir]));
+				if (dist > 1000)
+					setControlText(R.id.locationText, String.format("%.1fkm %s from here", dist / 1000, compassStrs[compassDir]));
+				else
+					setControlText(R.id.locationText, String.format("%.0fm %s from here", dist, compassStrs[compassDir]));
 				((ProgressBar) findViewById(R.id.locationProgress)).setVisibility(View.GONE);
 				setControlText(R.id.accuracy, String.format("+/- %.1f", lastLocation.getAccuracy()));
 			}

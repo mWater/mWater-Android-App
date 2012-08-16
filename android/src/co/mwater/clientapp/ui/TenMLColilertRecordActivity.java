@@ -3,6 +3,7 @@ package co.mwater.clientapp.ui;
 import android.content.ContentValues;
 import android.os.Bundle;
 import co.mwater.clientapp.R;
+import co.mwater.clientapp.db.RiskCalculations;
 import co.mwater.clientapp.db.TestsTable;
 import co.mwater.clientapp.db.testresults.PetrifilmResults;
 import co.mwater.clientapp.db.testresults.TenMLColilertResults;
@@ -46,6 +47,9 @@ public class TenMLColilertRecordActivity extends DetailActivity {
 		ContentValues values = new ContentValues();
 		values.put(TestsTable.COLUMN_RESULTS, results.toJson());
 		getContentResolver().update(uri, values, null, null);
+
+		// Update risk of source
+		RiskCalculations.updateSourceRiskForSample(this, rowValues.getAsString(TestsTable.COLUMN_SAMPLE));
 	}
 	
 

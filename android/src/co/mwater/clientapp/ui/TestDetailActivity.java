@@ -53,7 +53,6 @@ public abstract class TestDetailActivity extends DetailActivity {
 		}
 	}
 
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.test_detail_menu, menu);
@@ -105,7 +104,7 @@ public abstract class TestDetailActivity extends DetailActivity {
 					String.format("%s sample %s", source.getAsString(SourcesTable.COLUMN_NAME), sample.getAsString(SamplesTable.COLUMN_CODE)));
 		}
 	}
-
+	
 	void deleteTest() {
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {

@@ -6,4 +6,5 @@
         android:title="Recreate Thumbnails">
     </item>
     <item android:id="@+id/menu_logout" android:title="Logout" android:showAsAction="withText"></item>
+    <item android:id="@+id/menu_recalculate_source_risks" android:title="Recalculate source risks (advanced)"></item>
 </menu>

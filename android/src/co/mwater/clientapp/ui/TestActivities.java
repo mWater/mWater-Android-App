@@ -1,12 +1,17 @@
 package co.mwater.clientapp.ui;
 
+import java.util.HashMap;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.Risk;
 import co.mwater.clientapp.db.testresults.TestType;
 import co.mwater.clientapp.ui.petrifilm.PetrifilmTestDetailActivity;

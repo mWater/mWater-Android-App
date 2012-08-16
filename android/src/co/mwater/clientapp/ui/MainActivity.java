@@ -14,6 +14,7 @@ import android.widget.Toast;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.db.RiskCalculations;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.SyncIntentService;
@@ -70,6 +71,14 @@ public class MainActivity extends SherlockActivity {
 			}
 		});
 
+		// Add listeners
+		menu.findItem(R.id.menu_recalculate_source_risks).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				RiskCalculations.updateSourcesRisk(MainActivity.this);
+				return true;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -77,7 +86,7 @@ public class MainActivity extends SherlockActivity {
 		Intent intent = new Intent(this, SourceListActivity.class);
 		startActivity(intent);
 	}
-	
+
 	public void onMapClick(View v) {
 		Intent intent = new Intent(this, SourceMapActivity.class);
 		startActivity(intent);
@@ -100,7 +109,7 @@ public class MainActivity extends SherlockActivity {
 			public void onClick(DialogInterface dialog, int which) {
 				// Start sync
 				Intent intent = new Intent(MainActivity.this, SyncIntentService.class);
-				intent.putExtra("includeImages", which==1);
+				intent.putExtra("includeImages", which == 1);
 				intent.putExtra("dataSlice", new CompleteDataSlice());
 
 				Log.d(TAG, "Calling sync service");

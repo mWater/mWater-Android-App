@@ -3,6 +3,7 @@ package co.mwater.clientapp.petrifilmanalysis;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.RiskCalculations;
 import co.mwater.clientapp.db.testresults.PetrifilmResults;
 import co.mwater.clientapp.db.TestsTable;
 import android.app.IntentService;
@@ -66,6 +67,9 @@ public class PetriFilmProcessingIntentService extends IntentService {
 			update.put(TestsTable.COLUMN_RESULTS, testResults.toJson());
 
 			getContentResolver().update(testUri, update, null, null);
+
+			// Update risk of source
+			RiskCalculations.updateSourceRiskForSample(this, values.getAsString(TestsTable.COLUMN_SAMPLE));
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 		}

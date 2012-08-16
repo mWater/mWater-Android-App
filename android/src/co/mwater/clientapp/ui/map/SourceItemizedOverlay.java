@@ -1,9 +1,14 @@
 package co.mwater.clientapp.ui.map;
 
+import java.util.HashMap;
+
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.testresults.Risk;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -12,19 +17,29 @@ import com.google.android.maps.OverlayItem;
 
 public class SourceItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	Cursor sourceCursor;
-	int columnCode, columnName, columnLat, columnLong;
+	int columnCode, columnName, columnLat, columnLong, columnRisk;
 	SourceTapped sourceTapped;
 
-	public SourceItemizedOverlay(Drawable marker, Cursor sourceCursor,
+	HashMap<Risk, Drawable> markers = new HashMap<Risk, Drawable>();
+	
+	public SourceItemizedOverlay(Context context, Drawable marker, Cursor sourceCursor,
 			SourceTapped sourceTapped) {
 		super(boundCenterBottom(marker));
 		this.sourceCursor = sourceCursor;
 		this.sourceTapped = sourceTapped;
 
+		markers.put(Risk.UNSPECIFIED, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_0)));
+		markers.put(Risk.BLUE, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_1)));
+		markers.put(Risk.GREEN, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_2)));
+		markers.put(Risk.YELLOW, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_3)));
+		markers.put(Risk.ORANGE, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_4)));
+		markers.put(Risk.RED, boundCenterBottom(context.getResources().getDrawable(R.drawable.marker_5)));
+		
 		columnCode = sourceCursor.getColumnIndex(SourcesTable.COLUMN_CODE);
 		columnName = sourceCursor.getColumnIndex(SourcesTable.COLUMN_NAME);
 		columnLat = sourceCursor.getColumnIndex(SourcesTable.COLUMN_LAT);
 		columnLong = sourceCursor.getColumnIndex(SourcesTable.COLUMN_LONG);
+		columnRisk = sourceCursor.getColumnIndex(SourcesTable.COLUMN_RISK);
 		populate();
 	}
 
@@ -38,6 +53,15 @@ public class SourceItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 		OverlayItem newItem = new OverlayItem(new GeoPoint((int) (latitude * 1000000), (int) (longitude * 1000000)),
 				code, name != null ? name : "");
+		
+		// Get risk
+		Risk risk = null;
+		if (sourceCursor.isNull(columnRisk))
+			risk = Risk.UNSPECIFIED;
+		else 
+			risk = Risk.fromInt(sourceCursor.getInt(columnRisk));
+
+		newItem.setMarker(markers.get(risk));
 		return newItem;
 	}
 
