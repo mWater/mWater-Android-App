@@ -9,9 +9,11 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 /**
- * Takes various location services and combines to give best guess as to location
+ * Takes various location services and combines to give best guess as to
+ * location
+ * 
  * @author Clayton
- *
+ * 
  */
 public class LocationFinder implements LocationListener {
 	ArrayList<LocationFinderListener> listeners = new ArrayList<LocationFinderListener>();
@@ -31,7 +33,7 @@ public class LocationFinder implements LocationListener {
 		for (String locationProvider : locationProviders)
 		{
 			Location loc = locationManager.getLastKnownLocation(locationProvider);
-			if (isBetterLocation(loc, lastLocation))
+			if (loc != null && isBetterLocation(loc, lastLocation))
 				lastLocation = loc;
 		}
 	}
@@ -39,7 +41,7 @@ public class LocationFinder implements LocationListener {
 	public Location getLastLocation() {
 		return lastLocation;
 	}
-	
+
 	public void addLocationListener(LocationFinderListener l) {
 		if (listeners.size() == 0) {
 			for (String locationProvider : locationProviders)
@@ -122,7 +124,7 @@ public class LocationFinder implements LocationListener {
 	public void onLocationChanged(Location location) {
 		if (isBetterLocation(location, lastLocation))
 			lastLocation = location;
-		
+
 		// Call listeners TODO only call if better?
 		for (LocationFinderListener l : listeners)
 			l.onLocationChanged(lastLocation);

@@ -8,5 +8,8 @@
 	<classpathentry kind="lib" path="libs/acra-4.2.3.jar"/>
 	<classpathentry kind="lib" path="libs/NotificationCompat2-1.1.2.jar"/>
 	<classpathentry kind="lib" path="libs/actionbarsherlock-plugin-maps-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/acra-4.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/actionbarsherlock-plugin-maps-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/NotificationCompat2-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

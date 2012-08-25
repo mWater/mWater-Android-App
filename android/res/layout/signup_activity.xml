@@ -49,12 +49,12 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
-
+
     <Button
         android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onLoginClick"
+        android:onClick="onSignupClick"
         android:text="Sign Up" />
 
     <TextView
