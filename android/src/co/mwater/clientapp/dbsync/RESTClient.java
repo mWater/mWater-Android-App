@@ -1,5 +1,6 @@
 package co.mwater.clientapp.dbsync;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -249,6 +250,40 @@ public class RESTClient {
 		}
 	}
 
+	public byte[] getBytes(String command, String... args) throws RESTClientException {
+		// Construct url
+		URL url;
+		try {
+			url = new URL(baseUrl + command + "?" + createQuery(args));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
+		try {
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
+			return readStreamBytes(connection.getInputStream());
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
+			connection.disconnect();
+		}
+	}
+
 	public interface PostStatus {
 		boolean isCancelled();
 
@@ -282,4 +317,26 @@ public class RESTClient {
 		return out.toString();
 	}
 
+	
+	private byte[] readStreamBytes(InputStream inputStream) throws IOException {
+		if (inputStream == null)
+			return null;
+
+		final byte[] buffer = new byte[8 * 1024];
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		
+		try {
+			int read;
+			do {
+				read = inputStream.read(buffer, 0, buffer.length);
+				if (read > 0) {
+					out.write(buffer, 0, read);
+				}
+			} while (read >= 0);
+		} finally {
+			inputStream.close();
+		}
+		return out.toByteArray();
+	}
 }

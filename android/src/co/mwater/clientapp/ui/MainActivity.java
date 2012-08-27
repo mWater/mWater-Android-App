@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import co.mwater.clientapp.R;
+import co.mwater.clientapp.db.ImageManager;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.RiskCalculations;
@@ -41,6 +42,9 @@ public class MainActivity extends SherlockActivity {
 			return;
 		}
 
+		// Start image manager
+		ImageManager.defaultImageManager = new ImageManager(getApplicationContext(), MWaterServer.createClient(getApplicationContext()));
+		
 		setContentView(R.layout.main_activity);
 	}
 

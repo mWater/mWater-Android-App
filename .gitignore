@@ -10,7 +10,6 @@ assets/analytics_website_script.html
 bin
 gen
 obj
-libs
 
 # Compiled source #
 ###################
@@ -52,3 +51,7 @@ Icon?
 Thumbs.db
 /mwater.keystore
 /*.apk
+/android/libs/armeabi-v7a/libnative_sample.so
+/android/libs/armeabi-v7a/libopencv_java.so
+/android/libs/armeabi/libnative_sample.so
+/android/libs/armeabi/libopencv_java.so

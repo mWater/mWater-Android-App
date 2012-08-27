@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import co.mwater.clientapp.db.ImageManager;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.dbsync.SyncTable;
@@ -161,7 +162,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		TextView textView = (TextView) findViewById(id);
 		textView.setEnabled(editable);
 	}
-	
+
 	/**
 	 * Convenience method to set the text of a text view
 	 * 
@@ -210,28 +211,34 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	}
 
 	/**
-	 * Determine if the record was created by me 
+	 * Determine if the record was created by me
+	 * 
 	 * @return
 	 */
 	protected boolean isCreatedByMe() {
 		return MWaterServer.getUsername(this).equals(rowValues.getAsString(SyncTable.COLUMN_CREATED_BY));
 	}
-	
+
 	protected void displayImage(String imageColumn) {
 		String photoUid = rowValues.getAsString(imageColumn);
 		if (photoUid == null)
 			return;
 
 		// TODO massive work needed for cached, etc.
-
-		Intent intent = new Intent();
-		intent.setAction(android.content.Intent.ACTION_VIEW);
 		try {
-			intent.setDataAndType(Uri.fromFile(new File(ImageStorage.getPendingImagePath(this, photoUid))), "image/jpeg");
+			File imageFile = new File(ImageStorage.getPendingImagePath(this, photoUid));
+			if (!imageFile.exists()) {
+				Toast.makeText(this, "Full-size image download not implemented", Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			Intent intent = new Intent();
+			intent.setAction(android.content.Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.fromFile(imageFile), "image/jpeg");
+			startActivity(intent);
 		} catch (IOException e) {
 			return;
 		}
-		startActivity(intent);
 	}
 
 	final int TAKE_PHOTO_REQUEST_CODE = 101;
@@ -291,24 +298,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 			return;
 		}
 
-		// Try to find image locally
-		File file;
-		try {
-			file = new File(ImageStorage.getPendingThumbnailImagePath(this, imageUid));
-		} catch (IOException e) {
-			// TODO Display error image
-			return;
-		}
-
-		if (file.exists())
-		{
-			imageButton.setImageURI(Uri.fromFile(file));
-			return;
-		}
-
-		// TODO try server
-
-		imageButton.setImageResource(defaultImage);
+		ImageManager.defaultImageManager.displayThumbnailImage(imageUid, imageButton, defaultImage);
 	}
 
 	void handleContentChange() {
