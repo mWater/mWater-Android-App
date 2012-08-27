@@ -1,16 +1,12 @@
-Currently we are building out the code to count bacteria in the field using an Android.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Links
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-http://www.rhok.org/problems/bacteria-counting-app-low-cost-water-monitoring-kit
-http://www.rhok.org/solutions/android-image-pattern-recognition-and-upload
-Where to get started for OpenCV on Android (includes setting up your development environment)
-
-http://opencv.itseez.com/doc/tutorials/introduction/android_binary_package/android_binary_package.html
-http://opencv.willowgarage.com/wiki/Android
-WishList:
-
-http://opencv.itseez.com/doc/tutorials/core/table_of_content_core/table_of_content_core.html#table-of-content-core
-References:
-
-http://www.rhok.org/event/montr%C3%A9al-canada
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

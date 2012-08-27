@@ -87,6 +87,9 @@ public abstract class TestDetailActivity extends DetailActivity {
 			setControlText(R.id.read_on, "Read: " + DateFormat.getDateTimeInstance().format(new Date(read_on * 1000)));
 		}
 
+		setControlText(R.id.notes, rowValues.getAsString(TestsTable.COLUMN_NOTES));
+		setControlTextEditable(R.id.notes, isCreatedByMe());
+		
 		// Get sample
 		String sampleUid = rowValues.getAsString(TestsTable.COLUMN_SAMPLE);
 		ContentValues sample = null;
@@ -98,6 +101,7 @@ public abstract class TestDetailActivity extends DetailActivity {
 			if (sourceUid != null)
 				source = MWaterContentProvider.getSingleRow(this, MWaterContentProvider.SOURCES_URI, sourceUid);
 		}
+		
 		// TODO other options
 		if (source != null && sample != null) {
 			setControlText(R.id.source,

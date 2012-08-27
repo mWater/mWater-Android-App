@@ -37,7 +37,7 @@ public class HundredMLEColiDetailActivity extends TestDetailActivity {
 		if (results.ecoli == null)
 			setControlText(R.id.ecoli_count, "");
 		else
-			setControlText(R.id.ecoli_count, results.ecoli ? ">= 10 CFU/100mL" : "< 10 CFU/100mL");
+			setControlText(R.id.ecoli_count, results.ecoli ? ">= 1 CFU/100mL" : "< 1 CFU/100mL");
 
 		Risk risk = results.getRisk(rowValues.getAsInteger(TestsTable.COLUMN_DILUTION));
 		int riskColor = TestActivities.getRiskColor(risk);
