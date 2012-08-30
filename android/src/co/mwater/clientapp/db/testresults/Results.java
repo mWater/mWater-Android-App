@@ -11,6 +11,8 @@ public abstract class Results {
 			return new TenMLColilertResults(results);
 		case HUNDRED_ML_ECOLI:
 			return new HundredMLEColiResults(results);
+		case CHLORINE:
+			return new ChlorineResults(results);
 		default:
 			throw new InvalidParameterException("Test type unknown");
 		}

@@ -50,6 +50,9 @@ public class TestCreator implements OnClickListener {
 		case 2:
 			testType = TestType.HUNDRED_ML_ECOLI;
 			break;
+		case 4:
+			testType = TestType.CHLORINE;
+			break;
 		default:
 			Toast.makeText(context, "To do", Toast.LENGTH_SHORT).show();
 			return;

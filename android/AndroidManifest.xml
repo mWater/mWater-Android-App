@@ -90,6 +90,10 @@
         </activity>
         <activity android:name=".ui.HundredMLEColiRecordActivity" >
         </activity>
+        <activity android:name=".ui.ChlorineDetailActivity" >
+        </activity>
+        <activity android:name=".ui.ChlorineRecordActivity" >
+        </activity>
         <activity android:name=".ui.petrifilm.PetrifilmTestDetailActivity" >
         </activity>
         <activity android:name=".ui.petrifilm.PetrifilmManualCountActivity" >

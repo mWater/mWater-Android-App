@@ -26,6 +26,8 @@ public class TestActivities {
 			return TenMLColilertDetailActivity.class;
 		case HUNDRED_ML_ECOLI:
 			return HundredMLEColiDetailActivity.class;
+		case CHLORINE:
+			return ChlorineDetailActivity.class;
 		default:
 			return null;
 		}

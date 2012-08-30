@@ -9,7 +9,6 @@
         <item>Starred Sources</item>
         <item>Recent Sources</item>
     </string-array>
-  
     <string-array name="source_types">
         <item>Piped into dwelling</item>
         <item>Piped into yard/plot</item>
@@ -41,11 +40,22 @@
         <item>10mL Colilert</item>
         <item>100mL E. coli</item>
         <item>UNC Compartmentalized Bag</item>
+        <item>Chlorine</item>
     </string-array>
     <string-array name="operational_values">
         <item>Not specified</item>
         <item>Operational</item>
         <item>Broken</item>
+    </string-array>
+    <string-array name="chlorine_values">
+        <item>Unspecified</item>
+        <item>0</item>
+        <item>0.1</item>
+        <item>0.2</item>
+        <item>0.3</item>
+        <item>0.4</item>
+        <item>0.5</item>
+        <item>Custom</item>
     </string-array>
 
     <!-- Tags to use for test types -->
@@ -54,6 +64,7 @@
         <item>E.Coli</item>
         <item>E.Coli</item>
         <item>E.Coli</item>
+        <item>Cl</item>
     </string-array>
 
 </resources>

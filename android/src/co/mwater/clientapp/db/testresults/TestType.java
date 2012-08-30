@@ -7,7 +7,8 @@ import java.util.Map;
 public enum TestType {
 	PETRIFILM(0),
 	TEN_ML_COLILERT(1),
-	HUNDRED_ML_ECOLI(2);
+	HUNDRED_ML_ECOLI(2),
+	CHLORINE(4);
 
 	@SuppressLint("UseSparseArrays")
 	private static final Map<Integer, TestType> intToTypeMap = new HashMap<Integer, TestType>();

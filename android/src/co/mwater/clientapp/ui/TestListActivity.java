@@ -67,7 +67,7 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-		return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null, null, null, null);
+		return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null, null, null, TestsTable.COLUMN_STARTED_ON + " DESC");
 	}
 
 	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
