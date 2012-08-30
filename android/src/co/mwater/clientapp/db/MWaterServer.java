@@ -1,5 +1,7 @@
 package co.mwater.clientapp.db;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
@@ -15,10 +17,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
 import co.mwater.clientapp.dbsync.RESTClient;
+import co.mwater.clientapp.ui.SourceNoteDetailActivity;
 
 // TODO cleanup this class
 public class MWaterServer {
+	private static final String TAG = MWaterServer.class.getSimpleName();
+
 	private static final String PREF_NAME = "Login";
 
 	static final public String serverUrl = "https://data.mwater.co/mwater/sync/";
@@ -97,11 +103,23 @@ public class MWaterServer {
 		};
 
 		try {
-			SSLContext sc = SSLContext.getInstance("SSL");
+			SSLContext sc = null;
+			try {
+				sc = SSLContext.getInstance("SSL");
+			} catch (NoSuchAlgorithmException ex) {
+				Log.w(TAG, "SSL not found");
+				try {
+					sc=SSLContext.getInstance("TLS");
+				} catch (NoSuchAlgorithmException e) {
+					Log.e(TAG, "TLS not found");
+					System.exit(1);
+				}
+			}
+
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			Log.e(TAG, "Key management exception");
 			System.exit(1);
 		}
 	}

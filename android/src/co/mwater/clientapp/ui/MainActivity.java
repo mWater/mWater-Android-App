@@ -16,10 +16,8 @@ import co.mwater.clientapp.db.ImageManager;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.RiskCalculations;
-import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.SyncIntentService;
-import co.mwater.clientapp.petrifilmanalysis.PetriFilmProcessingIntentService;
 import co.mwater.clientapp.ui.map.SourceMapActivity;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -43,8 +41,18 @@ public class MainActivity extends SherlockActivity {
 		}
 
 		// Start image manager
-		ImageManager.defaultImageManager = new ImageManager(getApplicationContext(), MWaterServer.createClient(getApplicationContext()));
-		
+		if (ImageManager.defaultImageManager == null)
+		{
+			ImageManager.defaultImageManager = new ImageManager(getApplicationContext(), MWaterServer.createClient(getApplicationContext()));
+
+			// Start sync if starting up
+			Intent intent = new Intent(MainActivity.this, SyncIntentService.class);
+			intent.putExtra("includeImages", false);
+			intent.putExtra("dataSlice", new CompleteDataSlice());
+			Log.d(TAG, "Calling sync service");
+			startService(intent);
+		}
+
 		setContentView(R.layout.main_activity);
 	}
 
