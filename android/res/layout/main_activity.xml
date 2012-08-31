@@ -62,11 +62,12 @@
             android:drawableTop="@drawable/ic_sync_large"
             android:onClick="onSyncClick"
             android:text="Synchronize" />
-
+
         <Button
-            android:id="@+id/Button02"
+            android:id="@+id/settings"
             style="@style/mainButton"
             android:drawableTop="@drawable/ic_settings_large"
+            android:onClick="onSettingsClick"
             android:text="Settings" />
 
     </TableRow>

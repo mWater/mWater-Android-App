@@ -3,8 +3,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="co.mwater.clientapp"
-    android:versionCode="15"
-    android:versionName="0.25" >
+    android:versionCode="16"
+    android:versionName="0.30" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -17,8 +17,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" 
-        android:required="false"/>
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <supports-screens
         android:anyDensity="true"
@@ -27,29 +28,34 @@
         android:smallScreens="true" />
 
     <application
+        android:name="MyApplication"
         android:icon="@drawable/mwater"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.DarkActionBar"
-        android:name="MyApplication" >
-        <uses-library android:name="com.google.android.maps"/>
+        android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
+        <uses-library android:name="com.google.android.maps" />
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.LoginActivity"
-            android:label="Login">
+            android:label="Login" >
         </activity>
         <activity
             android:name=".ui.SignupActivity"
-            android:label="Signup">
+            android:label="Signup" >
         </activity>
         <activity
-            android:name=".ui.map.SourceMapActivity">
+            android:name=".ui.PrefActivity"
+            android:label="Preferences" >
+        </activity>
+        <activity android:name=".ui.map.SourceMapActivity" >
         </activity>
         <activity
             android:name=".ui.SourceListActivity"
@@ -106,6 +112,8 @@
         </activity>
 
         <service android:name=".dbsync.SyncIntentService" >
+        </service>
+        <service android:name=".dbsync.WelcomeIntentService" >
         </service>
         <service android:name=".petrifilmanalysis.PetriFilmProcessingIntentService" >
         </service>

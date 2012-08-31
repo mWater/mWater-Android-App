@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ChlorineResults extends Results {
+	public Boolean present;
 	public Double mgPerL;
 
 	public ChlorineResults() {
@@ -29,6 +30,7 @@ public class ChlorineResults extends Results {
 	public String toJson() {
 		try {
 			JSONObject jt = new JSONObject();
+			jt.put("present", present);
 			jt.put("mgPerL", mgPerL);
 
 			return jt.toString();
@@ -41,7 +43,8 @@ public class ChlorineResults extends Results {
 	public void fromJson(String json) {
 		try {
 			JSONObject jt = new JSONObject(json);
-			this.mgPerL = (Double) jt.opt("mgPerL");
+			this.present = (Boolean) jt.opt("present");
+			this.mgPerL = jt.has("mgPerL") ? (Double) jt.optDouble("mgPerL") : null;
 		} catch (JSONException e) {
 			throw new IllegalArgumentException(e);
 		}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <PreferenceCategory android:title="Login">
+        <Preference android:key="login_name" android:persistent="false" android:selectable="false" android:title="Login Name"/>
+        
+        <Preference android:key="logout" android:persistent="false" android:title="Logout" android:summary="Click to logout of server"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Synchronization">
+        <CheckBoxPreference android:summary="When checked, automatically synchronize with server periodically" android:key="autosync" android:title="Autosync" android:defaultValue="true"/>
+    </PreferenceCategory>
+    
+
+</PreferenceScreen>

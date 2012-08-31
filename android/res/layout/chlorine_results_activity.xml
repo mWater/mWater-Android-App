@@ -10,20 +10,38 @@
         android:layout_height="wrap_content" >
 
         <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/present"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_span="2"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="Chlorine Present"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        </TableRow>
+
+        <TableRow
             android:id="@+id/tableRow1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
-
+
             <TextView
-                android:id="@+id/TextView02"
+                android:id="@+id/concentration_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chlorine (mg/L):"
+                android:layout_weight="0"
+                android:text="Amount (mg/L):"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
             <Spinner
                 android:id="@+id/mgPerLSpinner"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:entries="@array/chlorine_values" />
@@ -40,10 +58,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
             <EditText
                 android:id="@+id/mgPerLCustom"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
@@ -53,6 +71,7 @@
             </EditText>
 
         </TableRow>
+
     </TableLayout>
 
 </LinearLayout>

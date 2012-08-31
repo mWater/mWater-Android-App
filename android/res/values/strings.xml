@@ -6,7 +6,6 @@
 
     <string-array name="source_list_views">
         <item>Nearby Sources</item>
-        <item>Starred Sources</item>
         <item>Recent Sources</item>
     </string-array>
     <string-array name="source_types">
@@ -49,7 +48,6 @@
     </string-array>
     <string-array name="chlorine_values">
         <item>Unspecified</item>
-        <item>0</item>
         <item>0.1</item>
         <item>0.2</item>
         <item>0.3</item>

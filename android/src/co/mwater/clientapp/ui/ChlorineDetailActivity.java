@@ -31,10 +31,17 @@ public class ChlorineDetailActivity extends TestDetailActivity {
 
 		// Get results
 		ChlorineResults results = new ChlorineResults(rowValues.getAsString(TestsTable.COLUMN_RESULTS));
-		if (results.mgPerL == null)
-			setControlText(R.id.mgPerL, "");
+		if (results.present == null)
+			setControlText(R.id.chlorine, "");
+		else if (results.present == false)
+			setControlText(R.id.chlorine, "Not Present");
 		else
-			setControlText(R.id.mgPerL, results.mgPerL.toString());
+		{
+			if (results.mgPerL == null)
+				setControlText(R.id.chlorine, "Present");
+			else
+				setControlText(R.id.chlorine, results.mgPerL.toString() + " mg/L");
+		}
 
 		// Enable/disable
 		((Button)findViewById(R.id.record_results)).setEnabled(isCreatedByMe());

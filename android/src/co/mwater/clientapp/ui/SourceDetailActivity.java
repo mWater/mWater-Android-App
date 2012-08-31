@@ -82,7 +82,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 		String[] sourceTypes = getResources().getStringArray(R.array.source_types);
 		Integer sourceType = rowValues.getAsInteger(SourcesTable.COLUMN_SOURCE_TYPE);
 		String sourceTypeText;
-		if (sourceType == null || sourceType >= sourceTypes.length)
+		if (sourceType == null)
+			sourceTypeText = "Unspecified";
+		else if (sourceType >= sourceTypes.length)
 			sourceTypeText = "?";
 		else
 			sourceTypeText = sourceTypes[sourceType];
