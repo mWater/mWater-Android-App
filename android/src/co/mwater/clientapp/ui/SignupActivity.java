@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -34,41 +35,75 @@ public class SignupActivity extends SherlockActivity {
 
 	public void onSignupClick(View v) {
 		// TODO
-
 		// Login to server
 		// TODO put in task
 		String email = ((TextView) findViewById(R.id.email)).getText().toString();
 		String username = ((TextView) findViewById(R.id.username)).getText().toString();
 		String password = ((TextView) findViewById(R.id.password)).getText().toString();
 
-		RESTClient restClient = MWaterServer.createClient(this);
-		try {
-			JSONObject json = new JSONObject(restClient.get("signup",
-					"email", email,
-					"username", username,
-					"password", password));
-
-			String clientUid = json.getString("clientuid");
-			List<String> roles = new ArrayList<String>();
-			for (int i = 0; i < json.getJSONArray("roles").length(); i++)
-				roles.add(json.getJSONArray("roles").getString(i));
-
-			MWaterServer.login(this, username, clientUid, roles);
-
-			// Obtain more sources if needed
-			SourceCodes.requestNewCodesIfNeeded(this);
-
-			Intent intent = new Intent(this, MainActivity.class);
-			startActivity(intent);
-			this.finish();
-		} catch (RESTClientException e) {
-			if (e.responseCode == HttpURLConnection.HTTP_FORBIDDEN)
-				Toast.makeText(this, "Username already taken or invalid email", Toast.LENGTH_LONG).show();
-			else
-				Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		} catch (JSONException e) {
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
+		SignupAsyncTask task = new SignupAsyncTask(email, username, password);
+		task.execute();
 	}
 
+	class SignupAsyncTask extends AsyncTask<Void, Void, Void> {
+		String email;
+		String username;
+		String password;
+
+		Exception ex;
+
+		public SignupAsyncTask(String email, String username, String password) {
+			this.email = email;
+			this.username = username;
+			this.password = password;
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			RESTClient restClient = MWaterServer.createClient(SignupActivity.this);
+			try {
+				JSONObject json = new JSONObject(restClient.get("signup",
+						"email", email,
+						"username", username,
+						"password", password));
+
+				String clientUid = json.getString("clientuid");
+				List<String> roles = new ArrayList<String>();
+				for (int i = 0; i < json.getJSONArray("roles").length(); i++)
+					roles.add(json.getJSONArray("roles").getString(i));
+
+				MWaterServer.login(SignupActivity.this, username, clientUid, roles);
+
+				// Obtain more sources if needed
+				SourceCodes.requestNewCodesIfNeeded(SignupActivity.this);
+				return null;
+			} catch (RESTClientException e) {
+				ex = e;
+			} catch (JSONException e) {
+				ex = e;
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			if (ex != null) {
+				if (ex instanceof RESTClientException) {
+					if (((RESTClientException) ex).responseCode == HttpURLConnection.HTTP_FORBIDDEN)
+						Toast.makeText(SignupActivity.this, "Username already taken or invalid email", Toast.LENGTH_LONG).show();
+					else
+						Toast.makeText(SignupActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				}
+				else {
+
+					Toast.makeText(SignupActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				}
+				return;
+			}
+			Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+			startActivity(intent);
+			SignupActivity.this.finish();
+		}
+
+	}
 }

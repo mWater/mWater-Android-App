@@ -18,7 +18,7 @@ public class MWaterContentProvider extends SyncContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		this.helper = new MWaterDatabase(getContext());
+		this.helper = MWaterDatabase.getDatabase(getContext());
 
 		addUriHandler("sources", new CRUDUriHandler(this, helper, new SourcesTable()));
 		addUriHandler("sources/#", new CRUDUriHandler(this, helper, new SourcesTable()));
