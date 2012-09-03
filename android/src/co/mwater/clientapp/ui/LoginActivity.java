@@ -7,9 +7,12 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,11 +21,13 @@ import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.RESTClient;
 import co.mwater.clientapp.dbsync.RESTClientException;
-import co.mwater.clientapp.ui.SignupActivity.SignupAsyncTask;
+import co.mwater.clientapp.util.ActivityTask;
+import co.mwater.clientapp.util.ProgressTask;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class LoginActivity extends SherlockActivity {
+public class LoginActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,28 +36,28 @@ public class LoginActivity extends SherlockActivity {
 
 	public void onLoginClick(View v) {
 		// Login to server
-		// TODO put in task
 		String username = ((TextView) findViewById(R.id.username)).getText().toString();
 		String password = ((TextView) findViewById(R.id.password)).getText().toString();
 
-		LoginAsyncTask task = new LoginAsyncTask(username, password);
-		task.execute();
+		new LoginTask(getApplicationContext(), username, password).execute(this, "mWater", "Logging in...");
 	}
 	
-	class LoginAsyncTask extends AsyncTask<Void, Void, Void> {
+	static class LoginTask extends ProgressTask {
+		Context context;
 		String username;
 		String password;
 
-		Exception ex;
-
-		public LoginAsyncTask(String username, String password) {
+		public LoginTask(Context context, String username, String password) {
+			this.context = context;
 			this.username = username;
 			this.password = password;
 		}
 
 		@Override
-		protected Void doInBackground(Void... arg0) {
-			RESTClient restClient = MWaterServer.createClient(LoginActivity.this);
+		protected void runInBackground() {
+			RESTClient restClient = MWaterServer.createClient(context);
+			
+			String errorMessage = null;
 			try {
 				JSONObject json = new JSONObject(restClient.get("login",
 						"username", username,
@@ -63,37 +68,32 @@ public class LoginActivity extends SherlockActivity {
 				for (int i = 0; i < json.getJSONArray("roles").length(); i++)
 					roles.add(json.getJSONArray("roles").getString(i));
 
-				MWaterServer.login(LoginActivity.this, username, clientUid, roles);
+				MWaterServer.login(context, username, clientUid, roles);
 
 				// Obtain more sources if needed
-				SourceCodes.requestNewCodesIfNeeded(LoginActivity.this);
+				SourceCodes.requestNewCodesIfNeeded(context);
 			} catch (RESTClientException e) {
-				ex = e;
+				if (e.responseCode == HttpURLConnection.HTTP_FORBIDDEN)
+					errorMessage = "Incorrect username/password";
+				else
+					errorMessage = e.getLocalizedMessage();
 			} catch (JSONException e) {
-				ex = e;
+				errorMessage = e.getLocalizedMessage();
 			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			if (ex != null) {
-				if (ex instanceof RESTClientException) {
-					if (((RESTClientException) ex).responseCode == HttpURLConnection.HTTP_FORBIDDEN)
-						Toast.makeText(LoginActivity.this, "Incorrect username/password", Toast.LENGTH_LONG).show();
-					else
-						Toast.makeText(LoginActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+			
+			final String msg = errorMessage;
+			
+			runOnActivity(new ActivityTask() {
+				public void run(FragmentActivity activity) {
+					if (msg != null)
+						Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
+					else {
+					Intent intent = new Intent(activity, MainActivity.class);
+					activity.startActivity(intent);
+					activity.finish();
+					}
 				}
-				else {
-
-					Toast.makeText(LoginActivity.this, ex.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-				}
-				return;
-			}
-			Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-			startActivity(intent);
-			LoginActivity.this.finish();
+			});
 		}
-
 	}
 }

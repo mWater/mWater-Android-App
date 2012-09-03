@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import co.mwater.clientapp.R;
@@ -14,14 +15,17 @@ import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.SyncIntentService;
 import co.mwater.clientapp.dbsync.WelcomeIntentService;
 import co.mwater.clientapp.ui.map.SourceMapActivity;
+import co.mwater.clientapp.util.ActivityTask;
+import co.mwater.clientapp.util.ProgressTask;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
-public class MainActivity extends SherlockActivity {
-	private static final String TAG = MainActivity.class.getCanonicalName();
+public class MainActivity extends SherlockFragmentActivity {
+	private static final String TAG = MainActivity.class.getSimpleName();
 
 	static boolean firstRun = true;
 	static long lastSync = 0; // TODO move to preference file
