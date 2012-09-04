@@ -19,7 +19,6 @@ import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.RESTClient;
 import co.mwater.clientapp.dbsync.RESTClientException;
-import co.mwater.clientapp.util.ActivityTask;
 import co.mwater.clientapp.util.ProgressTask;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;

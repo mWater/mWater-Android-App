@@ -2,6 +2,7 @@ package co.mwater.clientapp.ui;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -39,15 +40,16 @@ public class SourceCreateDialog extends DialogFragment {
 		View view = inflater.inflate(R.layout.source_create_dialog, container);
 
 		// Load type spinner
-		Spinner sourceType = (Spinner)view.findViewById(R.id.source_type);
-		// Create an ArrayAdapter using the string array and a default spinner layout
+		Spinner sourceType = (Spinner) view.findViewById(R.id.source_type);
+		// Create an ArrayAdapter using the string array and a default spinner
+		// layout
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-		        R.array.source_types, android.R.layout.simple_spinner_item);
+				R.array.source_types, android.R.layout.simple_spinner_item);
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		sourceType.setAdapter(adapter);
-		
+
 		dataBinder = new DataBinder(getActivity().getContentResolver(), new Handler());
 		dataBinder.addTextView((TextView) view.findViewById(R.id.name), SourcesTable.COLUMN_NAME);
 		dataBinder.addTextView((TextView) view.findViewById(R.id.desc), SourcesTable.COLUMN_DESC);
@@ -55,12 +57,12 @@ public class SourceCreateDialog extends DialogFragment {
 
 		// Connect buttons events
 		((Button) view.findViewById(R.id.create)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) { 
+			public void onClick(View v) {
 				onCreateClick();
 			}
 		});
 		((Button) view.findViewById(R.id.cancel)).setOnClickListener(new OnClickListener() {
-			public void onClick(View v) { 
+			public void onClick(View v) {
 				dismiss();
 			}
 		});
@@ -75,32 +77,33 @@ public class SourceCreateDialog extends DialogFragment {
 		try {
 			cv.put("code", SourceCodes.obtainCode(this.getActivity()));
 		} catch (NoMoreCodesException e) {
-			// Obtain more sources if needed
-			if (!SourceCodes.requestNewCodesIfNeeded(getActivity()))
-				showErrorDialog("No source codes remaining. Please Synchronize to obtain more.");
+			// TODO Obtain more source codes if needed
+			showNoSourcesErrorDialog(getActivity());
+			this.dismiss();
 			return;
 		}
 		cv.put(SourcesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(getActivity()));
 		dataBinder.saveAllTo(cv);
 		uri = getActivity().getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
-		
+
 		Intent intent = new Intent(this.getActivity(), SourceDetailActivity.class);
 		intent.putExtra("uri", uri);
-		intent.putExtra("setLocation", ((CheckBox)this.getView().findViewById(R.id.currentLocation)).isChecked());
+		intent.putExtra("setLocation", ((CheckBox) this.getView().findViewById(R.id.currentLocation)).isChecked());
 
 		startActivity(intent);
 
 		this.dismiss();
 	}
-	
-	private void showErrorDialog(String message) {
-	      AlertDialog errorDialog = new AlertDialog.Builder(getActivity()).setMessage(message)
-	                      .setCancelable(false)
-	                      .setNeutralButton("Close", new DialogInterface.OnClickListener() {
-	                          public void onClick(DialogInterface dialog, int id) {
-	                              dialog.dismiss();
-	                      }
-	                  }).create();
-	      errorDialog.show();
+
+	public static void showNoSourcesErrorDialog(Context context) {
+		AlertDialog errorDialog = new AlertDialog.Builder(context)
+				.setMessage("No source codes remaining. Please Synchronize to obtain more and then try again.")
+				.setCancelable(false)
+				.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+					}
+				}).create();
+		errorDialog.show();
 	}
 }

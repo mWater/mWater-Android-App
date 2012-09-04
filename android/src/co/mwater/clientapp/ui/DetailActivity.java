@@ -298,7 +298,7 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 			return;
 		}
 
-		ImageManager.defaultImageManager.displayThumbnailImage(imageUid, imageButton, defaultImage);
+		ImageManager.getDefault(getApplicationContext()).displayThumbnailImage(imageUid, imageButton, defaultImage);
 	}
 
 	void handleContentChange() {

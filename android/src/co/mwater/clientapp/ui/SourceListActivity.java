@@ -2,6 +2,7 @@ package co.mwater.clientapp.ui;
 
 import java.util.Locale;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,7 +28,9 @@ import co.mwater.clientapp.LocationFinder;
 import co.mwater.clientapp.LocationFinder.LocationFinderListener;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.SourceCodes.NoMoreCodesException;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
@@ -42,6 +45,7 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 	private SimpleCursorAdapter adapter;
 	LocationFinder locationFinder;
 	ActionBar actionBar;
+	ProgressDialog progressDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,10 +55,11 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 		// Set up action bar
 		actionBar = getSupportActionBar();
 		// TODO re-add navigation changes once we store source creation date
-//		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-//		SpinnerAdapter spinnerAdapter = new SimpleSpinnerArrayAdapter(getSupportActionBar().getThemedContext(),
-//				getResources().getStringArray(R.array.source_list_views));
-//		actionBar.setListNavigationCallbacks(spinnerAdapter, this);
+		// actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		// SpinnerAdapter spinnerAdapter = new
+		// SimpleSpinnerArrayAdapter(getSupportActionBar().getThemedContext(),
+		// getResources().getStringArray(R.array.source_list_views));
+		// actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 
 		adapter = new SimpleCursorAdapter(this, R.layout.source_row, null, new String[] { "code", "name", "desc" }, new int[] { R.id.code, R.id.name,
 				R.id.desc }, Adapter.NO_SELECTION);
@@ -74,6 +79,9 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 		// If location available, start loader, otherwise wait
 		if (locationFinder.getLastLocation() != null)
 			getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+		else {
+			progressDialog = ProgressDialog.show(this, "Sources", "Waiting for location...");
+		}
 	}
 
 	@Override
@@ -121,6 +129,13 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 	}
 
 	void createNewSource() {
+		if (!SourceCodes.anyCodesAvailable(this))
+		{
+			// TODO Obtain more source codes if needed
+			SourceCreateDialog.showNoSourcesErrorDialog(this);
+			return;
+		}
+
 		FragmentManager fm = getSupportFragmentManager();
 		SourceCreateDialog createDialog = new SourceCreateDialog();
 		createDialog.show(fm, "dialog_create");
@@ -157,6 +172,12 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 		// Start loader if not already started
 		if (getSupportLoaderManager().getLoader(LOADER_ID) == null)
 			getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+
+		if (progressDialog != null)
+		{
+			progressDialog.dismiss();
+			progressDialog = null;
+		}
 	}
 
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {

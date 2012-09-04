@@ -15,7 +15,6 @@ import co.mwater.clientapp.dbsync.CompleteDataSlice;
 import co.mwater.clientapp.dbsync.SyncIntentService;
 import co.mwater.clientapp.dbsync.WelcomeIntentService;
 import co.mwater.clientapp.ui.map.SourceMapActivity;
-import co.mwater.clientapp.util.ActivityTask;
 import co.mwater.clientapp.util.ProgressTask;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -41,10 +40,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			finish();
 			return;
 		}
-
-		// Start image manager
-		if (ImageManager.defaultImageManager == null)
-			ImageManager.defaultImageManager = new ImageManager(getApplicationContext(), MWaterServer.createClient(getApplicationContext()));
 
 		// Show welcome message if needed
 		if (firstRun) {

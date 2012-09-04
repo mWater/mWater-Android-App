@@ -7,10 +7,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -21,10 +19,8 @@ import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.dbsync.RESTClient;
 import co.mwater.clientapp.dbsync.RESTClientException;
-import co.mwater.clientapp.util.ActivityTask;
 import co.mwater.clientapp.util.ProgressTask;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class LoginActivity extends SherlockFragmentActivity {
@@ -97,3 +93,6 @@ public class LoginActivity extends SherlockFragmentActivity {
 		}
 	}
 }
+
+
+

@@ -35,10 +35,9 @@ public class SyncServerImpl implements SyncServer {
 			JSONObject csjson = new JSONObject(cs);
 			return jsonSerializer.deserialize(csjson);
 		} catch (RESTClientException e) {
-			e.printStackTrace();
 			throw new SyncServerException(e.getMessage(), e);
 		} catch (JSONException e) {
-			throw new IllegalArgumentException(e);
+			throw new SyncServerException("Error contacting server", e);
 		}
 	}
 
@@ -48,9 +47,8 @@ public class SyncServerImpl implements SyncServer {
 			JSONObject csjson = jsonSerializer.serialize(changeSet);
 			restClient.post("upload", "clientuid", clientUid, "changeset", csjson.toString());
 		} catch (JSONException e) {
-			throw new IllegalArgumentException(e);
+			throw new SyncServerException("Error contacting server", e);
 		} catch (RESTClientException e) {
-			e.printStackTrace();
 			throw new SyncServerException(e.getMessage(), e);
 		}
 	}

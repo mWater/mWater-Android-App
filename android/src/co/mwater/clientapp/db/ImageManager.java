@@ -15,8 +15,9 @@ import android.widget.ImageView;
 
 /**
  * Manages image download of thumbnails
+ * 
  * @author Clayton
- *
+ * 
  */
 public class ImageManager {
 	private ImageQueue imageQueue = new ImageQueue();
@@ -24,15 +25,24 @@ public class ImageManager {
 	RESTClient restClient;
 	Context context;
 
-	public static ImageManager defaultImageManager; 
-	
- 	public ImageManager(Context context, RESTClient restClient) {
+	private static ImageManager defaultImageManager;
+
+	public ImageManager(Context context, RESTClient restClient) {
 		this.context = context;
 		this.restClient = restClient;
 
 		// Make background thread low priority, to avoid affecting UI
 		// performance
 		imageLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
+	}
+
+	public static ImageManager getDefault(Context applicationContext) {
+		if (defaultImageManager == null)
+		{
+			// Start image manager
+			defaultImageManager = new ImageManager(applicationContext, MWaterServer.createClient(applicationContext));
+		}
+		return defaultImageManager;
 	}
 
 	public void displayThumbnailImage(String uid, ImageView imageView, int defaultDrawableId) {
@@ -139,13 +149,13 @@ public class ImageManager {
 							continue;
 						}
 
-						Bitmap bmp = getBitmap(cacheFile, restClient, "downloadimagethumbnail", 
-								"clientuid", MWaterServer.getClientUid(context), 
+						Bitmap bmp = getBitmap(cacheFile, restClient, "downloadimagethumbnail",
+								"clientuid", MWaterServer.getClientUid(context),
 								"imageuid", imageToLoad.uid);
 						BitmapDisplayer bmpDisplayer =
 								new BitmapDisplayer(bmp, imageToLoad.imageView, imageToLoad.defDrawableId);
 
-						Activity a = (Activity)imageToLoad.imageView.getContext();
+						Activity a = (Activity) imageToLoad.imageView.getContext();
 
 						a.runOnUiThread(bmpDisplayer);
 					}

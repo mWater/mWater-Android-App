@@ -1,7 +1,5 @@
 package co.mwater.clientapp.db;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -16,7 +14,7 @@ import android.content.SharedPreferences.Editor;
 public class SourceCodes {
 	private static final String PREF_NAMES = "SourceCodes";
 	private static final String AVAILABLE_CODES = "AvailableCodes";
-	private static final int minCodes = 50;
+	private static final int minCodes = 5;
 
 	public static String obtainCode(Context context) throws NoMoreCodesException {
 		// Get available codes string
@@ -36,12 +34,18 @@ public class SourceCodes {
 		return code;
 	}
 
+	public static boolean anyCodesAvailable(Context context) {
+		// Get available codes string
+		SharedPreferences prefs = context.getSharedPreferences(PREF_NAMES, Context.MODE_PRIVATE);
+		List<String> availableCodes = PreferenceUtils.stringToList(prefs.getString(AVAILABLE_CODES, ""));
+		return availableCodes.size() > 0;
+	}
+	
 	public static boolean newCodesNeeded(Context context) {
 		// Get available codes string
 		SharedPreferences prefs = context.getSharedPreferences(PREF_NAMES, Context.MODE_PRIVATE);
 		List<String> availableCodes = PreferenceUtils.stringToList(prefs.getString(AVAILABLE_CODES, ""));
 		return availableCodes.size() < minCodes;
-
 	}
 
 	public static boolean requestNewCodesIfNeeded(Context context) {
