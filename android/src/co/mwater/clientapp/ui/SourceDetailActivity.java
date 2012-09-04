@@ -224,6 +224,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 
 	private void attemptSetLocation() {
 		Location lastLocation = locationFinder.getLastLocation();
+		if (lastLocation == null)
+			return;
+		
 		long age = System.currentTimeMillis() - lastLocation.getTime();
 
 		// If recent (<2 min) and close 

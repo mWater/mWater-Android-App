@@ -49,13 +49,14 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
-
+
     <Button
         android:id="@+id/signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onSignupClick"
-        android:text="Sign Up" />
+        android:text="Sign Up"
+        android:textAppearance="?android:attr/textAppearanceLargeInverse" />
 
     <TextView
         android:id="@+id/textView3"
@@ -63,12 +64,13 @@
         android:layout_height="wrap_content"
         android:text="-or-"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onLoginClick"
-        android:text="Login as Existing User..." />
+        android:text="Login as Existing User..."
+        android:textAppearance="?android:attr/textAppearanceLargeInverse" />
 
 </LinearLayout>

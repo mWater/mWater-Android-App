@@ -33,12 +33,13 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
-
+
     <Button
         android:id="@+id/login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onLoginClick"
-        android:text="Login" />
+        android:text="Login"
+        android:textAppearance="?android:attr/textAppearanceLargeInverse" />
 
 </LinearLayout>

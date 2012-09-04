@@ -36,6 +36,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		// Go to login screen if not logged in
 		if (MWaterServer.getClientUid(this) == null) {
 			Intent intent = new Intent(this, SignupActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
 			startActivity(intent);
 			finish();
 			return;
@@ -76,6 +77,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			public boolean onMenuItemClick(MenuItem item) {
 				MWaterServer.login(MainActivity.this, null, null, new ArrayList<String>());
 				Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
 				startActivity(intent);
 				finish();
 				return true;

@@ -33,6 +33,7 @@ public class PrefActivity extends PreferenceActivity implements OnSharedPreferen
 			public boolean onPreferenceClick(Preference preference) {
 				MWaterServer.login(PrefActivity.this, null, null, new ArrayList<String>());
 				Intent intent = new Intent(PrefActivity.this, SignupActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
 				startActivity(intent);
 				finish();
 				return true;

@@ -26,6 +26,7 @@ import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourceCodes;
 import co.mwater.clientapp.db.SourceCodes.NoMoreCodesException;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.testresults.Risk;
 
 public class SourceCreateDialog extends DialogFragment {
 	DataBinder dataBinder;
@@ -83,6 +84,7 @@ public class SourceCreateDialog extends DialogFragment {
 			return;
 		}
 		cv.put(SourcesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(getActivity()));
+		cv.put(SourcesTable.COLUMN_RISK, Risk.UNSPECIFIED.getValue());
 		dataBinder.saveAllTo(cv);
 		uri = getActivity().getContentResolver().insert(MWaterContentProvider.SOURCES_URI, cv);
 
