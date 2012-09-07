@@ -54,7 +54,9 @@ public class PetrifilmManualCountActivity extends DetailActivity {
 		getContentResolver().update(uri, values, null, null);
 
 		// Update risk of source
-		RiskCalculations.updateSourceRiskForSample(this, rowValues.getAsString(TestsTable.COLUMN_SAMPLE));
+		String sample = rowValues.getAsString(TestsTable.COLUMN_SAMPLE);
+		if (sample != null)
+			RiskCalculations.updateSourceRiskForSample(this, sample);
 	}
 	
 

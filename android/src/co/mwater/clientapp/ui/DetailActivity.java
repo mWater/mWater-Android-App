@@ -216,7 +216,18 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	 * @return
 	 */
 	protected boolean isCreatedByMe() {
-		return MWaterServer.getUsername(this).equals(rowValues.getAsString(SyncTable.COLUMN_CREATED_BY));
+		// Workaround for strange recurring bug
+		String username = MWaterServer.getUsername(this);
+		if (username == null)
+		{
+			Log.e(TAG, "Null username");
+			Intent intent = new Intent(this, SignupActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); 
+			startActivity(intent);
+			finish();
+			return false;
+		}
+		return username.equals(rowValues.getAsString(SyncTable.COLUMN_CREATED_BY));
 	}
 
 	protected void displayImage(String imageColumn) {
