@@ -23,6 +23,7 @@ import android.widget.Toast;
 import co.mwater.clientapp.db.ImageManager;
 import co.mwater.clientapp.db.ImageStorage;
 import co.mwater.clientapp.db.MWaterServer;
+import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.dbsync.SyncTable;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -129,6 +130,49 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 	 * @param rowValues
 	 */
 	abstract protected void displayData();
+
+	/**
+	 * Updates the specified value in the current row 
+	 * @param column
+	 * @param value
+	 */
+	protected void updateRow(String column, String value) {
+		ContentValues values = new ContentValues();
+		values.put(column, value);
+		getContentResolver().update(uri, values, null, null);
+	}
+
+	/**
+	 * Updates the specified value in the current row 
+	 * @param column
+	 * @param value
+	 */
+	protected void updateRow(String column, int value) {
+		ContentValues values = new ContentValues();
+		values.put(column, value);
+		getContentResolver().update(uri, values, null, null);
+	}
+
+	/**
+	 * Convenience method to set the text of preference widget
+	 * 
+	 * @param id
+	 * @param text
+	 */
+	protected void setPreferenceWidget(int id, String title, String summary, boolean editable) {
+		PreferenceWidget pw = (PreferenceWidget) findViewById(id);
+		pw.setTitle(title);
+		pw.setSummary(summary != null ? summary : "");
+		pw.setEditable(editable);
+	}
+
+	protected void setPreferenceWidget(int id, String title, String summary, Integer listValue, boolean editable) {
+		PreferenceWidget pw = (PreferenceWidget) findViewById(id);
+		pw.setTitle(title);
+		pw.setSummary(summary != null ? summary : "");
+		pw.setListValue(listValue != null ? listValue : -1);
+		pw.setEditable(editable);
+	}
 
 	/**
 	 * Convenience method to set the text of a text view

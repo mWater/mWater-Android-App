@@ -74,6 +74,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 
 	@Override
 	protected void displayData() {
+		if (rowValues == null)
+			return;
+		
 		getSupportActionBar().setTitle("Source " + rowValues.getAsString(SourcesTable.COLUMN_CODE));
 		setControlText(R.id.name, rowValues.getAsString(SourcesTable.COLUMN_NAME));
 		setControlText(R.id.desc, rowValues.getAsString(SourcesTable.COLUMN_DESC));
@@ -195,11 +198,25 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 				return true;
 			}
 		});
-		menu.findItem(R.id.menu_delete).setEnabled(isCreatedByMe());
+		menu.findItem(R.id.menu_delete).setVisible(isCreatedByMe());
+
+		menu.findItem(R.id.menu_edit).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				editSource();
+				return true;
+			}
+		});
+		menu.findItem(R.id.menu_edit).setVisible(isCreatedByMe());
 
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	void editSource() {
+		Intent intent = new Intent(this, SourceEditActivity.class);
+		intent.putExtra("uri", uri);
+		startActivity(intent);
+	}
+	
 	void deleteSource() {
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {

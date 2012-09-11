@@ -11,4 +11,5 @@
         android:showAsAction="withText"
         android:title="Delete">
     </item>
+    <item android:id="@+id/menu_edit" android:titleCondensed="Edit" android:icon="@drawable/ic_action_edit" android:title="Edit Source" android:showAsAction="ifRoom|withText"></item>
 </menu>

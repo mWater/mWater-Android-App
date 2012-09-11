@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.ui.SourceDetailActivity;
 import co.mwater.clientapp.ui.map.SourceItemizedOverlay.SourceTapped;
 
@@ -40,7 +41,7 @@ public class SourceMapActivity extends SherlockMapActivity implements SourceTapp
 		mapView.getOverlays().add(locationOverlay);
 
 		// TODO move to loader
-		sourceCursor = getContentResolver().query(MWaterContentProvider.SOURCES_URI, null, null, null, null);
+		sourceCursor = getContentResolver().query(MWaterContentProvider.SOURCES_URI, null, SourcesTable.COLUMN_LAT + " IS NOT NULL", null, null);
 		SourceItemizedOverlay sourceItemizedOverlay = new SourceItemizedOverlay(
 				getApplicationContext(), getResources().getDrawable(R.drawable.marker), sourceCursor, this);
 		mapView.getOverlays().add(sourceItemizedOverlay);
