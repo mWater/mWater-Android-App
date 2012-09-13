@@ -19,6 +19,7 @@ public class TenMLColilertDetailActivity extends TestDetailActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ten_ml_colilert_detail_activity);
+		finishCreatingViews();
 	}
 
 	public void onRecordResultsClick(View v) {

@@ -57,22 +57,12 @@
             android:text="Add Test" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/TextView03"
-        style="@style/sectionHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="DESCRIPTION" />
-
-    <EditText
+
+    <co.mwater.clientapp.ui.PreferenceWidget
         android:id="@+id/desc"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_weight="0"
-        android:ems="10"
-        android:inputType="text" />
+        android:layout_height="wrap_content" >
+    </co.mwater.clientapp.ui.PreferenceWidget>
 
     <TextView
         android:id="@+id/TextView07"

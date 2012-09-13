@@ -71,22 +71,6 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/Button03"
-                style="@style/borderlessButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:onClick="onAddSampleClick"
-                android:text="Add Sample" />
-
-            <View
-                android:id="@+id/View06"
-                style="@style/divider_vert"
-                android:layout_width="0.25dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0" />
-
-            <Button
                 android:id="@+id/Button05"
                 style="@style/borderlessButton"
                 android:layout_width="match_parent"

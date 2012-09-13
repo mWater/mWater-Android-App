@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_logout" android:title="Logout" android:showAsAction="withText"></item>
+    <item android:id="@+id/menu_sync" android:titleCondensed="Sync" android:icon="@drawable/ic_action_refresh" android:title="Synchronize" android:showAsAction="always|withText"></item><item android:id="@+id/menu_logout" android:title="Logout" android:showAsAction="withText"></item>
+    
+    <item android:id="@+id/menu_samples" android:titleCondensed="Samples" android:title="Samples (advanced)" android:showAsAction="never|withText"></item>
 </menu>

@@ -6,6 +6,7 @@ import java.util.Date;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import co.mwater.clientapp.R;
@@ -16,30 +17,24 @@ import co.mwater.clientapp.db.TestsTable;
 import co.mwater.clientapp.db.testresults.PetrifilmResults;
 import co.mwater.clientapp.db.testresults.Results;
 import co.mwater.clientapp.db.testresults.TestType;
+import co.mwater.clientapp.ui.PreferenceWidget.OnChangeListener;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 
 public abstract class TestDetailActivity extends DetailActivity {
-	@Override
-	public void onPause() {
-		super.onPause();
-	
-		if (rowValues != null) {
-			// Save notes
-			String curNotes = getControlText(R.id.notes);
-			if (curNotes.length() == 0)
-				curNotes = null;
-	
-			if (curNotes != rowValues.getAsString(TestsTable.COLUMN_NOTES)) {
-				ContentValues values = new ContentValues();
-				values.put(TestsTable.COLUMN_NOTES, curNotes);
-				getContentResolver().update(uri, values, null, null);
+	/**
+	 * Must be called at end of onCreate in subclasses.
+	 */
+	protected void finishCreatingViews() {
+		((PreferenceWidget) findViewById(R.id.notes)).setOnChangeListener(new OnChangeListener() {
+			public void onChange(Object value) {
+				TestDetailActivity.this.updateRow(TestsTable.COLUMN_NOTES, value.toString());
 			}
-		}
+		});
 	}
-
+	
 	protected void recordResultRead() {
 		if (rowValues.getAsString(TestsTable.COLUMN_RESULTS) == null) {
 			TestType testType = TestType.fromInt(rowValues.getAsInteger(TestsTable.COLUMN_TEST_TYPE));
@@ -87,9 +82,9 @@ public abstract class TestDetailActivity extends DetailActivity {
 			setControlText(R.id.read_on, "Read: " + DateFormat.getDateTimeInstance().format(new Date(read_on * 1000)));
 		}
 
-		setControlText(R.id.notes, rowValues.getAsString(TestsTable.COLUMN_NOTES));
-		setControlTextEditable(R.id.notes, isCreatedByMe());
-		
+		setPreferenceWidget(R.id.notes, "Notes",
+				rowValues.getAsString(TestsTable.COLUMN_NOTES), isCreatedByMe());
+
 		// Get sample
 		String sampleUid = rowValues.getAsString(TestsTable.COLUMN_SAMPLE);
 		ContentValues sample = null;
@@ -104,8 +99,13 @@ public abstract class TestDetailActivity extends DetailActivity {
 		
 		// TODO other options
 		if (source != null && sample != null) {
-			setControlText(R.id.source,
-					String.format("%s sample %s", source.getAsString(SourcesTable.COLUMN_NAME), sample.getAsString(SamplesTable.COLUMN_CODE)));
+			setPreferenceWidget(R.id.source, "Source",
+					String.format("%s sample %s", source.getAsString(SourcesTable.COLUMN_NAME), sample.getAsString(SamplesTable.COLUMN_CODE)),
+					false);
+		}
+		else {
+			setPreferenceWidget(R.id.source, "Source",
+					"", false);
 		}
 	}
 	

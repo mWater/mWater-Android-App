@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
+
         <Button
             android:id="@+id/sources"
             style="@style/mainButton"
@@ -33,36 +33,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
-        <Button
-            android:id="@+id/samples"
-            style="@style/mainButton"
-            android:drawableTop="@drawable/ic_sample_large"
-            android:onClick="onSamplesClick"
-            android:text="Samples" />
-
+
         <Button
             android:id="@+id/tests"
             style="@style/mainButton"
             android:drawableTop="@drawable/ic_test_large"
             android:onClick="onTestsClick"
-            android:text="Tests" />
+            android:text="My Tests" />
 
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/TableRow01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" >
-
-        <Button
-            android:id="@+id/sync"
-            style="@style/mainButton"
-            android:drawableTop="@drawable/ic_sync_large"
-            android:onClick="onSyncClick"
-            android:text="Synchronize" />
-
         <Button
             android:id="@+id/settings"
             style="@style/mainButton"

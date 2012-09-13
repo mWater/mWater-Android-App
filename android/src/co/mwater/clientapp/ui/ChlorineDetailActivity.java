@@ -15,6 +15,7 @@ public class ChlorineDetailActivity extends TestDetailActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.chlorine_detail_activity);
+		finishCreatingViews();
 	}
 
 	public void onRecordResultsClick(View v) {

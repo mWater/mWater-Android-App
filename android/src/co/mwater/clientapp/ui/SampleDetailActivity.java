@@ -6,27 +6,25 @@ import java.util.Date;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
 import co.mwater.clientapp.db.TestsTable;
+import co.mwater.clientapp.ui.PreferenceWidget.OnChangeListener;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
-import com.actionbarsherlock.view.Window;
 
 public class SampleDetailActivity extends DetailActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 	private static final String TAG = SampleDetailActivity.class.getSimpleName();
@@ -47,6 +45,12 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 			// @Override
 			public void onItemClick(AdapterView<?> a, View v, int position, long id) {
 				SampleDetailActivity.this.onItemClick(id);
+			}
+		});
+		
+		((PreferenceWidget) findViewById(R.id.desc)).setOnChangeListener(new OnChangeListener() {
+			public void onChange(Object value) {
+				SampleDetailActivity.this.updateRow(SamplesTable.COLUMN_DESC, value.toString());
 			}
 		});
 
@@ -77,8 +81,8 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 			setControlText(R.id.sampled_on, "");
 		}
 
-		setControlText(R.id.desc, rowValues.getAsString(SamplesTable.COLUMN_DESC));
-		setControlTextEditable(R.id.desc, isCreatedByMe());
+		setPreferenceWidget(R.id.desc, "Description",
+				rowValues.getAsString(SamplesTable.COLUMN_DESC), isCreatedByMe());
 
 		// Get source
 		String sourceUid = rowValues.getAsString(SamplesTable.COLUMN_SOURCE);
@@ -94,24 +98,6 @@ public class SampleDetailActivity extends DetailActivity implements LoaderManage
 			setControlText(R.id.source_name, "Unspecified source");
 			setControlText(R.id.source_code, "");
 
-		}
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		if (rowValues != null) {
-			// Save description
-			String curDesc = getControlText(R.id.desc);
-			if (curDesc.length() == 0)
-				curDesc = null;
-
-			if (curDesc != rowValues.getAsString(SamplesTable.COLUMN_DESC)) {
-				ContentValues values = new ContentValues();
-				values.put(SamplesTable.COLUMN_DESC, curDesc);
-				getContentResolver().update(uri, values, null, null);
-			}
 		}
 	}
 

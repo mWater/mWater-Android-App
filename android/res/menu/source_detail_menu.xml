@@ -12,4 +12,5 @@
         android:title="Delete">
     </item>
     <item android:id="@+id/menu_edit" android:titleCondensed="Edit" android:icon="@drawable/ic_action_edit" android:title="Edit Source" android:showAsAction="ifRoom|withText"></item>
+    <item android:id="@+id/menu_add_sample" android:titleCondensed="Add Sample" android:title="Add Sample (Advanced)" android:showAsAction="never|withText"></item>
 </menu>

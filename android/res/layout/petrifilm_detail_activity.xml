@@ -141,40 +141,18 @@
         android:layout_margin="8dp"
         android:onClick="onRecordResultsClick"
         android:text="Record Results" />
-
-    <TextView
-        android:id="@+id/TextView03"
-        style="@style/sectionHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Source" />
 
-    <LinearLayout
+    <co.mwater.clientapp.ui.PreferenceWidget
+        android:id="@+id/source"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/source"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/TextView07"
-        style="@style/sectionHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Notes" />
-
-    <EditText
+    </co.mwater.clientapp.ui.PreferenceWidget>
+
+    <co.mwater.clientapp.ui.PreferenceWidget
         android:id="@+id/notes"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_weight="0"
-        android:ems="10"
-        android:inputType="textMultiLine" />
+        android:layout_height="wrap_content" >
+
+    </co.mwater.clientapp.ui.PreferenceWidget>
 
 </LinearLayout>

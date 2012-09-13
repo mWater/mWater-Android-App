@@ -84,6 +84,22 @@ public class MainActivity extends SherlockFragmentActivity {
 			}
 		});
 
+		// Add listeners
+		menu.findItem(R.id.menu_sync).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				MainActivity.this.onSyncClick(null);
+				return true;
+			}
+		});
+
+		// Add listeners
+		menu.findItem(R.id.menu_samples).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				MainActivity.this.onSamplesClick(null);
+				return true;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
 	}
 

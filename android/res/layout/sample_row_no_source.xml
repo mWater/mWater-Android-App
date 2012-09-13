@@ -20,23 +20,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1" >
-
+
         <TextView
             android:id="@+id/textView6"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
+            style="@style/riskTag"
             android:background="@color/risk_orange"
-            android:padding="2dp"
-            android:text="E.Coli"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
+            android:text="E.Coli" />
+
         <TextView
             android:id="@+id/TextView01"
             style="@style/riskTag"
             android:background="@color/risk_green"
             android:text="Ph" />
+
     </LinearLayout>
 
     <TextView

@@ -38,6 +38,7 @@ public class PetrifilmTestDetailActivity extends TestDetailActivity implements O
 		setSupportProgressBarIndeterminateVisibility(false);
 
 		setContentView(R.layout.petrifilm_detail_activity);
+		finishCreatingViews();
 	}
 
 	public void onRecordResultsClick(View v) {

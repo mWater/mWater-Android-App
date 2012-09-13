@@ -15,10 +15,11 @@ import co.mwater.clientapp.R;
 
 public class PreferenceWidget extends LinearLayout {
 	TextView title, summary;
+	boolean emptySummary = true;
 	OnChangeListener onChangeListener;
 	String[] listItems;
 	int listValue = Spinner.INVALID_POSITION;
-	boolean editable = true; 
+	boolean editable = true;
 
 	public PreferenceWidget(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -26,6 +27,9 @@ public class PreferenceWidget extends LinearLayout {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		inflater.inflate(R.layout.preference_widget, this);
 		this.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+		if (isInEditMode())
+			return;
 
 		title = (TextView) findViewById(R.id.title);
 		summary = (TextView) findViewById(R.id.summary);
@@ -40,13 +44,13 @@ public class PreferenceWidget extends LinearLayout {
 	void onClick() {
 		if (!editable)
 			return;
-		
+
 		EditText inputText = null;
 		Spinner inputSpinner = null;
 
 		if (listItems == null) {
 			inputText = new EditText(getContext());
-			inputText.setText(summary.getText());
+			inputText.setText(emptySummary ? "" : summary.getText());
 		}
 		else {
 			inputSpinner = new Spinner(getContext());
@@ -90,6 +94,7 @@ public class PreferenceWidget extends LinearLayout {
 
 	public void setEditable(boolean editable) {
 		this.editable = editable;
+		this.setClickable(editable);
 	}
 
 	public void setTitle(CharSequence text) {
@@ -97,9 +102,19 @@ public class PreferenceWidget extends LinearLayout {
 	}
 
 	public void setSummary(CharSequence text) {
-		summary.setText(text);
+		if (text.length() == 0)
+		{
+			summary.setTextColor(0xFFD0D0D0);
+			summary.setText("None");
+			emptySummary = true;
+		}
+		else {
+			summary.setText(text);
+			summary.setTextColor(0xFF000000);
+			emptySummary = false;
+		}
 	}
-	
+
 	public void setListValue(int listValue) {
 		this.listValue = listValue;
 	}

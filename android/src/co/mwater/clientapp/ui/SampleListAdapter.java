@@ -12,6 +12,8 @@ import co.mwater.clientapp.db.testresults.TestType;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 public abstract class SampleListAdapter extends CustomAdapter {
@@ -62,6 +64,13 @@ public abstract class SampleListAdapter extends CustomAdapter {
 			TextView tagTextView = new TextView(context, null, R.style.riskTag);
 			tagTextView.setText(tagText);
 			tagTextView.setBackgroundColor(tagColor);
+			
+			// Since bug in Android doesn't allow setting styles
+		    LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		    llp.setMargins(2, 0, 2, 0); // (left, top, right, bottom);
+		    tagTextView.setLayoutParams(llp);
+		    tagTextView.setPadding(2, 2, 2, 2);
+			
 			tagViews.add(tagTextView);
 		}
 		return tagViews;

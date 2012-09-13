@@ -33,4 +33,10 @@ public class SampleListSummaryFragment extends SeeMoreListFragment {
 		intent.putExtra("uri", Uri.withAppendedPath(MWaterContentProvider.SAMPLES_URI, id + ""));
 		startActivity(intent);
 	}
+
+	@Override
+	protected Uri[] getExtraWatchUris() {
+		// Listen for any changes to tests
+		return new Uri[] { MWaterContentProvider.TESTS_URI };
+	}
 }

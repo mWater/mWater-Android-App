@@ -1,9 +1,6 @@
 package co.mwater.clientapp.ui;
 
-import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -14,8 +11,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import co.mwater.clientapp.R;
 import co.mwater.clientapp.db.MWaterContentProvider;
+import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.TestsTable;
-import co.mwater.clientapp.db.testresults.TestType;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -67,7 +64,10 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-		return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null, null, null, TestsTable.COLUMN_STARTED_ON + " DESC");
+		return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null,
+				TestsTable.COLUMN_CREATED_BY + "=?",
+				new String[] { MWaterServer.getUsername(this) },
+				TestsTable.COLUMN_STARTED_ON + " DESC");
 	}
 
 	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {

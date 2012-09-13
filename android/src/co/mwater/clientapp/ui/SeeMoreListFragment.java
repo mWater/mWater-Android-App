@@ -2,6 +2,7 @@ package co.mwater.clientapp.ui;
 
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.CursorAdapter;
@@ -35,13 +36,25 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	}
 
 	private void requery() {
+		// Unregister any listeners
+		getActivity().getContentResolver().unregisterContentObserver(observer);
+
 		Cursor cursor = performQuery();
 		cursor.registerContentObserver(observer);
 		adapter.changeCursor(cursor);
+
+		// Register any additional listeners
+		Uri[] uris = getExtraWatchUris();
+		for (Uri uri : uris) {
+			getActivity().getContentResolver().registerContentObserver(uri, true, observer);
+		}
 	}
 
 	@Override
 	public void onDestroy() {
+		// Unregister any listeners
+		getActivity().getContentResolver().unregisterContentObserver(observer);
+
 		Cursor cursor = adapter.getCursor();
 		if (cursor != null) {
 			// TODO needed?
@@ -56,6 +69,10 @@ public abstract class SeeMoreListFragment extends SherlockFragment {
 	protected abstract Cursor performQuery();
 
 	protected abstract void seeAllClicked();
+
+	protected Uri[] getExtraWatchUris() {
+		return new Uri[0];
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

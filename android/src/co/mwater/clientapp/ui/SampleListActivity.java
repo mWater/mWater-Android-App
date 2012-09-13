@@ -21,6 +21,7 @@ import co.mwater.clientapp.db.MWaterServer;
 import co.mwater.clientapp.db.OtherCodes;
 import co.mwater.clientapp.db.SamplesTable;
 import co.mwater.clientapp.db.SourcesTable;
+import co.mwater.clientapp.db.TestsTable;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -96,10 +97,15 @@ public class SampleListActivity extends SherlockFragmentActivity implements Load
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 		if (sourceUid != null)
-			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, SamplesTable.COLUMN_SOURCE + "=?", new String[] { sourceUid }, null);
+			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, 
+					SamplesTable.COLUMN_SOURCE + "=? AND " + SamplesTable.COLUMN_CREATED_BY + "=?", 
+					new String[] { sourceUid, MWaterServer.getUsername(this) }, 
+					null);
 		else
-			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, null, null, null);
-
+			return new CursorLoader(this, MWaterContentProvider.SAMPLES_URI, null, 
+					SamplesTable.COLUMN_CREATED_BY + "=?", 
+					new String[] { MWaterServer.getUsername(this) }, 
+					null);
 	}
 
 	public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {

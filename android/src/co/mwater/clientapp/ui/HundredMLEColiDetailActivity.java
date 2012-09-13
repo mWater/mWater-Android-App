@@ -18,6 +18,7 @@ public class HundredMLEColiDetailActivity extends TestDetailActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.hundred_ml_ecoli_detail_activity);
+		finishCreatingViews();
 	}
 
 	public void onRecordResultsClick(View v) {

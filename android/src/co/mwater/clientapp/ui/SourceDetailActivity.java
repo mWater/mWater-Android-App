@@ -1,9 +1,13 @@
 package co.mwater.clientapp.ui;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -76,7 +80,7 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 	protected void displayData() {
 		if (rowValues == null)
 			return;
-		
+
 		getSupportActionBar().setTitle("Source " + rowValues.getAsString(SourcesTable.COLUMN_CODE));
 		setControlText(R.id.name, rowValues.getAsString(SourcesTable.COLUMN_NAME));
 		setControlText(R.id.desc, rowValues.getAsString(SourcesTable.COLUMN_DESC));
@@ -97,9 +101,9 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 
 		// Display photo
 		displayImageButton(R.id.photo, SourcesTable.COLUMN_PHOTO, R.drawable.camera);
-		
+
 		// Enable/disable
-		((Button)findViewById(R.id.locationSet)).setEnabled(isCreatedByMe());
+		((Button) findViewById(R.id.locationSet)).setEnabled(isCreatedByMe());
 	}
 
 	public void onPhotoClick(View v) {
@@ -115,8 +119,8 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 	}
 
 	public void onBasicsClick(View v) {
-		// TODO
-		Toast.makeText(this, "To do", Toast.LENGTH_SHORT).show();
+		if (isCreatedByMe())
+			editSource();
 	}
 
 	public void onAddSampleClick(View v) {
@@ -135,13 +139,38 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 	}
 
 	public void onAddTestClick(View v) {
-		// Create sample linked to source
-		ContentValues values = new ContentValues();
-		values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
-		values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewSampleCode(this));
-		values.put(SamplesTable.COLUMN_SAMPLED_ON, System.currentTimeMillis() / 1000);
-		values.put(SamplesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
-		Uri sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
+		long sampleId = -1;
+
+		// Find existing sample on same day
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		long startOfToday = calendar.getTimeInMillis();
+		Cursor samples = getContentResolver().query(MWaterContentProvider.SAMPLES_URI, null,
+				SamplesTable.COLUMN_SAMPLED_ON + ">? AND " + SamplesTable.COLUMN_SOURCE + "=?",
+				new String[] { Long.toString(startOfToday/1000), rowValues.getAsString(SourcesTable.COLUMN_UID) },
+				SamplesTable.COLUMN_SAMPLED_ON + " DESC");
+
+		if (samples.moveToFirst()) {
+			sampleId = samples.getLong(samples.getColumnIndexOrThrow(SamplesTable.COLUMN_ID));
+		}
+
+		samples.close();
+
+		Uri sampleUri;
+		if (sampleId == -1) {
+			// Create sample linked to source
+			ContentValues values = new ContentValues();
+			values.put(SamplesTable.COLUMN_SOURCE, rowValues.getAsString(SourcesTable.COLUMN_UID));
+			values.put(SamplesTable.COLUMN_CODE, OtherCodes.getNewSampleCode(this));
+			values.put(SamplesTable.COLUMN_SAMPLED_ON, System.currentTimeMillis() / 1000);
+			values.put(SamplesTable.COLUMN_CREATED_BY, MWaterServer.getUsername(this));
+			sampleUri = getContentResolver().insert(MWaterContentProvider.SAMPLES_URI, values);
+		}
+		else {
+			sampleUri = Uri.withAppendedPath(MWaterContentProvider.SAMPLES_URI, sampleId + "");
+		}
 
 		new TestCreator(this, sampleUri).create();
 	}
@@ -167,12 +196,6 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 	}
 
 	public void onLocationMapClick(View v) {
-//		String mapUri = String.format("geo:%1$f,%2$f?q=%1$f,%2$f(%3$s)",
-//				rowValues.getAsDouble(SourcesTable.COLUMN_LAT),
-//				rowValues.getAsDouble(SourcesTable.COLUMN_LONG),
-//				Uri.encode(rowValues.getAsString(SourcesTable.COLUMN_CODE)));
-//		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mapUri));
-//		startActivity(intent);
 		Intent intent = new Intent(this, SourceMapActivity.class);
 		intent.putExtra("latitude", rowValues.getAsDouble(SourcesTable.COLUMN_LAT));
 		intent.putExtra("longitude", rowValues.getAsDouble(SourcesTable.COLUMN_LONG));
@@ -208,6 +231,13 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 		});
 		menu.findItem(R.id.menu_edit).setVisible(isCreatedByMe());
 
+		menu.findItem(R.id.menu_add_sample).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				SourceDetailActivity.this.onAddSampleClick(null);
+				return true;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -216,7 +246,7 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 		intent.putExtra("uri", uri);
 		startActivity(intent);
 	}
-	
+
 	void deleteSource() {
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
@@ -243,10 +273,10 @@ public class SourceDetailActivity extends DetailActivity implements LocationFind
 		Location lastLocation = locationFinder.getLastLocation();
 		if (lastLocation == null)
 			return;
-		
+
 		long age = System.currentTimeMillis() - lastLocation.getTime();
 
-		// If recent (<2 min) and close 
+		// If recent (<2 min) and close
 		if (lastLocation.getAccuracy() < 100 && age < 1000 * 60 * 2)
 		{
 			ContentValues values = new ContentValues();
