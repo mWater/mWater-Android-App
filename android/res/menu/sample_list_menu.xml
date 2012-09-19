@@ -7,11 +7,5 @@
         android:showAsAction="always|withText"
         android:title="New">
     </item>
-    <item
-        android:id="@+id/menu_search"
-        android:icon="@drawable/ic_action_search"
-        android:showAsAction="ifRoom|withText"
-        android:title="Search">
-    </item>
 
 </menu>

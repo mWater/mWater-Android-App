@@ -38,6 +38,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -57,7 +58,15 @@
         </activity>
         <activity
             android:name=".ui.SourceListActivity"
+            android:exported="false"
             android:label="Sources" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_sources" />
         </activity>
         <activity
             android:name=".ui.SourceDetailActivity"
@@ -66,7 +75,7 @@
         </activity>
         <activity
             android:name=".ui.SourceEditActivity"
-            android:label="Source">
+            android:label="Source" >
         </activity>
         <activity
             android:name=".ui.SourceNoteListActivity"
@@ -88,7 +97,15 @@
         </activity>
         <activity
             android:name=".ui.TestListActivity"
+            android:exported="false"
             android:label="Tests" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable_tests" />
         </activity>
         <activity android:name=".ui.TenMLColilertDetailActivity" >
         </activity>

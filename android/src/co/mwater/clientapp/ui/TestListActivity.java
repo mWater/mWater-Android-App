@@ -1,5 +1,7 @@
 package co.mwater.clientapp.ui;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -23,6 +25,7 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	public static final String TAG = TestListActivity.class.getSimpleName();
 	private static final int LOADER_ID = 0x01;
 	private CustomAdapter adapter;
+	String query = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,13 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 			}
 		});
 
+		// Get the intent, verify the action and get the query
+		Intent intent = getIntent();
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			this.query = query;
+		}
+
 		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 	}
 
@@ -52,6 +62,14 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 				return true;
 			}
 		});
+
+		menu.findItem(R.id.menu_search).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				TestListActivity.this.onSearchRequested();
+				return true;
+			}
+		});
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -64,6 +82,16 @@ public class TestListActivity extends SherlockFragmentActivity implements Loader
 	}
 
 	public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+		if (query != null)
+			return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null,
+					TestsTable.COLUMN_CREATED_BY + "=? AND "
+					+ TestsTable.COLUMN_CODE + " LIKE ?",
+					new String[] { 
+						MWaterServer.getUsername(this),
+						query + "%"
+					},
+					TestsTable.COLUMN_STARTED_ON + " DESC");
+
 		return new CursorLoader(this, MWaterContentProvider.TESTS_URI, null,
 				TestsTable.COLUMN_CREATED_BY + "=?",
 				new String[] { MWaterServer.getUsername(this) },

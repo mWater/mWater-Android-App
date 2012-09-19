@@ -3,6 +3,7 @@ package co.mwater.clientapp.ui;
 import java.util.Locale;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -46,6 +47,7 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 	LocationFinder locationFinder;
 	ActionBar actionBar;
 	ProgressDialog progressDialog;
+	String query = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,13 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 				SourceListActivity.this.onItemClick(id);
 			}
 		});
+
+		// Get the intent, verify the action and get the query
+		Intent intent = getIntent();
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			this.query = query;
+		}
 
 		// Set up location service
 		LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -103,6 +112,13 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 		menu.findItem(R.id.menu_new).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			public boolean onMenuItemClick(MenuItem item) {
 				createNewSource();
+				return true;
+			}
+		});
+
+		menu.findItem(R.id.menu_search).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				SourceListActivity.this.onSearchRequested();
 				return true;
 			}
 		});
@@ -156,6 +172,15 @@ public class SourceListActivity extends SherlockFragmentActivity implements Load
 		// SourcesTable.COLUMN_LAT, location.getLatitude(),
 		// SourcesTable.COLUMN_LONG, location.getLongitude());
 		// }
+
+		// Add query if present
+		if (query != null) {
+			return new CursorLoader(this, MWaterContentProvider.SOURCES_URI, null,
+					SourcesTable.COLUMN_CODE + " LIKE ? OR "
+							+ SourcesTable.COLUMN_NAME + " LIKE ? OR "
+							+ SourcesTable.COLUMN_DESC + " LIKE ?",
+					new String[] { query + "%", query + "%", query + "%" }, sort);
+		}
 
 		return new CursorLoader(this, MWaterContentProvider.SOURCES_URI, null, null, null, sort);
 	}

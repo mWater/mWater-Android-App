@@ -41,6 +41,8 @@ public class MainActivity extends SherlockFragmentActivity {
 			finish();
 			return;
 		}
+		if (MWaterServer.getUsername(this) == null)
+			throw new RuntimeException("Null username at impossible location");
 
 		// Show welcome message if needed
 		if (firstRun) {
