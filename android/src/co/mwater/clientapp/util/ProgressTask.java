@@ -1,6 +1,5 @@
 package co.mwater.clientapp.util;
 
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -27,8 +26,24 @@ public abstract class ProgressTask {
 		progressFragment.runWhenReady(task);
 	}
 
-	protected boolean isCancelled() {
-		if (progressFragment.isDestroyed())
+	public void updateProgress(int completed, int total) {
+		progressFragment.updateProgress(completed, total);
+	}
+
+	/**
+	 * Forces closing of progress display before end
+	 */
+	public void finish() {
+		// Clear fragment
+		ProgressTask.this.runOnActivity(new ActivityTask() {
+			public void run(FragmentActivity activity) {
+				activity.getSupportFragmentManager().beginTransaction().remove(progressFragment).commit();
+			}
+		});
+	}
+
+	public boolean isCancelled() {
+		if (progressFragment.isDestroyed() || progressFragment.isCancelled())
 			return true;
 		return false;
 	}

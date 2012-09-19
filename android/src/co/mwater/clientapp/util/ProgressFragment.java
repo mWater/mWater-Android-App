@@ -5,6 +5,8 @@ import java.util.List;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -22,11 +24,17 @@ public class ProgressFragment extends DialogFragment {
 	protected List<ActivityTask> pendingCallbacks = new LinkedList<ActivityTask>();
 
 	boolean destroyed = false;
+	boolean cancelled = false;
+	ProgressDialog dialog;
 
 	public ProgressFragment() {
 	}
 
 	public boolean isDestroyed() {
+		return destroyed;
+	}
+
+	public boolean isCancelled() {
 		return destroyed;
 	}
 
@@ -40,13 +48,19 @@ public class ProgressFragment extends DialogFragment {
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		ProgressDialog dialog = new ProgressDialog(this.getActivity());
+		dialog = new ProgressDialog(this.getActivity());
 		dialog.setTitle(getArguments().getString("title"));
 		dialog.setMessage(getArguments().getString("message"));
+		dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		dialog.setIndeterminate(true);
+		dialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface dialog) {
+				cancelled = true;
+			}
+		});
 		return dialog;
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -123,5 +137,13 @@ public class ProgressFragment extends DialogFragment {
 		Log.d(TAG, "onDestroy");
 		destroyed = true;
 		super.onDestroy();
+	}
+
+	public void updateProgress(int completed, int total) {
+		if (dialog != null) {
+			dialog.setIndeterminate(false);
+			dialog.setMax(total);
+			dialog.setProgress(completed);
+		}
 	}
 }

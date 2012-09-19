@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Stack;
 
 import co.mwater.clientapp.dbsync.RESTClient;
+import co.mwater.clientapp.dbsync.RESTClient.RequestProgress;
 import co.mwater.clientapp.dbsync.RESTClientException;
 import co.mwater.clientapp.util.ProgressTask;
 
@@ -77,8 +78,17 @@ public class ImageManager {
 		new ProgressTask() {
 			@Override
 			protected void runInBackground() {
+				final ProgressTask task = this;
 				try {
-					client.getBytesToFile("downloadimage", null, tempImage, "clientuid", MWaterServer.getClientUid(context),
+					client.getBytesToFile("downloadimage", new RequestProgress() {
+						public void progress(long completed, long total) {
+							task.updateProgress((int) (completed / 1024), (int) (total / 1024));
+						}
+
+						public boolean isCancelled() {
+							return task.isCancelled();
+						}
+					}, tempImage, "clientuid", MWaterServer.getClientUid(context),
 							"imageuid", uid);
 				} catch (RESTClientException e) {
 					runOnActivity(new ActivityTask() {
@@ -99,6 +109,7 @@ public class ImageManager {
 				}
 				runOnActivity(new ActivityTask() {
 					public void run(FragmentActivity activity) {
+						task.finish();
 						displayCachedImage(activity, cachedImage);
 					}
 				});
