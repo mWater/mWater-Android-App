@@ -6,12 +6,18 @@ import java.io.IOException;
 import java.util.Stack;
 
 import co.mwater.clientapp.dbsync.RESTClient;
+import co.mwater.clientapp.dbsync.RESTClientException;
+import co.mwater.clientapp.util.ProgressTask;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 /**
  * Manages image download of thumbnails
@@ -50,6 +56,64 @@ public class ImageManager {
 		imageView.setImageResource(defaultDrawableId);
 	}
 
+	public void displayImage(final String uid, FragmentActivity activity) throws IOException {
+		// Check if image exists locally
+		final File pendingImage = new File(ImageStorage.getPendingImagePath(activity, uid));
+		if (pendingImage.exists()) {
+			displayCachedImage(activity, pendingImage);
+			return;
+		}
+
+		final File cachedImage = new File(ImageStorage.getCachedImagePath(activity, uid));
+		if (cachedImage.exists()) {
+			displayCachedImage(activity, cachedImage);
+			return;
+		}
+
+		final File tempImage = new File(ImageStorage.getTempImagePath(activity, uid));
+		final RESTClient client = MWaterServer.createClient(context);
+
+		// Download image with progress box
+		new ProgressTask() {
+			@Override
+			protected void runInBackground() {
+				try {
+					client.getBytesToFile("downloadimage", null, tempImage, "clientuid", MWaterServer.getClientUid(context),
+							"imageuid", uid);
+				} catch (RESTClientException e) {
+					runOnActivity(new ActivityTask() {
+						public void run(FragmentActivity activity) {
+							Toast.makeText(activity, "Unable to download image", Toast.LENGTH_LONG).show();
+						}
+					});
+					return;
+				}
+				if (!tempImage.renameTo(cachedImage))
+				{
+					runOnActivity(new ActivityTask() {
+						public void run(FragmentActivity activity) {
+							Toast.makeText(activity, "Unable to display image", Toast.LENGTH_LONG).show();
+						}
+					});
+					return;
+				}
+				runOnActivity(new ActivityTask() {
+					public void run(FragmentActivity activity) {
+						displayCachedImage(activity, cachedImage);
+					}
+				});
+			}
+		}.execute(activity, "Downloading Image", null);
+	}
+
+	private void displayCachedImage(Context context, File imageFile) {
+		// Launch image viewer
+		Intent intent = new Intent();
+		intent.setAction(android.content.Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.fromFile(imageFile), "image/jpeg");
+		context.startActivity(intent);
+	}
+
 	private void queueThumbnailImage(String uid, ImageView imageView, int defaultDrawableId) {
 		// This ImageView might have been used for other images, so we clear
 		// the queue of old tasks before starting.
@@ -72,7 +136,7 @@ public class ImageManager {
 			// Check cache
 			if (!cacheFile.exists()) {
 				// Download file
-				byte[] bytes = client.getBytes(command, args);
+				byte[] bytes = client.getBytes(command, null, args);
 				if (bytes == null)
 					return null;
 

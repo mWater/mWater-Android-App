@@ -279,18 +279,8 @@ public abstract class DetailActivity extends SherlockFragmentActivity {
 		if (photoUid == null)
 			return;
 
-		// TODO massive work needed for cached, etc.
 		try {
-			File imageFile = new File(ImageStorage.getPendingImagePath(this, photoUid));
-			if (!imageFile.exists()) {
-				Toast.makeText(this, "Full-size image download not implemented", Toast.LENGTH_SHORT).show();
-				return;
-			}
-
-			Intent intent = new Intent();
-			intent.setAction(android.content.Intent.ACTION_VIEW);
-			intent.setDataAndType(Uri.fromFile(imageFile), "image/jpeg");
-			startActivity(intent);
+			ImageManager.getDefault(getApplicationContext()).displayImage(photoUid, this);
 		} catch (IOException e) {
 			return;
 		}

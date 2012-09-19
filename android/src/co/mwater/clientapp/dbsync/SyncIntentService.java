@@ -93,7 +93,7 @@ public class SyncIntentService extends IntentService {
 			File imageFile = new File(ImageStorage.getPendingImagePath(getApplicationContext(), uids[i]));
 			final int i2 = i;
 			// Call rest client
-			restClient.postFile("uploadimage", imageFile, new RESTClient.PostStatus() {
+			restClient.postFile("uploadimage", imageFile, new RESTClient.RequestProgress() {
 				public void progress(long completed, long total) {
 					double prog = (((double) completed / total) + i2) / uids.length;
 					notifyProgress((int) (prog * 100));

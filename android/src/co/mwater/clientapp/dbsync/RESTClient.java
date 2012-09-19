@@ -3,6 +3,7 @@ package co.mwater.clientapp.dbsync;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -126,7 +127,7 @@ public class RESTClient {
 		}
 	}
 
-	public String postBlob(String command, byte[] blob, PostStatus status, String... args) throws RESTClientException {
+	public String postBlob(String command, byte[] blob, RequestProgress status, String... args) throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
@@ -179,7 +180,7 @@ public class RESTClient {
 		}
 	}
 
-	public String postFile(String command, File file, PostStatus status, String... args) throws RESTClientException {
+	public String postFile(String command, File file, RequestProgress progress, String... args) throws RESTClientException {
 		// Construct url
 		URL url;
 		try {
@@ -217,11 +218,11 @@ public class RESTClient {
 					int numRead = 0;
 					int total = 0;
 					while ((numRead = fis.read(buffer)) > 0) {
-						if (status.isCancelled())
+						if (progress != null && progress.isCancelled())
 							throw new RESTClientCancelledException();
 						output.write(buffer, 0, numRead);
 						total += numRead;
-						status.progress(total, len);
+						progress.progress(total, len);
 					}
 				} finally {
 					fis.close();
@@ -250,7 +251,9 @@ public class RESTClient {
 		}
 	}
 
-	public byte[] getBytes(String command, String... args) throws RESTClientException {
+	public byte[] getBytes(String command, RequestProgress progress, String... args) throws RESTClientException {
+		// TODO implement progress
+
 		// Construct url
 		URL url;
 		try {
@@ -284,7 +287,76 @@ public class RESTClient {
 		}
 	}
 
-	public interface PostStatus {
+	public void getBytesToFile(String command, RequestProgress progress, File file, String... args) throws RESTClientException {
+		// TODO implement progress
+
+		// Construct url
+		URL url;
+		try {
+			url = new URL(baseUrl + command + "?" + createQuery(args));
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RESTClientException(e);
+		}
+
+		try {
+			if (userAgent != null)
+				connection.setRequestProperty("User-Agent", userAgent);
+
+			int chunkSize = 1024 * 20;
+			byte[] buffer = new byte[chunkSize];
+
+			InputStream input = null;
+			try {
+				input = connection.getInputStream();
+				int contentLength = connection.getContentLength();
+
+				FileOutputStream fos = new FileOutputStream(file);
+				try {
+					// Read in the bytes
+					int numRead = 0;
+					int total = 0;
+					while ((numRead = input.read(buffer)) > 0) {
+						if (progress != null && progress.isCancelled())
+							throw new RESTClientCancelledException();
+						fos.write(buffer, 0, numRead);
+						total += numRead;
+
+						if (contentLength > 0 && progress != null)
+							progress.progress(total, contentLength);
+					}
+				} finally {
+					fos.close();
+				}
+			} finally {
+				if (input != null)
+					try {
+						input.close();
+					} catch (IOException logOrIgnore) {
+						// Ignore since on close only
+					}
+			}
+		} catch (IOException ioex) {
+			int code;
+			try {
+				code = connection.getResponseCode();
+				String errorString = readStreamString(connection.getErrorStream());
+				throw new RESTClientException(code, errorString, ioex);
+			} catch (IOException e) {
+				throw new RESTClientException(e);
+			}
+		} finally {
+			connection.disconnect();
+		}
+	}
+
+	public interface RequestProgress {
 		boolean isCancelled();
 
 		void progress(long completed, long total);
@@ -317,7 +389,6 @@ public class RESTClient {
 		return out.toString();
 	}
 
-	
 	private byte[] readStreamBytes(InputStream inputStream) throws IOException {
 		if (inputStream == null)
 			return null;
@@ -325,7 +396,7 @@ public class RESTClient {
 		final byte[] buffer = new byte[8 * 1024];
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		
+
 		try {
 			int read;
 			do {
