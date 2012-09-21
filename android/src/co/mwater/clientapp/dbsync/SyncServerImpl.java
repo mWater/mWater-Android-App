@@ -31,7 +31,7 @@ public class SyncServerImpl implements SyncServer {
 					"since", since + "",
 					"slice", dataSlice.getSliceId());
 			
-			Log.d(TAG, "Got: " + cs);
+			//Log.d(TAG, "Got: " + cs);
 			JSONObject csjson = new JSONObject(cs);
 			return jsonSerializer.deserialize(csjson);
 		} catch (RESTClientException e) {
@@ -45,6 +45,7 @@ public class SyncServerImpl implements SyncServer {
 		// Create json
 		try {
 			JSONObject csjson = jsonSerializer.serialize(changeSet);
+			Log.d(TAG, "Sending: " + csjson.toString());
 			restClient.post("upload", "clientuid", clientUid, "changeset", csjson.toString());
 		} catch (JSONException e) {
 			throw new SyncServerException("Error contacting server", e);

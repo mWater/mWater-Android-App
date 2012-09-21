@@ -33,12 +33,13 @@
                 android:layout_weight="1"
                 android:minWidth="280dp" />
         </LinearLayout>
-
+
         <CheckBox
             android:id="@+id/currentLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:checked="true"
             android:minHeight="48dp"
             android:text="Set to current location" />
 
